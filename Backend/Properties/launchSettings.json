@@ -4,17 +4,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:2206",
-      "sslPort": 44374
+      "applicationUrl": "http://localhost:42585",
+      "sslPort": 44352
     }
   },
   "profiles": {
-    "NewsSiteBackEnd": {
+    "Horizon": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7056;http://localhost:5220",
+      "applicationUrl": "https://localhost:7171;http://localhost:5024",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

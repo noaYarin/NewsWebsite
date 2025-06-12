@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Body Styles */
+body {
+  background-color: black;
+  font-family: "Work Sans", sans-serif;
+  padding-top: 65px; /* Default padding for fixed navbar */
+}

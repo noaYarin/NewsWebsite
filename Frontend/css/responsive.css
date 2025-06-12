@@ -1,0 +1,74 @@
+/* Mobile Responsive Styles (max-width: 768px) */
+@media (max-width: 1024px) {
+  body {
+    padding-top: 60px; /* Adjust for smaller mobile navbar */
+  }
+
+  .navbar {
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .nav-items,
+  .login-btn,
+  .signup-btn {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .nav-left {
+    flex: 1;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Mobile Search Overlay */
+  .search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    background-color: black;
+    padding: 0;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .search-overlay .logo,
+  .search-overlay .nav-right {
+    display: none;
+  }
+
+  .search-container {
+    display: none; /* Hides desktop search container on mobile */
+  }
+}
+
+/* Desktop-only elements (hidden on mobile/tablet) */
+@media (min-width: 1025px) {
+  .mobile-menu,
+  .mobile-search-header {
+    display: none;
+  }
+}
+
+/* Large Desktop Adjustments */
+@media (min-width: 1440px) {
+  .navbar,
+  .search-overlay.active {
+    padding-left: calc(50vw - 800px);
+    padding-right: calc(50vw - 800px);
+  }
+}
