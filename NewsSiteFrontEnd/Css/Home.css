@@ -1,0 +1,20 @@
+:root {
+  --bg-color: #952323;
+  --r-color: #a73121;
+  --g-color: #dad4b5;
+  --b-color: #f2e8c6;
+  --small-font: 1rem;
+}
+
+.logo-div {
+  background-color: var(--g-color);
+  text-align: center;
+}
+.navbar {
+  background-color: var(--bg-color);
+  font-size: var(--small-font);
+}
+.nav-item a:hover {
+  text-decoration: underline;
+  text-decoration-color: 2px solid var(--b-color);
+}
