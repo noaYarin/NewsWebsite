@@ -62,9 +62,9 @@ BenchmarkDotNet.Artifacts/
 project.lock.json
 project.fragment.lock.json
 artifacts/
-appsettings.json  # ignore sensitive config file
-appsettings.Development.json # Ignore local secret configs
 
+Backend/appsettings.json # Ignore local secret configs for Backend
+Backend/appsettings.Development.json # Ignore local secret configs for Backend
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
