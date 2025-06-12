@@ -1,0 +1,379 @@
+/* ========== Navbar ========== */
+.navbar {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 65px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.navbar,
+.search-overlay.active {
+  padding-left: calc(50vw - 720px);
+  padding-right: calc(50vw - 720px);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.logo-icon img {
+  height: 55px;
+}
+
+.nav-items {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+}
+
+.nav-items a {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 24px 0;
+  position: relative;
+  display: block;
+}
+
+.nav-items a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #ffcc04;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.nav-items a:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 100%;
+}
+
+.login-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.signup-btn {
+  background-color: #ffcc04;
+  border: none;
+  height: 100%;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s ease;
+}
+
+.signup-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  transition: left 0.4s ease;
+  z-index: 0;
+}
+
+.signup-btn:hover {
+  color: white;
+}
+
+.signup-btn:hover::before {
+  left: 0;
+}
+
+.signup-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.mobile-menu-btn {
+  display: none; /* Hidden by default, shown in mobile view */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu-btn span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: black;
+  margin: 5px 0;
+  transition: 0.3s;
+}
+
+/* ========== Search ========== */
+
+.search-icon {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.search-icon.hide {
+  opacity: 0;
+  transform: scale(0.5);
+  pointer-events: none;
+}
+
+.search-icon::before,
+.mobile-search-icon::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid black;
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+}
+
+.search-icon::after,
+.mobile-search-icon::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 6px;
+  background-color: black;
+  transform: rotate(-45deg);
+  bottom: 0;
+  right: 0;
+}
+
+.search-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background-color: white;
+  display: none; /* Hidden until .active class is added */
+  align-items: center;
+  z-index: 100;
+}
+
+.search-overlay.active {
+  display: flex;
+}
+
+.search-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 40px;
+  margin-right: 16px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  font-size: 16px;
+  padding: 8px 0;
+  outline: none;
+  background: none;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.close-search {
+  cursor: pointer;
+  font-size: 24px;
+  padding: 8px;
+  background: none;
+  border: none;
+}
+
+/* ========== Mobile Menu (Hidden on Desktop) ========== */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100vh;
+  background-color: white;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.mobile-menu.active {
+  left: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  max-height: 60px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-nav-items {
+  list-style: none;
+  padding: 0;
+}
+
+.mobile-nav-items li {
+  border-bottom: 1px solid #eee;
+}
+
+.mobile-nav-items a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.mobile-nav-items a::after {
+  content: "›";
+  font-size: 24px;
+  color: #666;
+}
+
+.mobile-menu-footer {
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+}
+
+.mobile-signup-btn {
+  flex: 1;
+  background-color: #ffcc04;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mobile-login-btn {
+  flex: 1;
+  background-color: white;
+  border: 2px solid black;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Mobile Search Specific Styles (Only used inside mobile search overlay) */
+.mobile-search-header {
+  background-color: white;
+  padding: 12px;
+  padding-left: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+}
+
+.mobile-search-icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mobile-search-input {
+  flex: 1;
+  border: none;
+  font-size: 16px;
+  padding: 4px 0;
+  outline: none;
+  background: none;
+  color: black;
+}
+
+.mobile-search-input::placeholder {
+  color: #666;
+}
+
+.mobile-close-search {
+  cursor: pointer;
+  font-size: 24px;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: black;
+}
+
+.mobile-search-content {
+  flex: 1;
+  padding: 40px 20px;
+  color: white;
+}
+
+.mobile-search-content h2 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.mobile-search-content p {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.mobile-search-content .underline {
+  text-decoration: underline;
+  text-decoration-color: #ffcc04;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.mobile-search-content .divider {
+  width: 60px;
+  height: 4px;
+  background-color: #ffcc04;
+  margin: 32px 0;
+}
