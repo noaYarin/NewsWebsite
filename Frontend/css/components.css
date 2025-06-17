@@ -1,5 +1,5 @@
 /* ========== Navbar ========== */
-.navbar {
+#navbar {
   background-color: white;
   display: flex;
   align-items: center;
@@ -12,7 +12,7 @@
   z-index: 1000;
 }
 
-.navbar,
+#navbar,
 .search-overlay.active {
   padding-left: calc(50vw - 720px);
   padding-right: calc(50vw - 720px);
@@ -218,7 +218,7 @@
 }
 
 /* ========== Mobile Menu (Hidden on Desktop) ========== */
-.mobile-menu {
+#mobileMenu {
   position: fixed;
   top: 0;
   left: -100%;
@@ -230,7 +230,7 @@
   overflow-y: auto;
 }
 
-.mobile-menu.active {
+#mobileMenu.active {
   left: 0;
 }
 
@@ -325,7 +325,6 @@
   flex: 1;
   border: none;
   font-size: 16px;
-  padding: 4px 0;
   outline: none;
   background: none;
   color: black;
@@ -376,4 +375,65 @@
   height: 4px;
   background-color: #ffcc04;
   margin: 32px 0;
+}
+
+/* ========== Main Content Container ========== */
+#container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  color: white;
+}
+
+/* ========== Footer ========== */
+
+#footer {
+  background-color: black;
+  border-top: #252525 1px solid;
+  color: #aaa;
+  font-size: 12px;
+  height: 70px;
+  width: 100%;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#footer.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1440px;
+  margin: 0 auto;
+  gap: 50px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  color: white;
+}
+
+.footer-logo img {
+  height: 40px;
+}
+
+.footer-copy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #999;
+  font-size: 14px;
 }
