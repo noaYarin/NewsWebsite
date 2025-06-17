@@ -32,6 +32,7 @@
   display: flex;
   list-style: none;
   gap: 32px;
+  margin-bottom: 0px;
 }
 
 .nav-items a {
@@ -151,8 +152,8 @@
 .mobile-search-icon::before {
   content: "";
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 2px solid black;
   border-radius: 50%;
   top: 0;
@@ -164,9 +165,9 @@
   content: "";
   position: absolute;
   width: 2px;
-  height: 6px;
+  height: 8px;
   background-color: black;
-  transform: rotate(-45deg);
+  transform: rotate(-52deg);
   bottom: 0;
   right: 0;
 }
@@ -378,11 +379,14 @@
 }
 
 /* ========== Main Content Container ========== */
+
 #container {
+  display: block; /* now container is a block */
   max-width: 1080px;
-  margin: 0 auto;
-  padding: 24px 16px;
+  margin: 0 auto; /* will center it */
+  padding: 20px 0px;
   color: white;
+  justify-content: center;
 }
 
 /* ========== Footer ========== */

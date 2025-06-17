@@ -1,0 +1,12 @@
+.titles {
+  padding: 65px 0px;
+  text-align: center;
+}
+
+.titles h1 {
+  font-size: 54px;
+  letter-spacing: 3px;
+  line-height: 1.5;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
