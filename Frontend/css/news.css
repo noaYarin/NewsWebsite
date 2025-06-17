@@ -1,5 +1,5 @@
 .titles {
-  padding: 65px 0px;
+  padding: 20px 0px 40px;
   text-align: center;
 }
 
@@ -8,5 +8,52 @@
   letter-spacing: 3px;
   line-height: 1.5;
   font-weight: bold;
-  margin-bottom: 0.5em;
+  margin: 0px;
+}
+
+.titles span {
+  font-weight: 500;
+}
+
+.highlight-container {
+  line-height: 1.4;
+}
+
+.highlight {
+  position: relative;
+  display: inline-block;
+  color: white;
+  transition: color 0.3s ease;
+  padding: 1px 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.highlight::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #ffcc04;
+  transition: height 0.3s ease, bottom 0.3s ease;
+  z-index: -1;
+}
+
+.highlight:hover {
+  color: black;
+}
+.highlight:hover::after {
+  bottom: 0;
+  height: 100%;
+}
+
+.highlight-container::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background-color: #ffcc04;
+  margin: 20px auto 0;
 }
