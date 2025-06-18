@@ -191,6 +191,13 @@
 .card-body .card-title {
   font-weight: 600;
   font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: var(--webkit-line-clamp);
+  line-clamp: var(--webkit-line-clamp);
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 
 .explore-button {
@@ -286,4 +293,57 @@
 
 .discover-item:hover img {
   transform: scale(1.05);
+}
+
+/* ========== Our Picks ========== */
+.our-picks {
+  background-color: var(--c-light);
+  color: var(--c-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.our-picks-titles {
+  width: var(--container-max-width);
+  max-width: 90%;
+  text-align: center;
+}
+
+.our-picks h1 {
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  font-size: 42px;
+  margin-bottom: 30px;
+}
+
+.our-picks p {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 60px;
+}
+
+.our-picks-cards {
+  width: var(--container-max-width);
+  max-width: 90%;
+}
+
+.our-picks-cards .card {
+  border: 1px solid var(--c-border-light);
+  height: 400px;
+}
+
+.our-picks-cards .card .card-body {
+  min-height: 200px;
+}
+
+.our-picks-cards .card-small-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.our-picks-cards .author {
+  text-transform: uppercase;
 }
