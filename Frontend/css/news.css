@@ -3,6 +3,10 @@
   padding: 80px 0 100px;
 }
 
+.secondary-container .titles {
+  padding: 80px 0 120px;
+}
+
 .titles h1 {
   font-size: 54px;
   letter-spacing: 3px;
