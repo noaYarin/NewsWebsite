@@ -72,20 +72,14 @@
     font-size: 36px;
   }
 
+  .video-background,
+  .bg-video,
   .video-content {
-    padding-top: 100px !important;
-  }
-
-  .video-background {
-    height: 500px !important;
-  }
-
-  .bg-video {
     height: 500px !important;
   }
 
   .video-content {
-    height: 500px !important;
+    padding-top: 100px !important;
   }
 
   .discover-more {
@@ -144,14 +138,8 @@
 }
 
 @media (max-width: 768px) {
-  .video-background {
-    height: 750px !important;
-  }
-
-  .bg-video {
-    height: 750px !important;
-  }
-
+  .video-background,
+  .bg-video,
   .video-content {
     height: 750px !important;
   }
