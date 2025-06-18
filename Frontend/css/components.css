@@ -40,7 +40,7 @@
   text-decoration: none;
   color: var(--c-dark);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 22px 0;
   position: relative;
   display: block;
@@ -78,7 +78,7 @@
   background: none;
   border: none;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   padding: 8px 16px;
   transition: color var(--transition-fast);
@@ -94,7 +94,7 @@
   height: 100%;
   padding: 10px 20px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -301,7 +301,7 @@
   border: none;
   padding: 12px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
