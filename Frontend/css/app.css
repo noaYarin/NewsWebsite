@@ -1,5 +1,41 @@
 @import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 
+/* 1. Regular */
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../sources/fonts/geographweb-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. Medium */
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../sources/fonts/geographeditweb-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 3. Bold */
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../sources/fonts/geographweb-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 4. Italic */
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../sources/fonts/geographeditweb-regularitalic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --c-primary: #ffcc04;
   --c-dark: #000000;
@@ -10,12 +46,14 @@
   --c-border-light: #eeeeee;
   --c-border-dark: #252525;
 
-  --font-primary: "Work Sans", sans-serif;
+  /* --font-primary: "Work Sans", sans-serif; */
+  --font-primary: "GeographWeb", "Work Sans", sans-serif;
 
   /* Sizing & Spacing */
   --navbar-height-desktop: 65px;
   --navbar-height-mobile: 60px;
   --container-max-width: 1080px;
+  --webkit-line-clamp: 3; /* Might need to change this to 2 in the future */
 
   /* Z-Index */
   --z-overlay-content: 100;

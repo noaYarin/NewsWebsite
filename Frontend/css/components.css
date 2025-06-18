@@ -391,8 +391,8 @@
 #container {
   display: block;
   max-width: var(--container-max-width);
-  margin: 0 auto; /* Center the container */
-  padding: 20px 0;
+  margin: 0 auto;
+  padding: 20px 0 50px;
   color: var(--c-light);
 }
 
