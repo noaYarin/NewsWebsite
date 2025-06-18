@@ -53,8 +53,23 @@
     display: none;
   }
 
+  /* Main content adjustments */
   #container {
     padding: 16px 12px;
+  }
+
+  .today-picks-sidebar {
+    min-height: auto;
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .featured-article {
+    height: 300px;
+  }
+
+  .titles h1 {
+    font-size: 36px;
   }
 
   /* Footer adjustments */

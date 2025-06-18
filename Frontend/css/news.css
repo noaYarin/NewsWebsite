@@ -1,7 +1,6 @@
 /* ========== News/Title Styles ========== */
 .titles {
   padding: 50px 0 70px;
-  text-align: center;
 }
 
 .titles h1 {
@@ -33,6 +32,7 @@
   position: relative;
   display: inline-block;
   color: var(--c-light);
+  font-weight: 500;
   transition: color var(--transition-fast);
   padding: 1px 0;
   z-index: 1;
@@ -81,14 +81,6 @@
   background-color: var(--c-primary);
 }
 
-.pick-item {
-  padding-bottom: 1rem;
-}
-
-.pick-item:last-child {
-  border-bottom: none;
-}
-
 .pick-item img {
   width: 100px;
   height: 100px;
@@ -120,11 +112,11 @@
 }
 
 .pick-item .badge {
-  font-size: 0.7rem;
+  font-size: 12px;
 }
 
 .pick-item .small {
-  font-size: 0.7rem;
+  font-size: 12px;
 }
 
 /* ========== Featured Article ========== */
@@ -157,6 +149,19 @@
   overflow: hidden;
 }
 
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 165px;
+}
+
+.card-body .explore-button {
+  color: var(--c-dark);
+  display: flex;
+  align-items: end;
+}
+
 .image-container {
   position: relative;
   width: 100%;
@@ -171,7 +176,7 @@
   transition: transform 0.3s ease;
 }
 
-.card:hover img {
+.card:hover .image-container img {
   transform: scale(1.05);
 }
 
@@ -179,9 +184,14 @@
   border-radius: 0;
 }
 
+.card-body .card-title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
 .explore-button {
   text-decoration: none;
-  color: white;
+  color: var(--c-light);
   font-weight: 500;
   letter-spacing: 4px;
   font-size: 12px;
@@ -190,22 +200,4 @@
 .explore-button img {
   width: 20px;
   height: 20px;
-  margin-right: 10px;
-}
-
-/* ========== Responsive Design ========== */
-@media (max-width: 768px) {
-  .today-picks-sidebar {
-    min-height: auto;
-    position: relative;
-    margin-bottom: 2rem;
-  }
-
-  .featured-article {
-    height: 300px;
-  }
-
-  .titles h1 {
-    font-size: 36px;
-  }
 }

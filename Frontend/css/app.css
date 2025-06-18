@@ -76,3 +76,8 @@ body {
   font-family: var(--font-primary);
   padding-top: var(--navbar-height-desktop);
 }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
