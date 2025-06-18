@@ -246,12 +246,17 @@
   max-width: 800px;
 }
 
+.discover-more {
+  width: var(--container-max-width);
+  max-width: 90%;
+}
+
 .discover-titles {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 80px;
-  width: var(--container-max-width);
+  width: 100%;
 }
 
 .discover-more h4 {

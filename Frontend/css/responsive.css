@@ -76,6 +76,22 @@
     padding-top: 100px !important;
   }
 
+  .video-background {
+    height: 500px !important;
+  }
+
+  .bg-video {
+    height: 500px !important;
+  }
+
+  .video-content {
+    height: 500px !important;
+  }
+
+  .discover-more {
+    display: none;
+  }
+
   /* Footer adjustments */
   #footer {
     height: auto;
@@ -124,5 +140,19 @@
   .search-overlay.active {
     padding-left: calc(50vw - 800px);
     padding-right: calc(50vw - 800px);
+  }
+}
+
+@media (max-width: 768px) {
+  .video-background {
+    height: 750px !important;
+  }
+
+  .bg-video {
+    height: 750px !important;
+  }
+
+  .video-content {
+    height: 750px !important;
   }
 }
