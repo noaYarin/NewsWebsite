@@ -26,6 +26,7 @@ namespace NewsSiteBackEnd
 
             app.UseAuthorization();
 
+            app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.MapControllers();
 
