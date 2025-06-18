@@ -72,6 +72,10 @@
     font-size: 36px;
   }
 
+  .video-content {
+    padding-top: 100px !important;
+  }
+
   /* Footer adjustments */
   #footer {
     height: auto;
