@@ -1,15 +1,40 @@
 @import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 
-/* Global Reset */
+:root {
+  --c-primary: #ffcc04;
+  --c-dark: #000000;
+  --c-light: #ffffff;
+  --c-text-muted: #666666;
+  --c-text-subtle: #999999;
+  --c-text-footer: #aaaaaa;
+  --c-border-light: #eeeeee;
+  --c-border-dark: #252525;
+
+  --font-primary: "Work Sans", sans-serif;
+
+  /* Sizing & Spacing */
+  --navbar-height-desktop: 65px;
+  --navbar-height-mobile: 60px;
+  --container-max-width: 1080px;
+
+  /* Z-Index */
+  --z-overlay-content: 100;
+  --z-footer: 999;
+  --z-fixed-element: 1000;
+
+  /* Transitions */
+  --transition-fast: 0.3s ease;
+  --transition-medium: 0.4s ease;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base Body Styles */
 body {
-  background-color: black;
-  font-family: "Work Sans", sans-serif;
-  padding-top: 65px; /* Default padding for fixed navbar */
+  background-color: var(--c-dark);
+  font-family: var(--font-primary);
+  padding-top: var(--navbar-height-desktop);
 }

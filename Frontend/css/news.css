@@ -1,5 +1,6 @@
+/* ========== News/Title Styles ========== */
 .titles {
-  padding: 20px 0px 40px;
+  padding: 50px 0;
   text-align: center;
 }
 
@@ -8,7 +9,7 @@
   letter-spacing: 3px;
   line-height: 1.5;
   font-weight: bold;
-  margin: 0px;
+  margin: 0;
 }
 
 .titles span {
@@ -19,11 +20,20 @@
   line-height: 1.4;
 }
 
+.highlight-container::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background-color: var(--c-primary);
+  margin: 20px auto 0;
+}
+
 .highlight {
   position: relative;
   display: inline-block;
-  color: white;
-  transition: color 0.3s ease;
+  color: var(--c-light);
+  transition: color var(--transition-fast);
   padding: 1px 0;
   z-index: 1;
   cursor: pointer;
@@ -36,24 +46,104 @@
   bottom: 0;
   width: 100%;
   height: 2px;
-  background: #ffcc04;
-  transition: height 0.3s ease, bottom 0.3s ease;
+  background: var(--c-primary);
+  transition: height var(--transition-fast), bottom var(--transition-fast);
   z-index: -1;
 }
 
 .highlight:hover {
-  color: black;
+  color: var(--c-dark);
 }
+
 .highlight:hover::after {
   bottom: 0;
   height: 100%;
 }
 
-.highlight-container::after {
+/* ========== Today's Picks Sidebar ========== */
+
+.today-picks-sidebar h2 {
+  position: relative;
+  font-weight: bold;
+  margin-bottom: 30px;
+  padding-left: 30px;
+}
+
+.today-picks-sidebar h2::before {
   content: "";
-  display: block;
-  width: 60px;
-  height: 4px;
-  background-color: #ffcc04;
-  margin: 20px auto 0;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 25px;
+  background-color: var(--c-primary);
+}
+
+.pick-item {
+  padding-bottom: 1rem;
+}
+
+.pick-item:last-child {
+  border-bottom: none;
+}
+
+.pick-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+
+.pick-item h6 {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.pick-item .badge {
+  font-size: 0.7rem;
+}
+
+.pick-item .small {
+  font-size: 0.7rem;
+}
+
+/* ========== Featured Article ========== */
+.featured-article {
+  height: 400px;
+}
+
+.featured-article .card {
+  height: 100%;
+}
+
+.featured-article .card-img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.featured-article .card-img-overlay {
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+}
+
+/* ========== Article Cards ========== */
+.card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 768px) {
+  .today-picks-sidebar {
+    min-height: auto;
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .featured-article {
+    height: 300px;
+  }
+
+  .titles h1 {
+    font-size: 36px;
+  }
 }

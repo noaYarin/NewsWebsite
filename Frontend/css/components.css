@@ -1,17 +1,18 @@
 /* ========== Navbar ========== */
 #navbar {
-  background-color: white;
+  background-color: var(--c-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 65px;
+  height: var(--navbar-height-desktop);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-fixed-element);
 }
 
+/* Centering for navbar and search overlay */
 #navbar,
 .search-overlay.active {
   padding-left: calc(50vw - 720px);
@@ -32,17 +33,22 @@
   display: flex;
   list-style: none;
   gap: 32px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .nav-items a {
   text-decoration: none;
-  color: black;
+  color: var(--c-dark);
   font-size: 14px;
   font-weight: 600;
   padding: 22px 0;
   position: relative;
   display: block;
+  transition: color var(--transition-fast);
+}
+
+.nav-items a:hover {
+  color: var(--c-primary);
 }
 
 .nav-items a::after {
@@ -52,9 +58,9 @@
   left: 0;
   width: 100%;
   height: 3px;
-  background-color: #ffcc04;
+  background-color: var(--c-primary);
   transform: scaleX(0);
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-fast);
 }
 
 .nav-items a:hover::after {
@@ -75,10 +81,15 @@
   font-weight: 600;
   cursor: pointer;
   padding: 8px 16px;
+  transition: color var(--transition-fast);
+}
+
+.login-btn:hover {
+  color: var(--c-text-subtle);
 }
 
 .signup-btn {
-  background-color: #ffcc04;
+  background-color: var(--c-primary);
   border: none;
   height: 100%;
   padding: 10px 20px;
@@ -87,7 +98,7 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: color 0.4s ease;
+  transition: color var(--transition-medium);
 }
 
 .signup-btn::before {
@@ -97,13 +108,13 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background-color: black;
-  transition: left 0.4s ease;
+  background-color: var(--c-dark);
+  transition: left var(--transition-medium);
   z-index: 0;
 }
 
 .signup-btn:hover {
-  color: white;
+  color: var(--c-light);
 }
 
 .signup-btn:hover::before {
@@ -127,19 +138,18 @@
   display: block;
   width: 24px;
   height: 2px;
-  background-color: black;
+  background-color: var(--c-dark);
   margin: 5px 0;
   transition: 0.3s;
 }
 
-/* ========== Search ========== */
-
+/* ========== Search Functionality ========== */
 .search-icon {
   cursor: pointer;
   width: 20px;
   height: 20px;
   position: relative;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
 .search-icon.hide {
@@ -148,13 +158,14 @@
   pointer-events: none;
 }
 
+/* Shared styles for search icon pseudo-elements */
 .search-icon::before,
 .mobile-search-icon::before {
   content: "";
   position: absolute;
   width: 18px;
   height: 18px;
-  border: 2px solid black;
+  border: 2px solid var(--c-dark);
   border-radius: 50%;
   top: 0;
   left: 0;
@@ -166,7 +177,7 @@
   position: absolute;
   width: 2px;
   height: 8px;
-  background-color: black;
+  background-color: var(--c-dark);
   transform: rotate(-52deg);
   bottom: 0;
   right: 0;
@@ -178,10 +189,10 @@
   left: 0;
   right: 0;
   height: 100%;
-  background-color: white;
-  display: none; /* Hidden until .active class is added */
+  background-color: var(--c-light);
+  display: none; /* Hidden until .active */
   align-items: center;
-  z-index: 100;
+  z-index: var(--z-overlay-content);
 }
 
 .search-overlay.active {
@@ -207,7 +218,7 @@
 }
 
 .search-input::placeholder {
-  color: #666;
+  color: var(--c-text-muted);
 }
 
 .close-search {
@@ -218,16 +229,16 @@
   border: none;
 }
 
-/* ========== Mobile Menu (Hidden on Desktop) ========== */
+/* ========== Mobile Menu ========== */
 #mobileMenu {
   position: fixed;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100vh;
-  background-color: white;
-  transition: left 0.3s ease;
-  z-index: 1000;
+  background-color: var(--c-light);
+  transition: left var(--transition-fast);
+  z-index: var(--z-fixed-element);
   overflow-y: auto;
 }
 
@@ -240,7 +251,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--c-border-light);
   max-height: 60px;
 }
 
@@ -258,7 +269,7 @@
 }
 
 .mobile-nav-items li {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--c-border-light);
 }
 
 .mobile-nav-items a {
@@ -267,7 +278,7 @@
   justify-content: space-between;
   padding: 20px;
   text-decoration: none;
-  color: black;
+  color: var(--c-dark);
   font-size: 18px;
   font-weight: 500;
 }
@@ -275,7 +286,7 @@
 .mobile-nav-items a::after {
   content: "›";
   font-size: 24px;
-  color: #666;
+  color: var(--c-text-muted);
 }
 
 .mobile-menu-footer {
@@ -284,9 +295,9 @@
   gap: 16px;
 }
 
-.mobile-signup-btn {
+.mobile-signup-btn,
+.mobile-login-btn {
   flex: 1;
-  background-color: #ffcc04;
   border: none;
   padding: 12px;
   font-size: 16px;
@@ -294,25 +305,23 @@
   cursor: pointer;
 }
 
-.mobile-login-btn {
-  flex: 1;
-  background-color: white;
-  border: 2px solid black;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
+.mobile-signup-btn {
+  background-color: var(--c-primary);
 }
 
-/* Mobile Search Specific Styles (Only used inside mobile search overlay) */
+.mobile-login-btn {
+  background-color: var(--c-light);
+  border: 2px solid var(--c-dark);
+}
+
+/* ========== Mobile Search Specifics ========== */
 .mobile-search-header {
-  background-color: white;
-  padding: 12px;
-  padding-left: 25px;
+  background-color: var(--c-light);
+  padding: 12px 12px 12px 25px;
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 60px;
+  height: var(--navbar-height-mobile);
 }
 
 .mobile-search-icon {
@@ -328,11 +337,11 @@
   font-size: 16px;
   outline: none;
   background: none;
-  color: black;
+  color: var(--c-dark);
 }
 
 .mobile-search-input::placeholder {
-  color: #666;
+  color: var(--c-text-muted);
 }
 
 .mobile-close-search {
@@ -341,13 +350,13 @@
   padding: 4px;
   background: none;
   border: none;
-  color: black;
+  color: var(--c-dark);
 }
 
 .mobile-search-content {
   flex: 1;
   padding: 40px 20px;
-  color: white;
+  color: var(--c-light);
 }
 
 .mobile-search-content h2 {
@@ -366,7 +375,7 @@
 
 .mobile-search-content .underline {
   text-decoration: underline;
-  text-decoration-color: #ffcc04;
+  text-decoration-color: var(--c-primary);
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
@@ -374,31 +383,28 @@
 .mobile-search-content .divider {
   width: 60px;
   height: 4px;
-  background-color: #ffcc04;
+  background-color: var(--c-primary);
   margin: 32px 0;
 }
 
 /* ========== Main Content Container ========== */
-
 #container {
-  display: block; /* now container is a block */
-  max-width: 1080px;
-  margin: 0 auto; /* will center it */
-  padding: 20px 0px;
-  color: white;
-  justify-content: center;
+  display: block;
+  max-width: var(--container-max-width);
+  margin: 0 auto; /* Center the container */
+  padding: 20px 0;
+  color: var(--c-light);
 }
 
 /* ========== Footer ========== */
-
 #footer {
-  background-color: black;
-  border-top: #252525 1px solid;
-  color: #aaa;
+  background-color: var(--c-dark);
+  border-top: 1px solid var(--c-border-dark);
+  color: var(--c-text-footer);
   font-size: 12px;
   height: 70px;
   width: 100%;
-  z-index: 999;
+  z-index: var(--z-footer);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -427,7 +433,7 @@
   align-items: center;
   gap: 8px;
   font-weight: bold;
-  color: white;
+  color: var(--c-light);
 }
 
 .footer-logo img {
@@ -438,6 +444,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  color: #999;
+  color: var(--c-text-subtle);
   font-size: 14px;
 }
