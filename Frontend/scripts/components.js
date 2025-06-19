@@ -146,7 +146,7 @@ function setupBackToTop() {
     const windowHeight = $(window).height();
     const footerTop = $footer.offset().top;
 
-    if (scrollTop > 300) {
+    if (scrollTop > 600) {
       $backToTop.addClass("visible");
     } else {
       $backToTop.removeClass("visible");
