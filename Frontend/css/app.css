@@ -39,7 +39,8 @@
 /* ========== CSS Custom Properties (Variables) ========== */
 :root {
   /* Color Palette */
-  --c-primary: #ffcc04;
+  --c-primary: #ffcc00;
+  --c-primary-light: #ffdd00;
   --c-dark: #000000;
   --c-light: #ffffff;
   --c-text-muted: #666666;

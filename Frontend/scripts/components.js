@@ -97,6 +97,7 @@ $(document).ready(function () {
   }
 
   setupEventHandlers();
+  setupBackToTop();
   updateFooterPosition();
 
   $(window).on("resize", updateFooterPosition);
@@ -125,7 +126,6 @@ function setupEventHandlers() {
     }
   });
 
-  // Event delegation for toggling menus and search
   $(document).on("click", ".mobile-menu-btn, .mobile-menu-header .close-btn", toggleMobileMenu);
   $(document).on("click", ".nav-right .search-icon, .close-search, .mobile-close-search", toggleSearch);
 
@@ -134,6 +134,45 @@ function setupEventHandlers() {
       toggleMobileMenu();
     }
     toggleSearch();
+  });
+}
+
+function setupBackToTop() {
+  const $backToTop = $("#backToTop");
+  const $footer = $("#footer");
+
+  $(window).on("scroll", function () {
+    const scrollTop = $(window).scrollTop();
+    const windowHeight = $(window).height();
+    const footerTop = $footer.offset().top;
+
+    if (scrollTop > 300) {
+      $backToTop.addClass("visible");
+    } else {
+      $backToTop.removeClass("visible");
+    }
+
+    // Adjust position when near footer
+    const buttonBottom = scrollTop + windowHeight - 30;
+    const footerOverlap = buttonBottom + 20 - footerTop; // 50px if you want to consider the button height but 20 looks better
+
+    if (footerOverlap > 0) {
+      // Move button up by the overlap amount
+      $backToTop.css({
+        bottom: 30 + footerOverlap + "px",
+        transition: "bottom 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease"
+      });
+    } else {
+      // Reset to original position
+      $backToTop.css({
+        bottom: "30px",
+        transition: "all 0.3s ease"
+      });
+    }
+  });
+
+  $backToTop.on("click", function () {
+    $(window).scrollTop(0);
   });
 }
 

@@ -149,6 +149,11 @@
   .footer-copy .pipe {
     display: none;
   }
+
+  /* Back to top button adjustments */
+  .back-to-top {
+    display: none;
+  }
 }
 
 /* ========== Mobile Phones (max 768px) ========== */
