@@ -1,10 +1,16 @@
-/* ========== News/Title Styles ========== */
+/* ========== NEWS PAGE STYLES ========== */
+
+/* ========== Title Sections ========== */
 .titles {
   padding: 80px 0 100px;
 }
 
 #secondary-container .titles {
   padding: 80px 0 120px;
+}
+
+#third-container .titles {
+  padding: 80px 0 60px;
 }
 
 .titles h1 {
@@ -32,6 +38,7 @@
   margin: 20px auto 0;
 }
 
+/* ========== Highlight Elements ========== */
 .highlight {
   position: relative;
   display: inline-block;
@@ -65,7 +72,6 @@
 }
 
 /* ========== Today's Picks Sidebar ========== */
-
 .today-picks-sidebar h2 {
   position: relative;
   font-weight: bold;
@@ -85,21 +91,10 @@
   background-color: var(--c-primary);
 }
 
-.pick-item img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-}
-
 .pick-item .col-8 {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.category-tag {
-  font-weight: 600;
-  letter-spacing: 3px;
 }
 
 .pick-item h6 {
@@ -115,17 +110,26 @@
   white-space: normal;
 }
 
-.pick-item .badge {
-  font-size: 12px;
+/* Pick item images */
+.pick-item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
 }
 
-.pick-item .small {
-  font-size: 12px;
+/* ========== Category Tags ========== */
+.category-tag {
+  font-weight: 600;
+  letter-spacing: 3px;
 }
 
-/* ========== Featured Article ========== */
+/* ========== Featured Articles ========== */
 .featured-article {
   height: 400px;
+}
+
+.featured-article.featured-article-large {
+  height: 500px;
 }
 
 .featured-article .card {
@@ -146,6 +150,21 @@
   transform: scale(1.05);
 }
 
+/* Featured article large specific styles */
+.featured-large-title {
+  font-size: 2rem;
+}
+
+.featured-large-description {
+  font-size: 1.2rem;
+  max-width: 600px;
+}
+
+/* Third container featured article overlay */
+#third-container .featured-article .card-img-overlay {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 1));
+}
+
 /* ========== Article Cards ========== */
 .card {
   border: none;
@@ -153,14 +172,14 @@
   overflow: hidden;
 }
 
-.card-body {
+.article-card .card-body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 165px;
 }
 
-.card-body .explore-button {
+.article-card .card-body .explore-button {
   color: var(--c-dark);
   display: flex;
   align-items: end;
@@ -200,7 +219,9 @@
   white-space: normal;
 }
 
+/* ========== Explore Buttons ========== */
 .explore-button {
+  display: flex;
   text-decoration: none;
   color: var(--c-light);
   font-weight: 500;
@@ -213,7 +234,7 @@
   height: 20px;
 }
 
-/* ========== Video Section ========== */
+/* ========== Video Background Section ========== */
 .video-background {
   position: relative;
   width: 100%;
@@ -257,6 +278,7 @@
   max-width: 800px;
 }
 
+/* ========== Discover More Section ========== */
 .discover-more {
   width: var(--container-max-width);
   max-width: 90%;
@@ -296,7 +318,7 @@
   transform: scale(1.05);
 }
 
-/* ========== Our Picks ========== */
+/* ========== Our Picks Section ========== */
 .our-picks {
   background-color: var(--c-light);
   color: var(--c-dark);
@@ -306,7 +328,6 @@
   justify-content: center;
   padding: 60px 0;
   position: relative;
-  /*background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));*/
   z-index: 1;
 }
 
@@ -334,46 +355,31 @@
   max-width: 90%;
 }
 
-.our-picks-cards .card {
+.our-picks-card {
   border: 1px solid var(--c-border-light);
   height: 400px;
 }
 
-.our-picks-cards .card .card-body {
+.our-picks-card .card-body {
   min-height: 200px;
 }
 
-.our-picks-cards .card-small-title {
+.our-picks-card .card-small-title {
   display: flex;
   flex-direction: column;
 }
 
-.our-picks-cards .author {
+.our-picks-card .author {
   text-transform: uppercase;
-}
-
-/* ========== Third Container Specific Styles ========== */
-#third-container .titles {
-  padding: 80px 0 60px;
-}
-
-#third-container .featured-article {
-  height: 500px;
-}
-
-#third-container .featured-article .card-img-overlay {
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 1));
 }
 
 /* ========== Newsletter Section ========== */
 .newsletter-signup {
   width: 100%;
   min-height: 300px;
-
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../sources/stub/test.avif");
   background-size: cover;
   background-position: center;
-
   display: flex;
   text-align: center;
   flex-direction: column;

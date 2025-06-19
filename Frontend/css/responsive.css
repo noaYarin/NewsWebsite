@@ -1,10 +1,30 @@
-/* ========== Responsive Styles ========== */
+/* ========== RESPONSIVE STYLES ========== */
 
+/* ========== Large Desktop Screens (1440px+) ========== */
+@media (min-width: 1440px) {
+  #navbar,
+  .search-overlay.active {
+    padding-left: calc(50vw - 800px);
+    padding-right: calc(50vw - 800px);
+  }
+}
+
+/* ========== Desktop & Large Tablets (1025px+) ========== */
+@media (min-width: 1025px) {
+  #mobileMenu,
+  .mobile-search-header {
+    display: none;
+  }
+}
+
+/* ========== Tablets & Small Laptops (max 1024px) ========== */
 @media (max-width: 1024px) {
+  /* Body adjustments */
   body {
     padding-top: var(--navbar-height-mobile);
   }
 
+  /* Navbar adjustments */
   #navbar {
     padding: 0 16px;
     height: var(--navbar-height-mobile);
@@ -23,6 +43,7 @@
     display: block;
   }
 
+  /* Navigation layout adjustments */
   .nav-left {
     flex: 1;
     justify-content: space-between;
@@ -60,20 +81,24 @@
     padding: 16px 12px;
   }
 
+  /* Sidebar adjustments */
   .today-picks-sidebar {
     min-height: auto;
     position: relative;
     margin-bottom: 2rem;
   }
 
+  /* Featured article adjustments */
   .featured-article {
     height: 300px;
   }
 
+  /* Title adjustments */
   .titles h1 {
     font-size: 36px;
   }
 
+  /* Video section adjustments */
   .video-background,
   .bg-video,
   .video-content {
@@ -84,6 +109,7 @@
     padding-top: 100px !important;
   }
 
+  /* Hide discover more section on mobile */
   .discover-more {
     display: none;
   }
@@ -124,29 +150,101 @@
   }
 }
 
-@media (min-width: 1025px) {
-  #mobileMenu,
-  .mobile-search-header {
-    display: none;
-  }
-}
-
-@media (min-width: 1440px) {
-  #navbar,
-  .search-overlay.active {
-    padding-left: calc(50vw - 800px);
-    padding-right: calc(50vw - 800px);
-  }
-}
-
+/* ========== Mobile Phones (max 768px) ========== */
 @media (max-width: 768px) {
+  /* Video section further adjustments */
   .video-background,
   .bg-video,
   .video-content {
     height: 750px !important;
   }
 
+  /* Newsletter button adjustments */
   .newsletter-signup .styled-button {
     padding: 12px 120px !important;
+  }
+
+  /* Typography adjustments */
+  .titles h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+
+  /* Card adjustments */
+  .image-container {
+    height: 150px;
+  }
+
+  .card img {
+    height: 150px;
+  }
+
+  /* Video title adjustments */
+  .video-title {
+    font-size: 36px;
+  }
+
+  .video-description {
+    font-size: 16px;
+  }
+
+  /* Our picks section adjustments */
+  .our-picks h1 {
+    font-size: 28px;
+    letter-spacing: 4px;
+  }
+
+  .our-picks p {
+    letter-spacing: 1px;
+  }
+}
+
+/* ========== Small Mobile Phones (max 480px) ========== */
+@media (max-width: 480px) {
+  /* Container padding adjustments */
+  #container,
+  #secondary-container,
+  #third-container {
+    padding: 12px 8px;
+  }
+
+  /* Further reduce typography */
+  .titles h1 {
+    font-size: 24px;
+    letter-spacing: 1px;
+  }
+
+  .video-title {
+    font-size: 28px;
+  }
+
+  /* Newsletter adjustments */
+  .newsletter-signup h1 {
+    font-size: 24px;
+  }
+
+  .newsletter-signup p {
+    font-size: 16px;
+  }
+
+  .newsletter-signup .styled-button {
+    padding: 10px 60px !important;
+    font-size: 14px;
+  }
+
+  /* Pick item image adjustments */
+  .pick-item-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Card body adjustments */
+  .article-card .card-body {
+    min-height: 140px;
+  }
+
+  /* Our picks card adjustments */
+  .our-picks-card {
+    height: 350px;
   }
 }

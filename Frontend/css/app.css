@@ -1,6 +1,9 @@
+/* ========== GLOBAL STYLES & VARIABLES ========== */
+
+/* ========== Font Imports ========== */
 @import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 
-/* 1. Regular */
+/* Custom Font Face Declarations */
 @font-face {
   font-family: "GeographWeb";
   src: url("../sources/fonts/geographweb-regular.woff2") format("woff2");
@@ -9,7 +12,6 @@
   font-display: swap;
 }
 
-/* 2. Medium */
 @font-face {
   font-family: "GeographWeb";
   src: url("../sources/fonts/geographeditweb-medium.woff2") format("woff2");
@@ -18,7 +20,6 @@
   font-display: swap;
 }
 
-/* 3. Bold */
 @font-face {
   font-family: "GeographWeb";
   src: url("../sources/fonts/geographweb-bold.woff2") format("woff2");
@@ -27,7 +28,6 @@
   font-display: swap;
 }
 
-/* 4. Italic */
 @font-face {
   font-family: "GeographWeb";
   src: url("../sources/fonts/geographeditweb-regularitalic.woff2") format("woff2");
@@ -36,7 +36,9 @@
   font-display: swap;
 }
 
+/* ========== CSS Custom Properties (Variables) ========== */
 :root {
+  /* Color Palette */
   --c-primary: #ffcc04;
   --c-dark: #000000;
   --c-light: #ffffff;
@@ -46,16 +48,16 @@
   --c-border-light: #eeeeee;
   --c-border-dark: #252525;
 
-  /* --font-primary: "Work Sans", sans-serif; */
+  /* Typography */
   --font-primary: "GeographWeb", "Work Sans", sans-serif;
 
-  /* Sizing & Spacing */
+  /* Layout & Spacing */
   --navbar-height-desktop: 65px;
   --navbar-height-mobile: 60px;
   --container-max-width: 1080px;
-  --webkit-line-clamp: 3; /* Might need to change this to 2 in the future */
+  --webkit-line-clamp: 3;
 
-  /* Z-Index */
+  /* Z-Index Scale */
   --z-overlay-content: 100;
   --z-footer: 999;
   --z-fixed-element: 1000;
@@ -65,6 +67,7 @@
   --transition-medium: 0.4s ease;
 }
 
+/* ========== Global Reset & Base Styles ========== */
 * {
   margin: 0;
   padding: 0;
@@ -76,13 +79,20 @@ body {
   font-family: var(--font-primary);
   padding-top: var(--navbar-height-desktop);
   color: var(--c-light);
+  line-height: 1.6;
 }
 
+/* ========== Global Link Styles ========== */
 a {
   text-decoration: none;
   color: inherit;
 }
 
+a:hover {
+  text-decoration: none;
+}
+
+/* ========== Styled Button Component ========== */
 .styled-button {
   background-color: var(--c-primary);
   color: var(--c-dark);
@@ -94,6 +104,7 @@ a {
   position: relative;
   overflow: hidden;
   transition: color var(--transition-medium);
+  font-family: var(--font-primary);
 }
 
 .styled-button::before {
@@ -116,4 +127,77 @@ a {
   position: relative;
   z-index: 1;
   text-transform: uppercase;
+}
+
+/* ========== Utility Classes ========== */
+.text-center {
+  text-align: center;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.position-relative {
+  position: relative;
+}
+
+/* ========== Image Optimization ========== */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ========== Focus Styles for Accessibility ========== */
+
+/*
+button:focus,
+a:focus,
+input:focus {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+}
+*/
+
+/* ========== Selection Styles ========== */
+/* Chrome, Edge, Safari */
+::selection {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+}
+
+/* Firefox */
+::-moz-selection {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+}
+
+/* ========== Print Styles ========== */
+@media print {
+  .video-background,
+  #navbar,
+  #mobileMenu,
+  #footer {
+    display: none;
+  }
+
+  body {
+    padding-top: 0;
+    background-color: white;
+    color: black;
+  }
+
+  .card,
+  .featured-article {
+    break-inside: avoid;
+  }
 }

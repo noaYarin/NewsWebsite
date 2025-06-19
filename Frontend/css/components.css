@@ -1,4 +1,17 @@
-/* ========== Navbar ========== */
+/* ========== COMPONENT STYLES ========== */
+
+/* ========== Main Content Containers ========== */
+#container,
+#secondary-container,
+#third-container {
+  display: block;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 20px 0 50px;
+  color: var(--c-light);
+}
+
+/* ========== Navigation Bar ========== */
 #navbar {
   background-color: var(--c-light);
   display: flex;
@@ -20,6 +33,7 @@
   padding-right: calc(50vw - 720px);
 }
 
+/* ========== Navigation Elements ========== */
 .nav-left {
   display: flex;
   align-items: center;
@@ -68,6 +82,7 @@
   transform: scaleX(1);
 }
 
+/* ========== Navigation Right Side ========== */
 .nav-right {
   display: flex;
   align-items: center;
@@ -127,6 +142,7 @@
   z-index: 1;
 }
 
+/* ========== Mobile Menu Button ========== */
 .mobile-menu-btn {
   display: none; /* Hidden by default, shown in mobile view */
   background: none;
@@ -386,17 +402,6 @@
   height: 4px;
   background-color: var(--c-primary);
   margin: 32px 0;
-}
-
-/* ========== Main Content Container ========== */
-#container,
-#secondary-container,
-#third-container {
-  display: block;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: 20px 0 50px;
-  color: var(--c-light);
 }
 
 /* ========== Footer ========== */
