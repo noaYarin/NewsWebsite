@@ -57,7 +57,7 @@
   color: var(--c-dark);
   font-size: 14px;
   font-weight: 500;
-  padding: 22px 0;
+  padding: 21px 0;
   position: relative;
   display: block;
   transition: color var(--transition-fast);
