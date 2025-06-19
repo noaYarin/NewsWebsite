@@ -260,6 +260,7 @@
 .discover-more {
   width: var(--container-max-width);
   max-width: 90%;
+  padding: 0 24px;
 }
 
 .discover-titles {
@@ -304,6 +305,9 @@
   align-items: center;
   justify-content: center;
   padding: 60px 0;
+  position: relative;
+  /*background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));*/
+  z-index: 1;
 }
 
 .our-picks-titles {
@@ -361,10 +365,36 @@
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 1));
 }
 
-#third-container .card-title {
-  line-height: 1.2;
+/* ========== Newsletter Section ========== */
+.newsletter-signup {
+  width: 100%;
+  min-height: 300px;
+
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../sources/stub/test.avif");
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
 }
 
-#third-container .col-12 .card-title {
-  font-weight: 700;
+.newsletter-signup .container {
+  max-width: var(--container-max-width);
+}
+
+.newsletter-signup h1 {
+  font-size: 36px;
+}
+
+.newsletter-signup p {
+  font-size: 18px;
+}
+
+.newsletter-signup .styled-button {
+  padding: 18px 180px;
+  font-size: 16px;
 }

@@ -145,4 +145,8 @@
   .video-content {
     height: 750px !important;
   }
+
+  .newsletter-signup .styled-button {
+    padding: 12px 120px !important;
+  }
 }
