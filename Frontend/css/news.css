@@ -97,6 +97,19 @@
   justify-content: space-between;
 }
 
+.pick-item .website-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.pick-item .website-link:hover .col-8 {
+  text-decoration: underline;
+}
+
+.pick-item .website-link:hover {
+  color: inherit;
+}
+
 .pick-item h6 {
   font-weight: 600;
   line-height: 1.3;
