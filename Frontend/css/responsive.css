@@ -77,7 +77,8 @@
   /* Main content adjustments */
   #container,
   #secondary-container,
-  #third-container {
+  #third-container,
+  #fourth-container {
     padding: 16px 12px;
   }
 
@@ -204,7 +205,8 @@
   /* Container padding adjustments */
   #container,
   #secondary-container,
-  #third-container {
+  #third-container,
+  #fourth-container {
     padding: 12px 8px;
   }
 

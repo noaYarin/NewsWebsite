@@ -3,7 +3,8 @@
 /* ========== Main Content Containers ========== */
 #container,
 #secondary-container,
-#third-container {
+#third-container,
+#fourth-container {
   display: block;
   max-width: var(--container-max-width);
   margin: 0 auto;

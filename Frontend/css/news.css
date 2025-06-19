@@ -172,17 +172,11 @@
   overflow: hidden;
 }
 
-.article-card .card-body {
+.card-body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 165px;
-}
-
-.article-card .card-body .explore-button {
-  color: var(--c-dark);
-  display: flex;
-  align-items: end;
 }
 
 .image-container {
@@ -227,6 +221,10 @@
   font-weight: 500;
   letter-spacing: 4px;
   font-size: 12px;
+}
+
+.card-body .explore-button {
+  color: var(--c-dark);
 }
 
 .explore-button img {
@@ -403,4 +401,28 @@
 .newsletter-signup .styled-button {
   padding: 18px 180px;
   font-size: 16px;
+}
+
+/* ========== Third & Fourth Containers ========== */
+#third-container .card-body .card-title,
+#fourth-container .card-body .card-title {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+#third-container .card-body .card-text,
+#fourth-container .card-body .card-text {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+#third-container .card-body .card-title,
+#fourth-container .card-body .card-title,
+#third-container .card-body .card-text,
+#fourth-container .card-body .card-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
