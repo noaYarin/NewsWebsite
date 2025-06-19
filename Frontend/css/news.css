@@ -121,6 +121,10 @@
 .category-tag {
   font-weight: 600;
   letter-spacing: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 /* ========== Featured Articles ========== */
@@ -404,6 +408,7 @@
 }
 
 /* ========== Third & Fourth Containers ========== */
+
 #third-container .card-body .card-title,
 #fourth-container .card-body .card-title {
   -webkit-line-clamp: 1;
