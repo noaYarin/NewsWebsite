@@ -84,7 +84,7 @@ $(document).ready(function () {
           <img src="../sources/logo_name.png" alt="Logo" />
         </div>
         <div class="footer-copy">
-          <span>Copyright © 1996-2015 Horizon Society</span>
+          <span>Copyright © 2008-2015 Horizon Society</span>
           <span class="pipe">|</span>
           <span>Copyright © 2015-2025 Horizon Partners, LLC. All rights reserved</span>
         </div>

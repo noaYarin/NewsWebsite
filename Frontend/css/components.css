@@ -390,7 +390,8 @@
 
 /* ========== Main Content Container ========== */
 #container,
-#secondary-container {
+#secondary-container,
+#third-container {
   display: block;
   max-width: var(--container-max-width);
   margin: 0 auto;

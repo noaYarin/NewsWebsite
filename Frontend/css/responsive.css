@@ -55,7 +55,8 @@
 
   /* Main content adjustments */
   #container,
-  #secondary-container {
+  #secondary-container,
+  #third-container {
     padding: 16px 12px;
   }
 

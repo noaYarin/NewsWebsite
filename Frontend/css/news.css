@@ -3,7 +3,7 @@
   padding: 80px 0 100px;
 }
 
-.secondary-container .titles {
+#secondary-container .titles {
   padding: 80px 0 120px;
 }
 
@@ -346,4 +346,25 @@
 
 .our-picks-cards .author {
   text-transform: uppercase;
+}
+
+/* ========== Third Container Specific Styles ========== */
+#third-container .titles {
+  padding: 80px 0 60px;
+}
+
+#third-container .featured-article {
+  height: 500px;
+}
+
+#third-container .featured-article .card-img-overlay {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 1));
+}
+
+#third-container .card-title {
+  line-height: 1.2;
+}
+
+#third-container .col-12 .card-title {
+  font-weight: 700;
 }
