@@ -464,7 +464,10 @@
   right: 30px;
   width: 50px;
   height: 50px;
-  background-color: var(--c-primary);
+
+  background: var(--c-light);
+  mix-blend-mode: exclusion;
+
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -485,7 +488,6 @@
 }
 
 .back-to-top:hover {
-  background-color: var(--c-primary-light);
   transform: translateY(-3px);
 }
 
@@ -494,8 +496,4 @@
   height: 24px;
   color: var(--c-dark);
   transition: color var(--transition-fast);
-}
-
-.back-to-top:hover svg {
-  color: var(--c-light);
 }
