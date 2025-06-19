@@ -386,6 +386,10 @@
 
 .our-picks-card .author {
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 /* ========== Newsletter Section ========== */
