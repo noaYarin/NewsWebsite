@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NewsSiteBackEnd.User
+namespace NewsSiteBackEnd
 {
 	public class User
 	{
@@ -17,6 +17,7 @@ namespace NewsSiteBackEnd.User
 		public string HashedPassword { get; set; }
 		public List<User> BlockedUsers { get; set; }
 		public List<Tag> Tags { get; set; }
+		public List<Article> SavedArticles { get; set; }
 
 		public User() { }
 		
