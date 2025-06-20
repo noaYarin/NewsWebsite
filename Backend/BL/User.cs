@@ -15,10 +15,11 @@ namespace Horizon.BL
         public string HashedPassword { get; set; }
         public List<User> BlockedUsers { get; set; }
         public List<Tag> Tags { get; set; }
+        public List<Article> SavedArticles { get; set; }
 
         public User() { }
 
-        public static int Register(User user)// change params to relvent parms
+        public static int Register(User user)// change params to relevant parms
         {
             //user.HashedPassword = HashPassword(user.HashedPassword);
             //pass it ot DB

@@ -10,5 +10,19 @@ namespace Horizon.BL
         public DateTime PublishDate { get; set; }
         public List<Tag> Tags { get; set; }
         public List<Comment> Comments { get; set; }
+        public List<Report> Reports { get; set; }
+
+        public Article(int id, int userId, string title, DateTime publishDate, List<Tag> tags, List<Comment> comments, List<Report> reports)
+        {
+            this.id = id;
+            UserId = userId;
+            Title = title;
+            PublishDate = publishDate;
+            Tags = tags;
+            Comments = comments;
+            Reports = reports;
+        }
+
+        public Article() { }
     }
 }

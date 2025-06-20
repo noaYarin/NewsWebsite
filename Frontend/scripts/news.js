@@ -14,6 +14,7 @@ function updateMonthTitle() {
 
 /* ALL THIS CODE NEEDS TO BE DELETED, ITS SOMETHING THE CHAT GAVE JUST TO CHECK THAT IT ACTUALLY WORKS, CHANGE THE API KEY TO ACTUALLY CHECK IT */
 
+/*
 $(document).ready(function () {
   // List of blocked sources
   const blockedSources = ["Al Jazeera", "Al Jazeera English"];
@@ -298,3 +299,4 @@ $(document).ready(function () {
 
   fetchNews();
 });
+*/
