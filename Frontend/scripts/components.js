@@ -1,6 +1,6 @@
 $(document).ready(function () {
-  // Check if we're on index.html page
   const isIndexPage = window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/");
+  const isAuthPage = window.location.pathname.includes("auth.html");
   const logoHref = isIndexPage ? "#" : "index.html";
 
   const htmlSnippets = {
@@ -26,7 +26,7 @@ $(document).ready(function () {
           <li><a href="#">More</a></li>
         </ul>
       </div>
-      <div class="nav-right">
+      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
         <div class="search-icon"></div>
         <button class="login-btn">Log In</button>
         <button class="signup-btn"><span>Sign Up</span></button>
@@ -66,7 +66,7 @@ $(document).ready(function () {
     mobileMenu: `
       <div class="mobile-menu-header">
         <button class="close-btn">✕</button>
-        <div class="search-icon"></div>
+        <div class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""}></div>
       </div>
       <ul class="mobile-nav-items">
         <li><a href="#">Business</a></li>
@@ -77,7 +77,7 @@ $(document).ready(function () {
         <li><a href="#">Technology</a></li>
         <li><a href="#">More</a></li>
       </ul>
-      <div class="mobile-menu-footer">
+      <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
         <button class="mobile-login-btn">LOG IN</button>
         <button class="mobile-signup-btn">SIGN UP</button>
       </div>
@@ -106,6 +106,9 @@ $(document).ready(function () {
   }
 
   setupEventHandlers();
+  if (!isAuthPage) {
+    setupAuthNavLinks();
+  }
   setupBackToTop();
   updateFooterPosition();
 
@@ -157,6 +160,22 @@ function setupEventHandlers() {
         performSearch(query);
       }
     }
+  });
+}
+
+function setupAuthNavLinks() {
+  $(document).on("click", ".login-btn", () => {
+    window.location.href = "auth.html#signin";
+  });
+  $(document).on("click", ".signup-btn", () => {
+    window.location.href = "auth.html#signup";
+  });
+
+  $(document).on("click", ".mobile-login-btn", () => {
+    window.location.href = "auth.html#signin";
+  });
+  $(document).on("click", ".mobile-signup-btn", () => {
+    window.location.href = "auth.html#signup";
   });
 }
 

@@ -53,7 +53,9 @@
 
   /* Layout & Spacing */
   --navbar-height-desktop: 65px;
+  --footer-height-desktop: 70px;
   --navbar-height-mobile: 60px;
+  --footer-height-mobile: 110px;
   --container-max-width: 1080px;
   --webkit-line-clamp: 3;
 
