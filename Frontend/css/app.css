@@ -1,7 +1,6 @@
 /* ========== GLOBAL STYLES & VARIABLES ========== */
 
 /* ========== Font Imports ========== */
-@import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 
 /* Custom Font Face Declarations */
 @font-face {
@@ -50,7 +49,7 @@
   --c-border-dark: #252525;
 
   /* Typography */
-  --font-primary: "GeographWeb", "Work Sans", sans-serif;
+  --font-primary: "GeographWeb", sans-serif;
 
   /* Layout & Spacing */
   --navbar-height-desktop: 65px;
