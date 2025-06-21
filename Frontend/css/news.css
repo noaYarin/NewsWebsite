@@ -448,3 +448,7 @@
   -webkit-box-orient: vertical;
   white-space: normal;
 }
+
+#fourth-container .card-body {
+  min-height: 175px;
+}
