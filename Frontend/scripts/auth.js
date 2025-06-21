@@ -281,6 +281,7 @@ function switchForm(target) {
   }
 
   $(".auth-form form")[0].reset();
+  $(".auth-form form")[1].reset();
   $(".auth-logo img").attr("src", "../sources/images/sun/sun-0.png");
 }
 
