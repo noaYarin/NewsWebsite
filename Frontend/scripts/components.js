@@ -1,4 +1,8 @@
 $(document).ready(function () {
+  // Check if we're on index.html page
+  const isIndexPage = window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/");
+  const logoHref = isIndexPage ? "#" : "index.html";
+
   const htmlSnippets = {
     navbar: `
       <div class="nav-left">
@@ -7,7 +11,7 @@ $(document).ready(function () {
           <span></span>
           <span></span>
         </button>
-        <a href="#" class="logo">
+        <a href="${logoHref}" class="logo">
           <div class="logo-icon">
             <img src="../sources/logo.png" alt="Logo" />
           </div>
@@ -28,7 +32,7 @@ $(document).ready(function () {
         <button class="signup-btn"><span>Sign Up</span></button>
       </div>
       <div class="search-overlay" id="searchOverlay">
-        <a href="#" class="logo">
+        <a href="${logoHref}" class="logo">
           <div class="logo-icon">
             <img src="../sources/logo.png" />
           </div>
