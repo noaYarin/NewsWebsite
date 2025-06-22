@@ -23,12 +23,11 @@ namespace Horizon.Controllers
         public User? Post([FromBody] JsonElement data)
         {
             string email = data.GetProperty("email").GetString();
-            string password = data.GetProperty("password").GetString();
+            string password = data.GetProperty("hashedPassword").GetString();
             User user = new User();
-            return user.LogIn(password, email);
+            return user.LogIn(email,password);
         }
 
-        */
 
         // POST- register
         [HttpPost("register")]
