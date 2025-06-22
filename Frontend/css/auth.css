@@ -3,19 +3,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  /*background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);*/
   background-color: var(--c-light);
-  padding: 20px;
+  padding: 10px;
 }
 
 .auth-container {
   padding: 20px;
   background-color: var(--c-light);
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);*/
   width: 100%;
   max-width: 400px;
-  min-height: 550px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -75,7 +74,7 @@
 }
 
 .auth-form input::placeholder {
-  color: #6c757d;
+  color: var(--c-placeholder);
 }
 
 /* ========== Button ========== */
@@ -97,58 +96,111 @@
   transform: translateY(-2px);
 }
 
-/* ========== Links ========== */
-.forgot-link {
-  font-size: 14px;
-  color: #6c757d;
-  margin: 20px 0;
+/* ========== Date Input Styling ========== */
+input[type="date"] {
+  padding: 10px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f8f9fa;
+  color: var(--c-dark);
+  font-family: inherit;
 }
 
-.forgot-link a {
-  color: var(--c-primary);
-  text-decoration: underline;
+input[type="date"]:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  background: white;
 }
 
-.switch-text {
-  font-size: 14px;
-  color: #6c757d;
-  margin: 0px;
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color-scheme: light dark;
+  filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px;
+  transition: background-color var(--transition-fast), filter var(--transition-fast);
 }
 
-.switch-text a,
-.form-switch {
-  color: var(--c-primary);
-  text-decoration: none;
-  padding: 0px;
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: none;
+  background-color: var(--c-primary);
 }
 
-.switch-text a:hover,
-.form-switch:hover {
+/* For Firefox */
+input[type="date"]::-moz-focus-inner {
+  border: 0;
+}
+
+input[type="date"]:invalid {
+  color: var(--c-placeholder);
+}
+
+input[type="date"]:valid {
   color: var(--c-dark);
 }
 
-/* ========== Responsive ========== */
-@media (max-width: 1024px) {
-  .auth-main {
-    min-height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
-    padding: 16px;
-    padding-top: 20px;
-  }
-
-  .auth-container {
-    padding: 40px;
-  }
-
-  .auth-logo img {
-    width: 90px;
-    height: 90px;
-  }
-
-  .auth-form h1 {
-    font-size: 24px;
-  }
+/* ========== Name Fields ========== */
+.name-fields {
+  display: flex;
+  gap: 12px;
 }
 
+.name-fields input {
+  flex: 1;
+  width: 50%;
+}
+
+/* ========== Email Display ========== */
+.email-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.email-text {
+  color: var(--c-dark);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.change-email-btn {
+  background: none;
+  border: none;
+  color: var(--c-primary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.change-email-btn:hover {
+  background: var(--c-primary);
+  color: white;
+}
+
+/* ========== Title Updates ========== */
+.auth-title {
+  font-size: 28px;
+  color: var(--c-dark);
+  margin: 20px;
+  font-weight: 600;
+}
+
+/* ========== Links ========== */
+.forgot-password {
+  color: var(--c-primary);
+  font-size: 14px;
+}
+
+/* ========== Responsive ========== */
 @media (max-width: 480px) {
   .auth-main {
     padding: 12px;

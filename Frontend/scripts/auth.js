@@ -1,23 +1,137 @@
 $(document).ready(function () {
   setupAuthHandlers();
   setupSunAnimation();
-
-  const mode = window.location.hash.replace("#", "");
-  if (mode === "signup" || mode === "signin") {
-    switchForm(mode);
-  }
 });
 
 function setupAuthHandlers() {
-  $(document).on("click", ".form-switch", function () {
-    const target = $(this).data("target");
-    switchForm(target);
-  });
-
+  $(document).on("submit", "#emailFormData", handleEmailSubmit);
   $(document).on("submit", "#signinFormData", handleSignin);
   $(document).on("submit", "#signupFormData", handleSignup);
+  $(document).on("click", ".change-email-btn", handleChangeEmail);
+  $(document).on("click", ".forgot-password", handleForgotPassword);
 }
 
+let userEmail = "";
+
+function handleEmailSubmit(e) {
+  e.preventDefault();
+
+  const email = $(this).find("input[name='email']").val().trim();
+
+  if (!email) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  userEmail = email;
+
+  // TODO: Replace this with actual API call to check if user exists
+  checkUserExists(email);
+}
+
+function checkUserExists(email) {
+  // Simulate API call with setTimeout
+  // TODO: Replace with actual backend API call
+
+  console.log("Checking if user exists:", email);
+
+  // Simulate loading state
+  $(".auth-button").text("Checking...").prop("disabled", true);
+
+  setTimeout(() => {
+    // Reset button
+    $(".auth-button").text("Continue").prop("disabled", false);
+
+    // Simulate response - replace this logic with your actual API response
+    const userExists = Math.random() > 0.5; // Random for demo
+
+    if (userExists) {
+      showSigninForm(email);
+    } else {
+      showSignupForm(email);
+    }
+  }, 1000);
+}
+
+function showSigninForm(email) {
+  $(".auth-title").text("Welcome back!");
+  $(".email-text").text(email);
+
+  $(".auth-form").removeClass("active");
+  $("#signinForm").addClass("active");
+
+  document.title = "HORIZON / Sign In";
+
+  setTimeout(() => {
+    $("#signinForm input[name='password']").focus();
+  }, 100);
+}
+
+function showSignupForm(email) {
+  $(".auth-title").text("Create Your Account");
+  $(".email-text").text(email);
+
+  $(".auth-form").removeClass("active");
+  $("#signupForm").addClass("active");
+
+  document.title = "HORIZON / Sign Up";
+  setTimeout(() => {
+    $("#signupForm input[name='firstName']").focus();
+  }, 100);
+}
+
+function handleChangeEmail() {
+  $(".auth-title").text("Welcome to Horizon");
+  $(".auth-form").removeClass("active");
+  $("#emailForm").addClass("active");
+
+  $("#emailForm input[name='email']").val("").focus();
+
+  document.title = "HORIZON / Sign In";
+
+  // Reset sun animation
+  $(".auth-logo img").attr("src", "../sources/images/sun/sun-0.png");
+}
+
+function handleSignin(e) {
+  e.preventDefault();
+
+  const formData = {
+    email: userEmail,
+    password: $(this).find("input[name='password']").val()
+  };
+
+  console.log("Sign in:", formData);
+
+  // TODO: Replace with actual authentication
+  alert("Sign in successful! (This is just a demo)");
+}
+
+function handleSignup(e) {
+  e.preventDefault();
+
+  const formData = {
+    email: userEmail,
+    firstName: $(this).find("input[name='firstName']").val(),
+    lastName: $(this).find("input[name='lastName']").val(),
+    birthdate: $(this).find("input[name='birthdate']").val(),
+    password: $(this).find("input[name='password']").val()
+  };
+
+  console.log("Sign up:", formData);
+
+  // TODO: Replace with actual user creation
+  alert("Account created! (This is just a demo)");
+}
+
+function handleForgotPassword(e) {
+  e.preventDefault();
+
+  // TODO: Implement forgot password functionality
+  alert(`Password reset link will be sent to: ${userEmail}`);
+}
+
+// ========== Sun Animation Setup ==========
 function setupSunAnimation() {
   let currentSunIndex = 0;
   let isAnimating = false;
@@ -25,32 +139,42 @@ function setupSunAnimation() {
   let queueTimer = null;
   const $sunImage = $(".auth-logo img");
 
-  function getSunIndexFromLength(length) {
-    if (length === 0) return 0; // empty = sun-0
-    if (length >= 36) return 36; // 36+ chars = sun-36 (max)
-    return length; // 1-35 chars = sun-1 to sun-35
+  function getSunIndexFromLength(length, isLastName = false, isFirstName = false) {
+    if (isLastName) {
+      // For last name: map [0, 18] to [18, 36]
+      return Math.max(18, Math.min(length + 18, 36));
+    }
+    if (isFirstName) {
+      // For first name: map [0, 18] to [0, 18]
+      return Math.max(0, Math.min(length, 18));
+    }
+    // For other fields: map [0, 36] to [0, 36]
+    return Math.max(0, Math.min(length, 36));
   }
 
   function processAnimationQueue() {
+    if (queueTimer) {
+      clearTimeout(queueTimer);
+      queueTimer = null;
+    }
+
     if (animationQueue.length > 0 && !isAnimating) {
       const nextAnimation = animationQueue.shift();
       nextAnimation();
     }
 
-    // Continue processing queue if there are more animations
+    // Continue processing if queue has items
     if (animationQueue.length > 0) {
       queueTimer = setTimeout(processAnimationQueue, 10);
-    } else {
-      queueTimer = null;
     }
   }
 
   function queueAnimation(animationFn) {
     animationQueue.push(animationFn);
 
-    // Start processing queue if not already running
+    // Start processing if not already running
     if (!queueTimer && !isAnimating) {
-      queueTimer = setTimeout(processAnimationQueue, 10);
+      processAnimationQueue();
     }
   }
 
@@ -62,190 +186,156 @@ function setupSunAnimation() {
     }
   }
 
-  function animateToFocus(callback) {
+  function animateFrameSequence(frames, frameDelay, finalIndex, callback) {
     if (isAnimating) {
-      queueAnimation(() => animateToFocus(callback));
+      queueAnimation(() => animateFrameSequence(frames, frameDelay, finalIndex, callback));
       return;
     }
+
     isAnimating = true;
+    let frameIndex = 0;
 
-    // Animation: 0 → 0-1 → 0-2 → 1
-    setTimeout(() => {
-      $sunImage.attr("src", "../sources/images/sun/sun-0-1.png");
-      setTimeout(() => {
-        $sunImage.attr("src", "../sources/images/sun/sun-0-2.png");
-        setTimeout(() => {
-          currentSunIndex = 1;
-          $sunImage.attr("src", "../sources/images/sun/sun-1.png");
-          isAnimating = false;
-          if (callback) callback();
+    function showNextFrame() {
+      if (frameIndex < frames.length) {
+        $sunImage.attr("src", frames[frameIndex]);
+        frameIndex++;
+        setTimeout(showNextFrame, frameDelay);
+      } else {
+        // Animation complete
+        if (finalIndex !== undefined) {
+          currentSunIndex = finalIndex;
+        }
+        isAnimating = false;
 
-          // Process next animation in queue
-          if (animationQueue.length > 0 && !queueTimer) {
-            queueTimer = setTimeout(processAnimationQueue, 10);
-          }
-        }, 15);
-      }, 15);
-    }, 15);
+        if (callback) callback();
+
+        // Process any queued animations
+        if (animationQueue.length > 0) {
+          processAnimationQueue();
+        }
+      }
+    }
+
+    showNextFrame();
+  }
+
+  function animateToFocus(callback) {
+    const frames = ["../sources/images/sun/sun-0-1.png", "../sources/images/sun/sun-0-2.png", "../sources/images/sun/sun-1.png"];
+    animateFrameSequence(frames, 15, 1, callback);
   }
 
   function animateToBlur(callback) {
-    if (isAnimating) {
-      queueAnimation(() => animateToBlur(callback));
-      return;
-    }
-    isAnimating = true;
+    const frames = ["../sources/images/sun/sun-0-2.png", "../sources/images/sun/sun-0-1.png", "../sources/images/sun/sun-0.png"];
+    animateFrameSequence(frames, 15, 0, callback);
+  }
 
-    // Animation: current → 0-2 → 0-1 → 0
-    setTimeout(() => {
-      $sunImage.attr("src", "../sources/images/sun/sun-0-2.png");
-      setTimeout(() => {
-        $sunImage.attr("src", "../sources/images/sun/sun-0-1.png");
-        setTimeout(() => {
-          currentSunIndex = 0;
-          $sunImage.attr("src", "../sources/images/sun/sun-0.png");
-          isAnimating = false;
-          if (callback) callback();
+  function animateToFocusLastName(callback) {
+    const frames = ["../sources/images/sun/sun-18-1.png", "../sources/images/sun/sun-18-2.png", "../sources/images/sun/sun-18.png"];
+    animateFrameSequence(frames, 15, 18, callback);
+  }
 
-          // Process next animation in queue
-          if (animationQueue.length > 0 && !queueTimer) {
-            queueTimer = setTimeout(processAnimationQueue, 10);
-          }
-        }, 15);
-      }, 15);
-    }, 15);
+  function animateToBlurLastName(callback) {
+    const frames = ["../sources/images/sun/sun-18-2.png", "../sources/images/sun/sun-18-1.png", "../sources/images/sun/sun-0.png"];
+    animateFrameSequence(frames, 15, 0, callback);
   }
 
   function animatePasswordFocus(callback) {
-    if (isAnimating) {
-      queueAnimation(() => animatePasswordFocus(callback));
-      return;
-    }
-    isAnimating = true;
-
-    // Password focus animation: 0 → 1 → 2 → 3 → 4
-    setTimeout(() => {
-      $sunImage.attr("src", "../sources/images/sun/sun-password-1.png");
-      setTimeout(() => {
-        $sunImage.attr("src", "../sources/images/sun/sun-password-2.png");
-        setTimeout(() => {
-          $sunImage.attr("src", "../sources/images/sun/sun-password-3.png");
-          setTimeout(() => {
-            $sunImage.attr("src", "../sources/images/sun/sun-password-4.png");
-            isAnimating = false;
-            if (callback) callback();
-
-            // Process next animation in queue
-            if (animationQueue.length > 0 && !queueTimer) {
-              queueTimer = setTimeout(processAnimationQueue, 10);
-            }
-          }, 20);
-        }, 20);
-      }, 20);
-    }, 20);
+    const frames = [
+      "../sources/images/sun/sun-password-1.png",
+      "../sources/images/sun/sun-password-2.png",
+      "../sources/images/sun/sun-password-3.png",
+      "../sources/images/sun/sun-password-4.png"
+    ];
+    animateFrameSequence(frames, 20, undefined, callback);
   }
 
   function animatePasswordBlur(callback) {
-    if (isAnimating) {
-      queueAnimation(() => animatePasswordBlur(callback));
-      return;
-    }
-    isAnimating = true;
-
-    // Password blur animation: 4 → 3 → 2 → 1 → 0
-    setTimeout(() => {
-      $sunImage.attr("src", "../sources/images/sun/sun-password-3.png");
-      setTimeout(() => {
-        $sunImage.attr("src", "../sources/images/sun/sun-password-2.png");
-        setTimeout(() => {
-          $sunImage.attr("src", "../sources/images/sun/sun-password-1.png");
-          setTimeout(() => {
-            currentSunIndex = 0;
-            $sunImage.attr("src", "../sources/images/sun/sun-0.png");
-            isAnimating = false;
-            if (callback) callback();
-
-            // Process next animation in queue
-            if (animationQueue.length > 0 && !queueTimer) {
-              queueTimer = setTimeout(processAnimationQueue, 10);
-            }
-          }, 20);
-        }, 20);
-      }, 20);
-    }, 20);
+    const frames = [
+      "../sources/images/sun/sun-password-3.png",
+      "../sources/images/sun/sun-password-2.png",
+      "../sources/images/sun/sun-password-1.png",
+      "../sources/images/sun/sun-0.png"
+    ];
+    animateFrameSequence(frames, 20, 0, callback);
   }
 
-  function animateBackwards(fromIndex, callback) {
+  function animateBackwards(fromIndex, targetIndex = 1, callback) {
     if (isAnimating) {
-      queueAnimation(() => animateBackwards(fromIndex, callback));
+      queueAnimation(() => animateBackwards(fromIndex, targetIndex, callback));
       return;
     }
 
-    if (fromIndex <= 1) {
+    if (fromIndex <= targetIndex) {
       if (callback) callback();
       return;
     }
 
-    isAnimating = true;
-    let frame = fromIndex;
-
-    function nextFrame() {
-      frame--;
-      currentSunIndex = frame;
-      $sunImage.attr("src", `../sources/images/sun/sun-${frame}.png`);
-
-      if (frame <= 1) {
-        isAnimating = false;
-        if (callback) callback();
-
-        // Process next animation in queue
-        if (animationQueue.length > 0 && !queueTimer) {
-          queueTimer = setTimeout(processAnimationQueue, 10);
-        }
-      } else {
-        setTimeout(nextFrame, 15);
-      }
+    // Build frames array for backward animation
+    const frames = [];
+    for (let i = fromIndex; i >= targetIndex; i--) {
+      frames.push(`../sources/images/sun/sun-${i}.png`);
     }
 
-    nextFrame();
+    animateFrameSequence(frames, 15, targetIndex, callback);
   }
 
-  // Listen for typing in all input fields except password
-  $(document).on("input", "#signinFormData input:not([name='password']), #signupFormData input:not([name='password'])", function () {
-    const inputLength = $(this).val().length;
-    const newSunIndex = getSunIndexFromLength(inputLength);
-
-    // Check if user cleared everything (from some text to empty)
-    if (inputLength === 0 && currentSunIndex > 0) {
-      // Clear password animations and animate backwards
-      clearAnimationQueue();
-      animateBackwards(currentSunIndex);
-    } else if (newSunIndex !== currentSunIndex) {
-      // Update sun index directly while typing (no animation for responsiveness)
-      currentSunIndex = newSunIndex;
-      if (!isAnimating) {
-        $sunImage.attr("src", `../sources/images/sun/sun-${currentSunIndex}.png`);
-      }
+  // Enhanced input handler with last name and first name detection
+  let inputTimeout = null;
+  function handleInputChange(inputElement) {
+    if (inputTimeout) {
+      clearTimeout(inputTimeout);
     }
+
+    inputTimeout = setTimeout(() => {
+      const inputLength = inputElement.val().length;
+      const inputName = inputElement.attr("name");
+      const isLastName = inputName === "lastName";
+      const isFirstName = inputName === "firstName";
+      const newSunIndex = getSunIndexFromLength(inputLength, isLastName, isFirstName);
+      const baseIndex = isLastName ? 18 : 1;
+
+      if (inputLength === 0 && currentSunIndex > baseIndex) {
+        clearAnimationQueue();
+        animateBackwards(currentSunIndex, baseIndex);
+      } else if (newSunIndex !== currentSunIndex && newSunIndex > (isLastName ? 18 : 0)) {
+        currentSunIndex = newSunIndex;
+        if (!isAnimating) {
+          $sunImage.attr("src", `../sources/images/sun/sun-${currentSunIndex}.png`);
+        }
+      }
+    }, 50);
+  }
+
+  // Define input selectors for different behaviors
+  const firstNameInputSelector = "#signupFormData input[name='firstName']";
+  const lastNameInputSelector = "#signupFormData input[name='lastName']";
+  const passwordInputSelectors = ["#signinFormData input[name='password']", "#signupFormData input[name='password']"].join(", ");
+
+  // All other inputs (email, birthdate, etc.) - exclude password, firstName, and lastName
+  const generalInputSelectors = [
+    "#emailFormData input[name='email']",
+    "#signinFormData input:not([name='password'])",
+    "#signupFormData input:not([name='firstName']):not([name='lastName']):not([name='password'])"
+  ].join(", ");
+
+  // First name input events (limited to 18)
+  $(document).on("input", firstNameInputSelector, function () {
+    handleInputChange($(this));
   });
 
-  // Handle focus - animate to sun-1 when focusing on non-password inputs
-  $(document).on("focus", "#signinFormData input:not([name='password']), #signupFormData input:not([name='password'])", function () {
-    clearAnimationQueue(); // Clear password animations
-
+  $(document).on("focus", firstNameInputSelector, function () {
+    clearAnimationQueue();
     const inputLength = $(this).val().length;
     if (inputLength === 0) {
       animateToFocus();
     }
   });
 
-  // Handle blur - animate back to sun-0 if empty for non-password inputs
-  $(document).on("blur", "#signinFormData input:not([name='password']), #signupFormData input:not([name='password'])", function () {
+  $(document).on("blur", firstNameInputSelector, function () {
     const inputLength = $(this).val().length;
     if (inputLength === 0) {
       animateToBlur();
     } else {
-      // Direct change without animation for speed
       currentSunIndex = 0;
       if (!isAnimating) {
         $sunImage.attr("src", "../sources/images/sun/sun-0.png");
@@ -253,59 +343,64 @@ function setupSunAnimation() {
     }
   });
 
-  // Handle focus on password fields
-  $(document).on("focus", "#signinFormData input[name='password'], #signupFormData input[name='password']", function () {
-    clearAnimationQueue(); // Clear other animations
+  // General input events (email, birthdate, etc. - unlimited up to 36)
+  $(document).on("input", generalInputSelectors, function () {
+    handleInputChange($(this));
+  });
+
+  $(document).on("focus", generalInputSelectors, function () {
+    clearAnimationQueue();
+    const inputLength = $(this).val().length;
+    if (inputLength === 0) {
+      animateToFocus();
+    }
+  });
+
+  $(document).on("blur", generalInputSelectors, function () {
+    const inputLength = $(this).val().length;
+    if (inputLength === 0) {
+      animateToBlur();
+    } else {
+      currentSunIndex = 0;
+      if (!isAnimating) {
+        $sunImage.attr("src", "../sources/images/sun/sun-0.png");
+      }
+    }
+  });
+
+  // Last name input events (modified behavior)
+  $(document).on("input", lastNameInputSelector, function () {
+    handleInputChange($(this));
+  });
+
+  $(document).on("focus", lastNameInputSelector, function () {
+    clearAnimationQueue();
+    const inputLength = $(this).val().length;
+    if (inputLength === 0) {
+      animateToFocusLastName();
+    }
+  });
+
+  $(document).on("blur", lastNameInputSelector, function () {
+    const inputLength = $(this).val().length;
+    if (inputLength === 0) {
+      clearAnimationQueue(); // Prevents animation conflicts
+      animateToBlurLastName();
+    } else {
+      currentSunIndex = 0;
+      if (!isAnimating) {
+        $sunImage.attr("src", "../sources/images/sun/sun-0.png");
+      }
+    }
+  });
+
+  // Password field events (unchanged)
+  $(document).on("focus", passwordInputSelectors, function () {
+    clearAnimationQueue();
     animatePasswordFocus();
   });
 
-  // Handle blur on password fields
-  $(document).on("blur", "#signinFormData input[name='password'], #signupFormData input[name='password']", function () {
+  $(document).on("blur", passwordInputSelectors, function () {
     animatePasswordBlur();
   });
-}
-
-function switchForm(target) {
-  $(".auth-form").removeClass("active");
-
-  if (target === "signup") {
-    $("#signupForm").addClass("active");
-    document.title = "HORIZON / Sign Up";
-    $(".signin-title").hide();
-    $(".signup-title").show();
-  } else {
-    $("#signinForm").addClass("active");
-    document.title = "HORIZON / Sign In";
-    $(".signup-title").hide();
-    $(".signin-title").show();
-  }
-
-  $(".auth-form form")[0].reset();
-  $(".auth-form form")[1].reset();
-  $(".auth-logo img").attr("src", "../sources/images/sun/sun-0.png");
-}
-
-function handleSignin(e) {
-  e.preventDefault();
-
-  const formData = {
-    email: $(this).find("input[name='email']").val(),
-    password: $(this).find("input[name='password']").val()
-  };
-
-  console.log("Sign in:", formData);
-  alert("Sign in successful! (This is just a demo)");
-}
-
-function handleSignup(e) {
-  e.preventDefault();
-
-  const formData = {
-    name: $(this).find("input[name='name']").val(),
-    email: $(this).find("input[name='email']").val(),
-    password: $(this).find("input[name='password']").val()
-  };
-
-  console.log("Sign up:", formData);
-  alert("Account created! (This is just a demo)");
 }
