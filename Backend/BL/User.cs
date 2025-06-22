@@ -28,13 +28,14 @@ namespace Horizon.BL
        public bool Register()
        {
             DBservices db = new DBservices();
-            if (db.IsEmailExists(this.Email))
+            if (!db.IsUserExists(this.Email,"",false))
             {
-                return false;
+                this.HashedPassword = HashPassword(this.HashedPassword);
+                db.InsertUser(this);
+                return true;
             }
-            this.HashedPassword = HashPassword(this.HashedPassword);
-            db.InsertUser(this);
-            return true;
+          
+            return false;
         }
 
 
@@ -50,21 +51,19 @@ namespace Horizon.BL
             }
 
         }
-        /*
-      public static int LogIn(string email, string password)// change params to relvent parms
+      public User LogIn(string email, string password)
       {
+            DBservices db = new DBservices();
+            string hashedPassword = HashPassword(password);
 
-          //bring data from db and than check for each user if it is his email and password
+            if (db.IsUserExists(email, hashedPassword, true))
+            {
+                return db.GetUserByEmail(email);
+            }
 
-          if (email == user.Email && HashPassword(password) == user.Password)
-          {
-              //continue and return  
-              return 1;
-          }
-
-          return 0; // if user nor found
+            return null;
       }
-     */
+
         public static int LogOut(User user)// change params to relvent parms
         {
             //TODO DB

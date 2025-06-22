@@ -18,16 +18,26 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE PROCEDURE SP_IsEmailExists
-	@email NVARCHAR(100)
+CREATE PROCEDURE SP_IsUserExists 
+	@email NVARCHAR(100),
+    @hashedPassword NVARCHAR(255) 
 AS
 BEGIN
-	
+
 	--SET NOCOUNT ON;
 
-    -- Insert statements for procedure here
-	SELECT *
-	FROM Users
-	WHERE Email=@email
+  IF @hashedPassword =''
+    BEGIN
+        SELECT Email
+        FROM Users
+        WHERE Email = @email
+    END
+    ELSE
+    BEGIN
+        SELECT *
+        FROM Users
+        WHERE Email = @email AND HashedPassword = @hashedPassword
+    END
+	
 END
 GO

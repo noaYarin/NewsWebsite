@@ -24,7 +24,14 @@ public class DBservices
         return con;
     }
 
-    /*Insert user*/
+
+    /*
+     ----------------------------------------------------------------------
+    User
+     ----------------------------------------------------------------------
+     */
+
+    /*Insert user - register */
 
     public int InsertUser(User user)
     {
@@ -38,7 +45,6 @@ public class DBservices
         }
         catch (Exception ex)
         {
-            // write to log
             throw (ex);
         }
         Dictionary<string, object> paramDic = new Dictionary<string, object>();
@@ -61,7 +67,6 @@ public class DBservices
 
         catch (Exception ex)
         {
-            // write to log
             throw (ex);
         }
 
@@ -69,15 +74,120 @@ public class DBservices
         {
             if (con != null)
             {
-                // close the db connection
                 con.Close();
             }
         }
 
     }
 
-    /*Check if email exists*/
-    public bool IsEmailExists(string email)
+
+    /*Insert user - login */
+
+    public int logIn(string email,string password)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@Email", email);
+        paramDic.Add("@HashedPassword", password);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_logIn", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+        }
+
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+
+    /*Check if user exists*/
+    public bool IsUserExists(string email,string hashedPassword, bool logIn)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@hashedPassword", hashedPassword);
+        paramDic.Add("@email", email);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_IsUserExists", con, paramDic);
+        SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+        try
+        {
+            while (dataReader.Read())
+            {
+                if (logIn)
+                {
+                    if (!string.IsNullOrEmpty(dataReader["Email"].ToString()) && !string.IsNullOrEmpty(dataReader["HashedPassword"].ToString()))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(dataReader["Email"].ToString()))
+                    {
+                        return true;
+                    }
+                }
+              
+            }
+            return false;
+
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+
+    /*Get user by email after logIn*/
+    public User GetUserByEmail(string email)
     {
 
         SqlConnection con;
@@ -95,24 +205,31 @@ public class DBservices
         Dictionary<string, object> paramDic = new Dictionary<string, object>();
         paramDic.Add("@Email", email);
 
-        cmd = CreateCommandWithStoredProcedureGeneral("SP_IsEmailExists", con, paramDic);
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_GetUserByEmail", con, paramDic);
         SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
         try
         {
+            User user = new User();
             while (dataReader.Read())
             {
-                if (!string.IsNullOrEmpty(dataReader["Email"].ToString()))
+                 user = new User
                 {
-                    return true;
-                }
+                    Id = Convert.ToInt32(dataReader["Id"]),
+                    Email = dataReader["Email"].ToString(),
+                    FirstName = dataReader["FirstName"].ToString(),
+                    LastName = dataReader["LastName"].ToString(),
+                    BirthDate = dataReader["BirthDate"].ToString(),
+                    ImgUrl = dataReader["ImgUrl"].ToString(),
+                    IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
+                    HashedPassword = dataReader["HashedPassword"].ToString()
+                };
             }
-            return false;
 
+            return user;
         }
         catch (Exception ex)
         {
-            // write to log
             throw (ex);
         }
 
@@ -120,7 +237,6 @@ public class DBservices
         {
             if (con != null)
             {
-                // close the db connection
                 con.Close();
             }
         }
@@ -235,7 +351,6 @@ public class DBservices
 
         catch (Exception ex)
         {
-            // write to log
             throw (ex);
         }
 
@@ -243,14 +358,16 @@ public class DBservices
         {
             if (con != null)
             {
-                // close the db connection
                 con.Close();
             }
         }
 
     }
 
-
+    /*
+    ----------------------------------------------------------------------------
+    ----------------------------------------------------------------------------
+     */
 
 
     private SqlCommand CreateCommandWithStoredProcedureGeneral(String spName, SqlConnection con, Dictionary<string, object> paramDic)
