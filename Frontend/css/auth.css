@@ -107,12 +107,14 @@ input[type="date"] {
   font-family: inherit;
 }
 
+/* Remove default focus outline and set custom border color */
 input[type="date"]:focus {
   outline: none;
   border-color: var(--c-primary);
   background: white;
 }
 
+/* Style the calendar icon (WebKit browsers) */
 input[type="date"]::-webkit-calendar-picker-indicator {
   color-scheme: light dark;
   filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
@@ -120,7 +122,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   padding: 3px;
   transition: background-color var(--transition-fast), filter var(--transition-fast);
+  outline: none;
 }
+
+/*
+input[type="date"]:focus::-webkit-calendar-picker-indicator {
+  outline: 1px solid var(--c-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--c-primary);
+}
+*/
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
   filter: none;
