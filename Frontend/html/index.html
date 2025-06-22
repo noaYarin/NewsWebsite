@@ -5,21 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HORIZON / Home</title>
     <link rel="icon" type="image/x-icon" href="../sources/logo.png" />
+
+    <link rel="preload" href="../sources/fonts/geographweb-regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="../sources/fonts/geographweb-bold.woff2" as="font" type="font/woff2" crossorigin />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/app.css" />
     <link rel="stylesheet" href="../css/components.css" />
     <link rel="stylesheet" href="../css/responsive.css" />
     <link rel="stylesheet" href="../css/news.css" />
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../scripts/components.js"></script>
     <script src="../scripts/news.js"></script>
   </head>
   <body>
     <nav id="navbar"></nav>
-    <mobileMenu id="mobileMenu"></mobileMenu>
+    <nav id="mobileMenu"></nav>
 
     <!-- Main Content Container -->
-    <container id="container">
+    <section id="container">
       <div class="titles text-center">
         <h1>LATEST NEWS</h1>
         <span class="highlight-container">
@@ -286,7 +291,7 @@
           </div>
         </div>
       </div>
-    </container>
+    </section>
 
     <!-- Video Background Section -->
     <div class="video-background">
@@ -328,7 +333,7 @@
     </div>
 
     <!-- Secondary Content Container -->
-    <container id="secondary-container">
+    <section id="secondary-container">
       <div class="titles text-center">
         <h1 id="month-title">MONTH YEAR NEWS</h1>
         <span class="highlight-container"> </span>
@@ -591,7 +596,7 @@
           </div>
         </div>
       </div>
-    </container>
+    </section>
 
     <!-- Our Picks Section -->
     <div class="our-picks">
@@ -707,7 +712,7 @@
     </div>
 
     <!-- Third Container -->
-    <container id="third-container">
+    <section id="third-container">
       <div class="titles text-center">
         <h1>BEYOND THE HEADLINES</h1>
         <span class="highlight-container"> Discover news that go deeper—insightful analysis, human journeys, and hidden gems you won't find on the front page. </span>
@@ -839,7 +844,7 @@
           </div>
         </div>
       </div>
-    </container>
+    </section>
 
     <!-- Newsletter Section -->
     <section class="newsletter-signup">
@@ -855,7 +860,7 @@
     </section>
 
     <!-- Additional News Section -->
-    <container id="fourth-container">
+    <section id="fourth-container">
       <div class="titles text-center">
         <h1>TRENDING NOW</h1>
         <span class="highlight-container"> Stay updated with the most talked-about news shaping our world today. </span>
@@ -1056,7 +1061,7 @@
           <a href="#"><span class="highlight">VIEW ALL NEWS</span></a>
         </div>
       </div>
-    </container>
+    </section>
 
     <!-- Back to Top Button -->
     <button id="backToTop" class="back-to-top" aria-label="Back to top">
