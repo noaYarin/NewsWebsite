@@ -4,7 +4,7 @@ namespace Horizon.BL
 {
     public class Article
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public int UserId { get; set; }
         public string Title { get; set; }
         public DateTime PublishDate { get; set; }
@@ -14,7 +14,7 @@ namespace Horizon.BL
 
         public Article(int id, int userId, string title, DateTime publishDate, List<Tag> tags, List<Comment> comments, List<Report> reports)
         {
-            this.id = id;
+            Id = id;
             UserId = userId;
             Title = title;
             PublishDate = publishDate;
