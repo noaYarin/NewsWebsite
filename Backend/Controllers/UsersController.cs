@@ -18,7 +18,6 @@ namespace Horizon.Controllers
             return user.Read();
         }
 
-        /*
         // POST- login
         [HttpPost("logIn")]
         public User? Post([FromBody] JsonElement data)
