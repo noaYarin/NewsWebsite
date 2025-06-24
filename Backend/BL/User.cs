@@ -12,6 +12,7 @@ namespace Horizon.BL
         public string BirthDate { get; set; }
         public string ImgUrl { get; set; }
         public bool IsAdmin { get; set; }
+        public bool IsLocked { get; set; }
         public string HashedPassword { get; set; }
         public List<User> ?BlockedUsers { get; set; }
         public List<Tag> ?Tags { get; set; }
