@@ -110,10 +110,10 @@ $(function () {
 
   function updatePasswordProgress(validCount) {
     const strengthLevels = {
-      0: { className: "", text: "" },
-      1: { className: "weak", text: "" },
-      2: { className: "medium", text: "" },
-      3: { className: "strong", text: "" }
+      0: { className: "" },
+      1: { className: "weak" },
+      2: { className: "medium" },
+      3: { className: "strong" }
     };
 
     const level = strengthLevels[validCount];
@@ -165,7 +165,14 @@ $(function () {
     $(".auth-form").removeClass("active");
     activeForm.addClass("active");
     cache.authTitle.text(title);
-    document.title = `HORIZON / ${title.includes("Create") ? "Sign Up" : "Sign In"}`;
+
+    if (activeForm.is(cache.signupForm)) {
+      document.title = "HORIZON / Sign Up";
+    } else if (activeForm.is(cache.signinForm)) {
+      document.title = "HORIZON / Sign In";
+    } else {
+      document.title = "HORIZON";
+    }
   }
 
   function showSigninForm(email) {
@@ -240,10 +247,9 @@ $(function () {
     icon.attr("src", isPassword ? "../sources/icons/eye-off-svgrepo-com.svg" : "../sources/icons/eye-svgrepo-com.svg");
     icon.attr("alt", isPassword ? "Hide password" : "Show password");
 
-    const cursorPosition = passwordInput[0].selectionStart;
     passwordInput.focus();
+
     setTimeout(() => {
-      passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
       if (isPassword && window.animatePasswordShow) window.animatePasswordShow();
       if (!isPassword && window.animatePasswordHide) window.animatePasswordHide();
     }, 10);
@@ -268,13 +274,8 @@ $(function () {
       .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()));
   }
 
-  // ========== Sun Animation (Unchanged) ==========
+  // ========== Sun Animation ==========
   function setupSunAnimation() {
-    // ... All original code from the setupSunAnimation function goes here ...
-    // To keep this example concise, the original animation code is omitted,
-    // but it should be pasted here in its entirety. It will work correctly
-    // within this encapsulated structure. The `window.animate...` assignments
-    // will also work as intended.
     let currentSunIndex = 0;
     let isAnimating = false;
     let animationQueue = [];
