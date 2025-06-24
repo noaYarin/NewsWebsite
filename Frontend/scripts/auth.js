@@ -29,6 +29,7 @@ function setupAuthHandlers() {
   $(document).on("submit", "#signupFormData", handleSignup);
   $(document).on("click", ".change-email-btn", handleChangeEmail);
   $(document).on("click", ".forgot-password", handleForgotPassword);
+  $(document).on("click", ".password-toggle-btn", handlePasswordToggle);
 }
 
 // ========== Form Validation Setup ==========
@@ -361,6 +362,56 @@ function handleForgotPassword(e) {
   alert(`Password reset link will be sent to: ${userEmail}`);
 }
 
+function handlePasswordToggle(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const button = $(this);
+  const passwordInput = button.siblings('input[name="password"]');
+  const icon = button.find(".password-toggle-icon");
+
+  // Store cursor position before type change
+  const cursorPosition = passwordInput[0].selectionStart;
+
+  if (passwordInput.attr("type") === "password") {
+    // Show password
+    passwordInput.attr("type", "text");
+    button.addClass("active");
+    icon.text("🙈");
+
+    // Always restore focus and cursor position
+    passwordInput.focus();
+    setTimeout(() => {
+      passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
+    }, 0);
+
+    // Trigger animation after focus is restored
+    if (window.animatePasswordShow) {
+      setTimeout(() => {
+        window.animatePasswordShow();
+      }, 10);
+    }
+  } else {
+    // Hide password
+    passwordInput.attr("type", "password");
+    button.removeClass("active");
+    icon.text("👁️");
+
+    // Always restore focus and cursor position
+    passwordInput.focus();
+    setTimeout(() => {
+      passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
+    }, 0);
+
+    // Trigger animation after focus is restored
+    if (window.animatePasswordHide) {
+      setTimeout(() => {
+        window.animatePasswordHide();
+      }, 10);
+    }
+  }
+}
+
 // ========== Sun Animation Setup ==========
 function setupSunAnimation() {
   let currentSunIndex = 0;
@@ -468,7 +519,6 @@ function setupSunAnimation() {
     const frames = ["../sources/images/sun/sun-18-2.png", "../sources/images/sun/sun-18-1.png", "../sources/images/sun/sun-0.png"];
     animateFrameSequence(frames, 15, 0, callback);
   }
-
   function animatePasswordFocus(callback) {
     const frames = [
       "../sources/images/sun/sun-password-1.png",
@@ -488,6 +538,35 @@ function setupSunAnimation() {
     ];
     animateFrameSequence(frames, 20, 0, callback);
   }
+  function animatePasswordShow(callback) {
+    const frames = ["../sources/images/sun/sun-password-5.png"];
+    animateFrameSequence(frames, 20, undefined, callback);
+  }
+
+  function animatePasswordHide(callback) {
+    const frames = ["../sources/images/sun/sun-password-4.png"];
+    animateFrameSequence(frames, 20, undefined, callback);
+  }
+  function animatePasswordFocusVisible(callback) {
+    const frames = ["../sources/images/sun/sun-password-1.png", "../sources/images/sun/sun-password-2.png", "../sources/images/sun/sun-password-5.png"];
+    animateFrameSequence(frames, 20, undefined, callback);
+  }
+
+  function animatePasswordBlurVisible(callback) {
+    const frames = [
+      "../sources/images/sun/sun-password-5.png",
+      "../sources/images/sun/sun-password-2.png",
+      "../sources/images/sun/sun-password-1.png",
+      "../sources/images/sun/sun-0.png"
+    ];
+    animateFrameSequence(frames, 20, 0, callback);
+  }
+
+  // Assign functions to global variables
+  window.animatePasswordShow = animatePasswordShow;
+  window.animatePasswordHide = animatePasswordHide;
+  window.animatePasswordFocusVisible = animatePasswordFocusVisible;
+  window.animatePasswordBlurVisible = animatePasswordBlurVisible;
 
   function animateBackwards(fromIndex, targetIndex = 1, callback) {
     if (isAnimating) {
@@ -622,14 +701,29 @@ function setupSunAnimation() {
       }
     }
   });
-
-  // Password field events (unchanged)
+  // Password field events (updated to handle toggle state)
   $(document).on("focus", passwordInputSelectors, function () {
     clearAnimationQueue();
-    animatePasswordFocus();
+    const passwordInput = $(this);
+    const toggleBtn = passwordInput.siblings(".password-toggle-btn");
+    const isVisible = passwordInput.attr("type") === "text";
+
+    if (isVisible) {
+      animatePasswordFocusVisible();
+    } else {
+      animatePasswordFocus();
+    }
   });
 
   $(document).on("blur", passwordInputSelectors, function () {
-    animatePasswordBlur();
+    const passwordInput = $(this);
+    const toggleBtn = passwordInput.siblings(".password-toggle-btn");
+    const isVisible = passwordInput.attr("type") === "text";
+
+    if (isVisible) {
+      animatePasswordBlurVisible();
+    } else {
+      animatePasswordBlur();
+    }
   });
 }

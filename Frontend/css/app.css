@@ -48,6 +48,11 @@
   --c-border-light: #eeeeee;
   --c-border-dark: #252525;
   --c-placeholder: #888888;
+  --c-input-bg: #f8f9fa;
+  --c-input-border: #e9ecef;
+  --c-red: #dc3545;
+  --c-yellow: #ffc107;
+  --c-green: #28a745;
 
   /* Typography */
   --font-primary: "GeographWeb", sans-serif;

@@ -3,7 +3,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /*background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);*/
   background-color: var(--c-light);
   padding: 10px;
 }
@@ -12,7 +11,6 @@
   padding: 0 20px;
   background-color: var(--c-light);
   border-radius: 20px;
-  /*box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);*/
   width: 100%;
   max-width: 420px;
   text-align: center;
@@ -60,10 +58,10 @@
 /* ========== Inputs ========== */
 .auth-form input {
   padding: 10px;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--c-input-border);
   border-radius: 10px;
   font-size: 16px;
-  background: #f8f9fa;
+  background: var(--c-input-bg);
   transition: all var(--transition-fast);
 }
 
@@ -98,23 +96,14 @@
 
 /* ========== Date Input Styling ========== */
 input[type="date"] {
-  padding: 10px;
-  border: 2px solid #e9ecef;
-  border-radius: 10px;
-  font-size: 16px;
-  background: #f8f9fa;
-  color: var(--c-placeholder); /* Default placeholder color */
+  color: var(--c-placeholder);
   font-family: inherit;
 }
 
-/* Remove default focus outline and set custom border color */
 input[type="date"]:focus {
-  outline: none;
-  border-color: var(--c-primary);
   background: var(--c-light);
 }
 
-/* Style the calendar icon (WebKit browsers) */
 input[type="date"]::-webkit-calendar-picker-indicator {
   color-scheme: light dark;
   filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
@@ -134,7 +123,6 @@ input[type="date"]::-moz-focus-inner {
   border: 0;
 }
 
-/* JavaScript-controlled class for when date has actual value */
 input[type="date"].has-value {
   color: var(--c-dark);
 }
@@ -159,8 +147,8 @@ input[type="date"].has-value {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
+  background: var(--c-input-bg);
+  border: 2px solid var(--c-input-border);
   border-radius: 10px;
 }
 
@@ -201,6 +189,47 @@ input[type="date"].has-value {
   font-size: 14px;
 }
 
+/* ========== Password Input Group ========== */
+.password-input-group {
+  position: relative;
+}
+
+.password-input-group input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  z-index: 10;
+  height: 36px;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.password-toggle-icon {
+  font-size: 16px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.password-toggle-btn.active .password-toggle-icon {
+  opacity: 0.7;
+}
+
 /* ========== Form Validation ========== */
 .form-group {
   position: relative;
@@ -209,12 +238,12 @@ input[type="date"].has-value {
 }
 
 .input-error {
-  border-color: #dc3545 !important;
+  border-color: var(--c-red) !important;
   background: #fff5f5 !important;
 }
 
 .error-message {
-  color: #dc3545;
+  color: var(--c-red);
   font-size: 12px;
   font-weight: 500;
   margin-top: 4px;
@@ -226,8 +255,8 @@ input[type="date"].has-value {
 
 /* ========== Password Criteria ========== */
 .password-criteria {
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
+  background: var(--c-input-bg);
+  border: 2px solid var(--c-input-border);
   border-radius: 10px;
   padding: 16px;
   margin-top: 10px;
@@ -235,27 +264,14 @@ input[type="date"].has-value {
   opacity: 0;
   transform: translateY(-10px);
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .password-criteria.show {
   display: block;
   opacity: 1;
   transform: translateY(0);
-}
-
-.password-criteria-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-dark);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.password-criteria-title::before {
-  content: "🔒";
-  font-size: 16px;
 }
 
 .password-requirement {
@@ -288,8 +304,8 @@ input[type="date"].has-value {
 }
 
 .password-requirement.valid .icon {
-  border: 2px solid #28a745;
-  color: #28a745;
+  border: 2px solid var(--c-green);
+  color: var(--c-green);
 }
 
 .password-requirement.valid .icon::before {
@@ -301,7 +317,7 @@ input[type="date"].has-value {
 }
 
 .password-requirement.valid {
-  color: #28a745;
+  color: var(--c-green);
 }
 
 /* ========== Password Progress Bar ========== */
@@ -312,7 +328,7 @@ input[type="date"].has-value {
 .password-progress-bar {
   width: 100%;
   height: 8px;
-  background-color: #e9ecef;
+  background-color: var(--c-input-border);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 8px;
@@ -323,22 +339,22 @@ input[type="date"].has-value {
   width: 0%;
   border-radius: 4px;
   transition: all 0.3s ease;
-  background-color: #dc3545; /* Red by default */
+  background-color: var(--c-red);
 }
 
 .password-progress-fill.weak {
   width: 33.33%;
-  background-color: #dc3545; /* Red */
+  background-color: var(--c-red);
 }
 
 .password-progress-fill.medium {
   width: 66.66%;
-  background-color: #ffc107; /* Yellow */
+  background-color: var(--c-yellow);
 }
 
 .password-progress-fill.strong {
   width: 100%;
-  background-color: #28a745; /* Green */
+  background-color: var(--c-green);
 }
 
 .password-progress-text {
@@ -346,35 +362,6 @@ input[type="date"].has-value {
   color: var(--c-text-muted);
   text-align: center;
   font-weight: 500;
-}
-
-.password-progress-text.weak {
-  color: #dc3545;
-}
-
-.password-progress-text.medium {
-  color: #b8860b; /* Darker yellow for better readability */
-}
-
-.password-progress-text.strong {
-  color: #28a745;
-}
-
-/* ========== Success States ========== */
-.success-message {
-  color: #28a745;
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 4px;
-  margin-left: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.success-message::before {
-  content: "✓";
-  font-size: 10px;
 }
 
 /* ========== Responsive ========== */
@@ -396,7 +383,8 @@ input[type="date"].has-value {
     height: 80px;
   }
 
-  .auth-form h1 {
+  .auth-logo h1,
+  .auth-title {
     font-size: 20px;
   }
 
