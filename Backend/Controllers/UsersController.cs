@@ -51,6 +51,26 @@ namespace Horizon.Controllers
             return user.AddUserTags(userId, tag);
         }
 
+        // POST- Add user articles
+
+        [HttpPost("userArticles")]
+        public int InsertUserSavedArticles([FromBody] JsonElement data)
+        {
+            int userId = data.GetProperty("UserId").GetInt32();
+
+            Article article = new Article
+            {
+                UserId = userId,
+                Title = data.GetProperty("Title").GetString(),
+                Tags = new List<Tag>(),
+                Comments = new List<Comment>(),
+                Reports = new List<Report>()
+            };
+
+            User user = new User();
+            return user.SavedUserArticles(userId, article);
+        }
+
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
         public string Get(int id)
