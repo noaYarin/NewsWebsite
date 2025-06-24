@@ -103,12 +103,16 @@ $(document).ready(function () {
   }
 
   setupEventHandlers();
+
   if (!isAuthPage) {
     setupAuthNavLinks();
   }
-  setupBackToTop();
-  updateFooterPosition();
 
+  if ($(window).width() > 1024) {
+    setupBackToTop();
+  }
+
+  updateFooterPosition();
   $(window).on("resize", updateFooterPosition);
 });
 
