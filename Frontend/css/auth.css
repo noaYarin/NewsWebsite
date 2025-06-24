@@ -33,13 +33,6 @@
   transition: transform 0.5s ease;
 }
 
-.auth-logo h1 {
-  font-size: 28px;
-  color: var(--c-dark);
-  margin: 15px;
-  font-weight: 600;
-}
-
 /* ========== Forms ========== */
 .auth-form {
   display: none;
@@ -361,13 +354,6 @@ input[type="date"].has-value {
 .password-progress-fill.strong {
   width: 100%;
   background-color: var(--c-green);
-}
-
-.password-progress-text {
-  font-size: 11px;
-  color: var(--c-text-muted);
-  text-align: center;
-  font-weight: 500;
 }
 
 /* ========== Responsive ========== */
