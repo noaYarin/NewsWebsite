@@ -25,11 +25,10 @@ $(document).ready(function () {
           <li><a href="#">Technology</a></li>
           <li><a href="#">More</a></li>
         </ul>
-      </div>
-      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
+      </div>      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
         <div class="search-icon"></div>
         <button class="login-btn">Log In</button>
-        <button class="signup-btn"><span>Sign Up</span></button>
+        <button class="signup-btn"><span>Subscribe</span></button>
       </div>
       <div class="search-overlay" id="searchOverlay">
         <a href="${logoHref}" class="logo">
@@ -46,10 +45,9 @@ $(document).ready(function () {
             autofocus
           />
           <button class="close-search">✕</button>
-        </div>
-        <div class="nav-right">
+        </div>        <div class="nav-right">
           <button class="login-btn">Log In</button>
-          <button class="signup-btn"><span>Sign Up</span></button>
+          <button class="signup-btn"><span>Subscribe</span></button>
         </div>
         <div class="mobile-search-header">
           <div class="mobile-search-icon"></div>
@@ -76,10 +74,9 @@ $(document).ready(function () {
         <li><a href="#">Sports</a></li>
         <li><a href="#">Technology</a></li>
         <li><a href="#">More</a></li>
-      </ul>
-      <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
+      </ul>      <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
         <button class="mobile-login-btn">LOG IN</button>
-        <button class="mobile-signup-btn">SIGN UP</button>
+        <button class="mobile-signup-btn">SUBSCRIBE</button>
       </div>
     `,
     footer: `
@@ -165,17 +162,19 @@ function setupEventHandlers() {
 
 function setupAuthNavLinks() {
   $(document).on("click", ".login-btn", () => {
-    window.location.href = "auth.html#signin";
+    window.location.href = "auth.html";
   });
   $(document).on("click", ".signup-btn", () => {
-    window.location.href = "auth.html#signup";
+    // TODO: Implement subscription functionality
+    alert("Subscribe functionality coming soon!");
   });
 
   $(document).on("click", ".mobile-login-btn", () => {
-    window.location.href = "auth.html#signin";
+    window.location.href = "auth.html";
   });
   $(document).on("click", ".mobile-signup-btn", () => {
-    window.location.href = "auth.html#signup";
+    // TODO: Implement subscription functionality
+    alert("Subscribe functionality coming soon!");
   });
 }
 

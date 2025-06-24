@@ -3,19 +3,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   background-color: var(--c-light);
-  padding: 20px;
+  padding: 10px;
 }
 
 .auth-container {
-  padding: 20px;
+  padding: 0 20px;
   background-color: var(--c-light);
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
-  min-height: 550px;
+  max-width: 420px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -36,13 +33,6 @@
   transition: transform 0.5s ease;
 }
 
-.auth-logo h1 {
-  font-size: 28px;
-  color: var(--c-dark);
-  margin: 20px;
-  font-weight: 600;
-}
-
 /* ========== Forms ========== */
 .auth-form {
   display: none;
@@ -61,10 +51,10 @@
 /* ========== Inputs ========== */
 .auth-form input {
   padding: 10px;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--c-input-border);
   border-radius: 10px;
   font-size: 16px;
-  background: #f8f9fa;
+  background: var(--c-input-bg);
   transition: all var(--transition-fast);
 }
 
@@ -75,7 +65,7 @@
 }
 
 .auth-form input::placeholder {
-  color: #6c757d;
+  color: var(--c-placeholder);
 }
 
 /* ========== Button ========== */
@@ -97,65 +87,283 @@
   transform: translateY(-2px);
 }
 
-/* ========== Links ========== */
-.forgot-link {
-  font-size: 14px;
-  color: #6c757d;
-  margin: 20px 0;
+/* ========== Date Input Styling ========== */
+input[type="date"] {
+  color: var(--c-placeholder);
+  font-family: inherit;
 }
 
-.forgot-link a {
-  color: var(--c-primary);
-  text-decoration: underline;
+input[type="date"]:focus {
+  background: var(--c-light);
 }
 
-.switch-text {
-  font-size: 14px;
-  color: #6c757d;
-  margin: 0px;
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color-scheme: light dark;
+  filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px;
+  transition: background-color var(--transition-fast), filter var(--transition-fast);
 }
 
-.switch-text a,
-.form-switch {
-  color: var(--c-primary);
-  text-decoration: none;
-  padding: 0px;
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: none;
+  background-color: var(--c-primary);
 }
 
-.switch-text a:hover,
-.form-switch:hover {
+/* For Firefox */
+input[type="date"]::-moz-focus-inner {
+  border: 0;
+}
+
+input[type="date"].has-value {
   color: var(--c-dark);
 }
 
-/* ========== Responsive ========== */
-@media (max-width: 1024px) {
-  .auth-main {
-    min-height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
-    padding: 16px;
-    padding-top: 20px;
-  }
-
-  .auth-container {
-    padding: 40px;
-  }
-
-  .auth-logo img {
-    width: 90px;
-    height: 90px;
-  }
-
-  .auth-form h1 {
-    font-size: 24px;
-  }
+/* ========== Name Fields ========== */
+.name-fields {
+  display: flex;
+  gap: 12px;
 }
 
+.name-fields .form-group {
+  flex: 1;
+}
+
+.name-fields input {
+  width: 100%;
+}
+
+/* ========== Email Display ========== */
+.email-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--c-input-bg);
+  border: 2px solid var(--c-input-border);
+  border-radius: 10px;
+}
+
+.email-text {
+  color: var(--c-dark);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.change-email-btn {
+  background: none;
+  border: none;
+  color: var(--c-primary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.change-email-btn:hover {
+  background: var(--c-primary);
+  color: white;
+}
+
+/* ========== Title Updates ========== */
+.auth-title {
+  font-size: 28px;
+  color: var(--c-dark);
+  margin: 20px;
+  font-weight: 600;
+}
+
+/* ========== Links ========== */
+.forgot-password {
+  color: var(--c-primary);
+  font-size: 14px;
+}
+
+/* ========== Password Input Group ========== */
+.password-input-group {
+  position: relative;
+}
+
+.password-input-group input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  z-index: 10;
+  height: 24px;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.password-toggle-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ========== Form Validation ========== */
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-error {
+  border-color: var(--c-red) !important;
+  background: #fff5f5 !important;
+}
+
+.error-message {
+  color: var(--c-red);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ========== Password Criteria ========== */
+.password-criteria {
+  background: var(--c-input-bg);
+  border: 2px solid var(--c-input-border);
+  border-radius: 10px;
+  padding: 0 16px;
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: all 0.35s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.password-criteria.show {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 200px;
+  padding: 16px;
+  pointer-events: auto;
+}
+
+.password-requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  transition: color 0.3s ease;
+}
+
+.password-requirement:last-child {
+  margin-bottom: 0;
+}
+
+.password-requirement .icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.password-requirement.invalid .icon {
+  border: 2px solid var(--c-placeholder);
+}
+
+.password-requirement.valid .icon {
+  border: 2px solid var(--c-green);
+  color: var(--c-green);
+}
+
+.password-requirement.valid .icon::before {
+  content: "✓";
+}
+
+.password-requirement.invalid {
+  color: var(--c-placeholder);
+}
+
+.password-requirement.valid {
+  color: var(--c-green);
+}
+
+/* ========== Password Progress Bar ========== */
+.password-progress {
+  margin-bottom: 16px;
+}
+
+.password-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--c-input-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.password-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: var(--c-red);
+}
+
+.password-progress-fill.weak {
+  width: 33.33%;
+  background-color: var(--c-red);
+}
+
+.password-progress-fill.medium {
+  width: 66.66%;
+  background-color: var(--c-yellow);
+}
+
+.password-progress-fill.strong {
+  width: 100%;
+  background-color: var(--c-green);
+}
+
+/* ========== Responsive ========== */
 @media (max-width: 480px) {
   .auth-main {
     padding: 12px;
   }
 
   .auth-container {
-    padding: 32px;
+    padding: 0;
+  }
+
+  .password-criteria {
+    padding: 8px;
   }
 
   .auth-logo img {
@@ -163,7 +371,8 @@
     height: 80px;
   }
 
-  .auth-form h1 {
+  .auth-logo h1,
+  .auth-title {
     font-size: 20px;
   }
 
@@ -174,5 +383,10 @@
   .auth-button {
     padding: 16px;
     font-size: 14px;
+  }
+
+  .password-toggle-btn {
+    top: 20px;
+    right: 16px;
   }
 }

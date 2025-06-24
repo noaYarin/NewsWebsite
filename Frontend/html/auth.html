@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../css/auth.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../scripts/components.js"></script>
+    <script src="../scripts/sun.js"></script>
     <script src="../scripts/auth.js"></script>
   </head>
   <body>
@@ -22,29 +23,94 @@
     <main class="auth-main">
       <div class="auth-container">
         <div class="auth-logo">
-          <img src="../sources/images/sun/sun.png" alt="Horizon Logo" />
-          <h1 class="signin-title">Return to Horizon</h1>
-          <h1 class="signup-title" style="display: none">Create Your Horizon</h1>
+          <img src="../sources/images/sun/sun-0.png" alt="Authentication Logo" />
+          <h1 class="auth-title">Welcome to Horizon</h1>
+        </div>
+
+        <!-- Email Entry Form -->
+        <div class="auth-form email-form active" id="emailForm">
+          <form id="emailFormData">
+            <div class="form-group">
+              <input type="email" name="email" placeholder="Enter your email" />
+              <div class="error-message" style="display: none"></div>
+            </div>
+            <button type="submit" class="auth-button">Continue</button>
+          </form>
         </div>
 
         <!-- Sign In Form -->
-        <div class="auth-form signin-form active" id="signinForm">
+        <div class="auth-form signin-form" id="signinForm">
           <form id="signinFormData">
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required />
+            <div class="email-display">
+              <span class="email-text"></span>
+              <button type="button" class="change-email-btn">Change</button>
+            </div>
+            <div class="form-group password-input-group">
+              <input type="password" name="password" placeholder="Enter your password" />
+              <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
+              </button>
+              <div class="error-message" style="display: none"></div>
+            </div>
             <button type="submit" class="auth-button">Sign In</button>
-            <p class="switch-text">Don't have an account? &nbsp; <a href="#" class="form-switch highlight" data-target="signup">Sign up</a></p>
+            <p class="switch-text">
+              <a href="#" class="highlight forgot-password">Forgot password?</a>
+            </p>
           </form>
         </div>
 
         <!-- Sign Up Form -->
         <div class="auth-form signup-form" id="signupForm">
           <form id="signupFormData">
-            <input type="text" name="name" placeholder="Full Name" required />
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit" class="auth-button">Sign Up</button>
-            <p class="switch-text">or &nbsp; <a href="#" class="form-switch highlight" data-target="signin">use an existing account</a></p>
+            <div class="email-display">
+              <span class="email-text"></span>
+              <button type="button" class="change-email-btn">Change</button>
+            </div>
+            <div class="name-fields">
+              <div class="form-group">
+                <input type="text" name="firstName" placeholder="First Name" />
+                <div class="error-message" style="display: none"></div>
+              </div>
+              <div class="form-group">
+                <input type="text" name="lastName" placeholder="Last Name" />
+                <div class="error-message" style="display: none"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="date" name="birthdate" placeholder="Birthdate" />
+              <div class="error-message" style="display: none"></div>
+            </div>
+
+            <!-- Password Section -->
+            <div class="form-group password-input-group">
+              <input type="password" name="password" placeholder="Create a password" />
+              <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
+              </button>
+              <div class="error-message" style="display: none"></div>
+              <div class="password-criteria">
+                <!-- Password Strength Indicator -->
+                <div class="password-progress">
+                  <div class="password-progress-bar">
+                    <div class="password-progress-fill"></div>
+                  </div>
+                </div>
+                <!-- Password Requirements -->
+                <div class="password-requirement invalid" data-requirement="length">
+                  <span class="icon"></span>
+                  <span>Use a minimum of eight characters</span>
+                </div>
+                <div class="password-requirement invalid" data-requirement="case">
+                  <span class="icon"></span>
+                  <span>Include both uppercase and lowercase letters</span>
+                </div>
+                <div class="password-requirement invalid" data-requirement="alphanumeric">
+                  <span class="icon"></span>
+                  <span>Use letters with at least one number or special character</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="auth-button">Create Account</button>
           </form>
         </div>
       </div>
