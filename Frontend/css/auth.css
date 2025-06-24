@@ -221,14 +221,6 @@ input[type="date"].has-value {
   pointer-events: none;
 }
 
-.password-toggle-btn:hover .password-toggle-icon {
-  opacity: 0.8;
-}
-
-.password-toggle-btn.active .password-toggle-icon {
-  opacity: 0.9;
-}
-
 /* ========== Form Validation ========== */
 .form-group {
   position: relative;
