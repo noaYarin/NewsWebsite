@@ -55,6 +55,7 @@ public class DBservices
         paramDic.Add("@ImgUrl", user.ImgUrl);
         paramDic.Add("@BirthDate", user.BirthDate);
         paramDic.Add("@IsAdmin", user.IsAdmin);
+        paramDic.Add("@IsLocked", user.IsAdmin);
 
 
         cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertUser", con, paramDic);
@@ -222,6 +223,7 @@ public class DBservices
                     BirthDate = dataReader["BirthDate"].ToString(),
                     ImgUrl = dataReader["ImgUrl"].ToString(),
                     IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
+                    IsLocked = Convert.ToBoolean(dataReader["IsLocked"]),
                     HashedPassword = dataReader["HashedPassword"].ToString()
                 };
             }
@@ -285,6 +287,7 @@ public class DBservices
                         BirthDate = dataReader["BirthDate"].ToString(),
                         ImgUrl = dataReader["ImgUrl"].ToString(),
                         IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
+                        IsLocked = Convert.ToBoolean(dataReader["IsLocked"]),
                         HashedPassword = dataReader["HashedPassword"].ToString(),
                         Tags = new List<Tag>(),
                         BlockedUsers = new List<User>(),
