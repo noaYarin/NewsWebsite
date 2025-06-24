@@ -70,9 +70,6 @@ function validatePassword(val) {
 // ========== UI & State Update Functions ==========
 function showPasswordCriteria() {
   cache.passwordCriteria.addClass("show");
-  setTimeout(() => {
-    updateFooterPosition();
-  }, 100);
 }
 
 function resetPasswordCriteria() {

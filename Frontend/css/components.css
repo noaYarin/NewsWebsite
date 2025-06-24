@@ -383,15 +383,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  flex-shrink: 0; /* Prevents the footer from shrinking */
 }
 
-#footer.fixed-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
+/* REMOVED .fixed-footer class as it's no longer needed */
 
 .footer-content {
   display: flex;

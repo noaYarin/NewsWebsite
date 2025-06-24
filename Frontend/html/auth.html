@@ -19,98 +19,102 @@
     <nav id="navbar"></nav>
     <nav id="mobileMenu"></nav>
 
-    <main class="auth-main">
-      <div class="auth-container">
-        <div class="auth-logo">
-          <img src="../sources/images/sun/sun-0.png" alt="Authentication Logo" />
-          <h1 class="auth-title">Welcome to Horizon</h1>
-        </div>
+    <main>
+      <div class="auth-main">
+        <div class="auth-container">
+          <div class="auth-logo">
+            <img src="../sources/images/sun/sun-0.png" alt="Authentication Logo" />
+            <h1 class="auth-title">Welcome to Horizon</h1>
+          </div>
 
-        <div class="auth-form email-form active" id="emailForm">
-          <form id="emailFormData">
-            <div class="form-group">
-              <input type="email" name="email" placeholder="Enter your email" />
-              <div class="error-message" style="display: none"></div>
-            </div>
-            <button type="submit" class="auth-button">Continue</button>
-          </form>
-        </div>
-
-        <div class="auth-form signin-form" id="signinForm">
-          <form id="signinFormData">
-            <div class="email-display">
-              <span class="email-text"></span>
-              <button type="button" class="change-email-btn">Change</button>
-            </div>
-            <div class="form-group password-input-group">
-              <input type="password" name="password" placeholder="Enter your password" />
-              <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
-                <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
-              </button>
-              <div class="error-message" style="display: none"></div>
-            </div>
-            <button type="submit" class="auth-button">Sign In</button>
-            <p><a href="#" class="highlight forgot-password">Forgot password?</a></p>
-          </form>
-        </div>
-
-        <div class="auth-form signup-form" id="signupForm">
-          <form id="signupFormData">
-            <div class="email-display">
-              <span class="email-text"></span>
-              <button type="button" class="change-email-btn">Change</button>
-            </div>
-            <div class="name-fields">
+          <div class="auth-form email-form active" id="emailForm">
+            <form id="emailFormData">
               <div class="form-group">
-                <input type="text" name="firstName" placeholder="First Name" />
+                <input type="email" name="email" placeholder="Enter your email" />
                 <div class="error-message" style="display: none"></div>
               </div>
-              <div class="form-group">
-                <input type="text" name="lastName" placeholder="Last Name" />
+              <button type="submit" class="auth-button">Continue</button>
+            </form>
+          </div>
+
+          <div class="auth-form signin-form" id="signinForm">
+            <form id="signinFormData">
+              <div class="email-display">
+                <span class="email-text"></span>
+                <button type="button" class="change-email-btn">Change</button>
+              </div>
+              <div class="form-group password-input-group">
+                <input type="password" name="password" placeholder="Enter your password" />
+                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                  <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
+                </button>
                 <div class="error-message" style="display: none"></div>
               </div>
-            </div>
-            <div class="form-group">
-              <input type="date" name="birthdate" placeholder="Birthdate" />
-              <div class="error-message" style="display: none"></div>
-            </div>
+              <button type="submit" class="auth-button">Sign In</button>
+              <p><a href="#" class="highlight forgot-password">Forgot password?</a></p>
+            </form>
+          </div>
 
-            <div class="form-group password-input-group">
-              <input type="password" name="password" placeholder="Create a password" />
-              <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
-                <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
-              </button>
-              <div class="error-message" style="display: none"></div>
-              <div class="password-criteria">
-                <div class="password-progress">
-                  <div class="password-progress-bar">
-                    <div class="password-progress-fill"></div>
+          <div class="auth-form signup-form" id="signupForm">
+            <form id="signupFormData">
+              <div class="email-display">
+                <span class="email-text"></span>
+                <button type="button" class="change-email-btn">Change</button>
+              </div>
+              <div class="name-fields">
+                <div class="form-group">
+                  <input type="text" name="firstName" placeholder="First Name" />
+                  <div class="error-message" style="display: none"></div>
+                </div>
+                <div class="form-group">
+                  <input type="text" name="lastName" placeholder="Last Name" />
+                  <div class="error-message" style="display: none"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="date" name="birthdate" placeholder="Birthdate" />
+                <div class="error-message" style="display: none"></div>
+              </div>
+
+              <div class="form-group password-input-group">
+                <input type="password" name="password" placeholder="Create a password" />
+                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                  <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
+                </button>
+                <div class="error-message" style="display: none"></div>
+                <div class="password-criteria">
+                  <div class="password-progress">
+                    <div class="password-progress-bar">
+                      <div class="password-progress-fill"></div>
+                    </div>
+                  </div>
+                  <div class="password-requirement invalid" data-requirement="length">
+                    <span class="icon"></span>
+                    <span>Use a minimum of eight characters</span>
+                  </div>
+                  <div class="password-requirement invalid" data-requirement="case">
+                    <span class="icon"></span>
+                    <span>Include both uppercase and lowercase letters</span>
+                  </div>
+                  <div class="password-requirement invalid" data-requirement="alphanumeric">
+                    <span class="icon"></span>
+                    <span>Use letters with at least one number or special character</span>
                   </div>
                 </div>
-                <div class="password-requirement invalid" data-requirement="length">
-                  <span class="icon"></span>
-                  <span>Use a minimum of eight characters</span>
-                </div>
-                <div class="password-requirement invalid" data-requirement="case">
-                  <span class="icon"></span>
-                  <span>Include both uppercase and lowercase letters</span>
-                </div>
-                <div class="password-requirement invalid" data-requirement="alphanumeric">
-                  <span class="icon"></span>
-                  <span>Use letters with at least one number or special character</span>
-                </div>
               </div>
-            </div>
-            <button type="submit" class="auth-button">Create Account</button>
-          </form>
-        </div>
+              <button type="submit" class="auth-button">Create Account</button>
+            </form>
+          </div>
 
-        <div class="auth-form" id="interestsForm">
-          <form id="interestsFormData">
-            <p class="interests-subtitle">Select at least 3 interests to personalize your news feed.</p>
-            <div id="interestsGrid" class="row g-3 mb-3"></div>
-            <button type="submit" class="auth-button">Finish</button>
-          </form>
+          <div class="auth-form" id="interestsForm">
+            <form id="interestsFormData">
+              <p class="interests-subtitle">Select at least 3 interests to personalize your news feed.</p>
+              <div id="interestsGrid" class="row g-3 mb-3"></div>
+              <div class="button-container">
+                <button type="submit" class="auth-button">Finish</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </main>

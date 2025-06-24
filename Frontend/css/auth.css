@@ -70,6 +70,8 @@
 
 /* ========== Button ========== */
 .auth-button {
+  max-width: 380px;
+  width: 100%;
   background: var(--c-primary);
   color: var(--c-dark);
   border: none;

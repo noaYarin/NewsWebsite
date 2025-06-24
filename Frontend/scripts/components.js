@@ -111,9 +111,6 @@ $(document).ready(function () {
   if ($(window).width() > 1024) {
     setupBackToTop();
   }
-
-  updateFooterPosition();
-  $(window).on("resize", updateFooterPosition);
 });
 
 function setupEventHandlers() {
@@ -266,17 +263,6 @@ function toggleSearch() {
       }
     }, 100);
   }
-}
-
-function updateFooterPosition() {
-  const $footer = $("#footer");
-  if (!$footer.length) {
-    console.warn("Footer (#footer) not found. Cannot update position.");
-    return;
-  }
-
-  const isScrollable = document.body.scrollHeight > window.innerHeight;
-  $footer.toggleClass("fixed-footer", !isScrollable);
 }
 
 function performSearch(query) {
