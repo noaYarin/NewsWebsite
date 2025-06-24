@@ -28,7 +28,7 @@ $(document).ready(function () {
       </div>      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
         <div class="search-icon"></div>
         <button class="login-btn">Log In</button>
-        <button class="signup-btn"><span>Subscribe</span></button>
+        <button class="subscribe-btn"><span>Subscribe</span></button>
       </div>
       <div class="search-overlay" id="searchOverlay">
         <a href="${logoHref}" class="logo">
@@ -47,7 +47,7 @@ $(document).ready(function () {
           <button class="close-search">✕</button>
         </div>        <div class="nav-right">
           <button class="login-btn">Log In</button>
-          <button class="signup-btn"><span>Subscribe</span></button>
+          <button class="subscribe-btn"><span>Subscribe</span></button>
         </div>
         <div class="mobile-search-header">
           <div class="mobile-search-icon"></div>
@@ -76,7 +76,7 @@ $(document).ready(function () {
         <li><a href="#">More</a></li>
       </ul>      <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
         <button class="mobile-login-btn">LOG IN</button>
-        <button class="mobile-signup-btn">SUBSCRIBE</button>
+        <button class="mobile-subscribe-btn">SUBSCRIBE</button>
       </div>
     `,
     footer: `
@@ -164,7 +164,7 @@ function setupAuthNavLinks() {
   $(document).on("click", ".login-btn", () => {
     window.location.href = "auth.html";
   });
-  $(document).on("click", ".signup-btn", () => {
+  $(document).on("click", ".subscribe-btn", () => {
     // TODO: Implement subscription functionality
     alert("Subscribe functionality coming soon!");
   });
@@ -172,7 +172,7 @@ function setupAuthNavLinks() {
   $(document).on("click", ".mobile-login-btn", () => {
     window.location.href = "auth.html";
   });
-  $(document).on("click", ".mobile-signup-btn", () => {
+  $(document).on("click", ".mobile-subscribe-btn", () => {
     // TODO: Implement subscription functionality
     alert("Subscribe functionality coming soon!");
   });

@@ -231,12 +231,14 @@ function handlePasswordToggle() {
   const icon = button.find(".password-toggle-icon");
   const isPassword = passwordInput.attr("type") === "password";
 
+  const cursorPosition = passwordInput[0].selectionStart;
+
   passwordInput.attr("type", isPassword ? "text" : "password");
-  button.toggleClass("active", isPassword);
   icon.attr("src", isPassword ? "../sources/icons/eye-off-svgrepo-com.svg" : "../sources/icons/eye-svgrepo-com.svg");
   icon.attr("alt", isPassword ? "Hide password" : "Show password");
 
   passwordInput.focus();
+  passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
 
   setTimeout(() => {
     if (isPassword && window.animatePasswordShow) window.animatePasswordShow();
@@ -278,7 +280,6 @@ function init() {
 
   setupAuthHandlers();
   setupFormValidation();
-  setupSunAnimation();
 }
 
 $(document).ready(init);

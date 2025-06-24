@@ -105,7 +105,7 @@
   color: var(--c-text-subtle);
 }
 
-.signup-btn {
+.subscribe-btn {
   background-color: var(--c-primary);
   border: none;
   height: 100%;
@@ -118,7 +118,7 @@
   transition: color var(--transition-medium);
 }
 
-.signup-btn::before {
+.subscribe-btn::before {
   content: "";
   position: absolute;
   top: 0;
@@ -130,15 +130,15 @@
   z-index: 0;
 }
 
-.signup-btn:hover {
+.subscribe-btn:hover {
   color: var(--c-light);
 }
 
-.signup-btn:hover::before {
+.subscribe-btn:hover::before {
   left: 0;
 }
 
-.signup-btn span {
+.subscribe-btn span {
   position: relative;
   z-index: 1;
 }
@@ -313,7 +313,7 @@
   gap: 16px;
 }
 
-.mobile-signup-btn,
+.mobile-subscribe-btn,
 .mobile-login-btn {
   flex: 1;
   border: none;
@@ -323,7 +323,7 @@
   cursor: pointer;
 }
 
-.mobile-signup-btn {
+.mobile-subscribe-btn {
   background-color: var(--c-primary);
 }
 

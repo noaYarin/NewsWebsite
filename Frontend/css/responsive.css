@@ -1,14 +1,5 @@
 /* ========== RESPONSIVE STYLES ========== */
 
-/* ========== Large Desktop Screens (1440px+) ========== */
-@media (min-width: 1440px) {
-  #navbar,
-  .search-overlay.active {
-    padding-left: calc(50vw - 800px);
-    padding-right: calc(50vw - 800px);
-  }
-}
-
 /* ========== Desktop & Large Tablets (1025px+) ========== */
 @media (min-width: 1025px) {
   #mobileMenu,
@@ -33,7 +24,7 @@
   /* Hide desktop nav elements */
   .nav-items,
   .login-btn,
-  .signup-btn,
+  .subscribe-btn,
   .search-container {
     display: none;
   }
