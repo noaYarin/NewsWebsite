@@ -81,6 +81,47 @@ public class DBservices
 
     }
 
+    /*Added user tags */
+    public int InsertUserTags(int userId , Tag tag)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@TagName", tag.Name);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertUserTags", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+        }
+
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
 
     /*Insert user - login */
 

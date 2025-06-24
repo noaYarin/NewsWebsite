@@ -65,6 +65,13 @@ namespace Horizon.BL
             return null;
       }
 
+        public int AddUserTags(int UserId, Tag tag)
+        {
+            DBservices db = new DBservices();
+            return db.InsertUserTags(UserId, tag);
+        }
+
+
         public static int LogOut(User user)// change params to relvent parms
         {
             //TODO DB
