@@ -12,6 +12,7 @@ namespace Horizon.BL
         public string BirthDate { get; set; }
         public string ImgUrl { get; set; }
         public bool IsAdmin { get; set; }
+        public bool IsLocked { get; set; }
         public string HashedPassword { get; set; }
         public List<User> ?BlockedUsers { get; set; }
         public List<Tag> ?Tags { get; set; }
@@ -63,6 +64,19 @@ namespace Horizon.BL
 
             return null;
       }
+
+        public int AddUserTags(int UserId, Tag tag)
+        {
+            DBservices db = new DBservices();
+            return db.InsertUserTags(UserId, tag);
+        }
+
+        public int SavedUserArticles(int UserId, Article article)
+        {
+            DBservices db = new DBservices();
+            return db.InsertUserSavedArticles(UserId, article);
+        }
+
 
         public static int LogOut(User user)// change params to relvent parms
         {

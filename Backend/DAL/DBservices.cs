@@ -55,9 +55,95 @@ public class DBservices
         paramDic.Add("@ImgUrl", user.ImgUrl);
         paramDic.Add("@BirthDate", user.BirthDate);
         paramDic.Add("@IsAdmin", user.IsAdmin);
+        paramDic.Add("@IsLocked", user.IsAdmin);
 
 
         cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertUser", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+        }
+
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+    /*Add user tags */
+    public int InsertUserTags(int userId , Tag tag)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@TagName", tag.Name);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertUserTags", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+        }
+
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+
+    /*Add user articles */
+    public int InsertUserSavedArticles(int userId, Article article)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@Title", article.Title);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertUserArticles", con, paramDic);
 
         try
         {
@@ -222,6 +308,7 @@ public class DBservices
                     BirthDate = dataReader["BirthDate"].ToString(),
                     ImgUrl = dataReader["ImgUrl"].ToString(),
                     IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
+                    IsLocked = Convert.ToBoolean(dataReader["IsLocked"]),
                     HashedPassword = dataReader["HashedPassword"].ToString()
                 };
             }
@@ -285,6 +372,7 @@ public class DBservices
                         BirthDate = dataReader["BirthDate"].ToString(),
                         ImgUrl = dataReader["ImgUrl"].ToString(),
                         IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
+                        IsLocked = Convert.ToBoolean(dataReader["IsLocked"]),
                         HashedPassword = dataReader["HashedPassword"].ToString(),
                         Tags = new List<Tag>(),
                         BlockedUsers = new List<User>(),
@@ -366,8 +454,65 @@ public class DBservices
 
     /*
     ----------------------------------------------------------------------------
+    Article
     ----------------------------------------------------------------------------
      */
+
+    /*Get all articles*/
+    public List<Article> GetAllArticles()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_GetAllArticles", con, null);
+        SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+        List<Article> articles = new List<Article>();
+
+        try
+        {
+            Article article = new Article();
+            while (dataReader.Read())
+            {
+                article = new Article
+                {
+                    Id = Convert.ToInt32(dataReader["Id"]),
+                    UserId = Convert.ToInt32(dataReader["Id"]),
+                    Title = dataReader["Title"].ToString(),
+                    PublishDate = Convert.ToDateTime(dataReader["PublishDate"]),
+                    Tags = new List<Tag>(),
+                    Comments = new List<Comment>(),
+                    Reports = new List<Report>()
+                };
+                articles.Add(article);
+            }
+
+            return articles;
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
 
 
     private SqlCommand CreateCommandWithStoredProcedureGeneral(String spName, SqlConnection con, Dictionary<string, object> paramDic)

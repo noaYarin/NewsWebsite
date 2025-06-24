@@ -17,7 +17,7 @@ BEGIN
 
 	--SET NOCOUNT ON;
 
-    SELECT U.Id, U.Email, U.FirstName, U.LastName,U.HashedPassword,U.ImgUrl,U.BirthDate,U.IsAdmin,U.MobileUrl,
+    SELECT U.Id, U.Email, U.FirstName, U.LastName,U.HashedPassword,U.ImgUrl,U.BirthDate,U.IsAdmin,U.IsLocked,
     BU.Id AS BlockedUserId,
     BU.FirstName AS BlockedUserFirstName,
     BU.LastName AS BlockedUserLastName,
@@ -26,7 +26,7 @@ BEGIN
     BU.ImgUrl AS BlockedUserImgUrl,
     BU.BirthDate AS BlockedUserBirthDate,
     BU.IsAdmin AS BlockedUserIsAdmin,
-    BU.MobileUrl AS BlockedUserMobileUrl,
+    BU.IsLocked AS BlockedLockedUser,
 
 	T.TagId AS TagId,
 	T.[Name] AS TagName,

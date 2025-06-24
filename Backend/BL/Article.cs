@@ -24,5 +24,12 @@ namespace Horizon.BL
         }
 
         public Article() { }
+
+        public List<Article> Read()
+        {
+            DBservices db = new DBservices();
+            return db.GetAllArticles();
+        }
+
     }
 }
