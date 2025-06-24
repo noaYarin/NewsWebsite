@@ -372,12 +372,11 @@ function handlePasswordToggle(e) {
 
   // Store cursor position before type change
   const cursorPosition = passwordInput[0].selectionStart;
-
   if (passwordInput.attr("type") === "password") {
     // Show password
     passwordInput.attr("type", "text");
     button.addClass("active");
-    icon.text("🙈");
+    icon.attr("src", "../sources/icons/eye-off-svgrepo-com.svg").attr("alt", "Hide password");
 
     // Always restore focus and cursor position
     passwordInput.focus();
@@ -395,7 +394,7 @@ function handlePasswordToggle(e) {
     // Hide password
     passwordInput.attr("type", "password");
     button.removeClass("active");
-    icon.text("👁️");
+    icon.attr("src", "../sources/icons/eye-svgrepo-com.svg").attr("alt", "Show password");
 
     // Always restore focus and cursor position
     passwordInput.focus();
