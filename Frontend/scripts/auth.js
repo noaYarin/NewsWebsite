@@ -1,6 +1,26 @@
+const PASSWORD_REQUIREMENTS = {
+  MIN_LENGTH: 8,
+  MAX_LENGTH: 128,
+  TOTAL_REQUIREMENTS: 3
+};
+
+const VALIDATION_REGEX = {
+  EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  NAME: /^[a-zA-Z\s'-]{2,30}$/,
+  PASSWORD_LETTER_AND_NUMBER: /^(?=.*[a-zA-Z])(?=.*\d)/,
+  PASSWORD_LETTER_AND_SPECIAL: /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+  PASSWORD_UPPERCASE_LOWERCASE: /^(?=.*[a-z])(?=.*[A-Z])/
+};
+
+const AGE_LIMITS = {
+  MIN_AGE: 18,
+  MAX_AGE: 120
+};
+
 $(document).ready(function () {
   setupAuthHandlers();
   setupSunAnimation();
+  setupFormValidation();
 });
 
 function setupAuthHandlers() {
@@ -11,28 +31,231 @@ function setupAuthHandlers() {
   $(document).on("click", ".forgot-password", handleForgotPassword);
 }
 
+// ========== Form Validation Setup ==========
+function setupFormValidation() {
+  $(document).on("focus", '#signupFormData input[name="password"]', function () {
+    showPasswordCriteria();
+  });
+
+  $(document).on("input", '#signupFormData input[name="password"]', function () {
+    updatePasswordCriteria($(this).val());
+  });
+
+  $(document).on("input", ".form-group input", function () {
+    clearValidationState($(this));
+  });
+
+  // I kid you not, I tried 50 other things to get this to work, this is the only thing that is remotely reliable.
+  $(document).on("input change", 'input[type="date"]', function () {
+    if ($(this).val()) {
+      $(this).addClass("has-value");
+    } else {
+      $(this).removeClass("has-value");
+    }
+  });
+}
+
+// ========== Validation Functions ==========
+function validateEmail(email) {
+  if (!email) {
+    return { valid: false, message: "Email is required" };
+  } else if (!VALIDATION_REGEX.EMAIL.test(email)) {
+    return { valid: false, message: "Please enter a valid email address" };
+  }
+  return { valid: true };
+}
+
+function validateName(name, fieldName) {
+  if (!name) {
+    return { valid: false, message: `${fieldName} is required` };
+  } else if (!VALIDATION_REGEX.NAME.test(name)) {
+    return { valid: false, message: `${fieldName} must contain only letters, spaces, hyphens, and apostrophes (2-30 characters)` };
+  }
+  return { valid: true };
+}
+
+function validateBirthdate(birthdate) {
+  if (!birthdate) {
+    return { valid: false, message: "Birthdate is required" };
+  }
+
+  const today = new Date();
+  const selectedDate = new Date(birthdate);
+  let age = today.getFullYear() - selectedDate.getFullYear();
+  const monthDiff = today.getMonth() - selectedDate.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < selectedDate.getDate())) {
+    age--;
+  }
+
+  if (selectedDate > today) {
+    return { valid: false, message: "Birthdate cannot be in the future" };
+  } else if (age < AGE_LIMITS.MIN_AGE) {
+    return { valid: false, message: `You must be at least ${AGE_LIMITS.MIN_AGE} years old to create an account` };
+  } else if (age > AGE_LIMITS.MAX_AGE) {
+    return { valid: false, message: "Please enter a valid birthdate" };
+  }
+  return { valid: true };
+}
+
+function validatePassword(password) {
+  const hasLetterAndNumber = VALIDATION_REGEX.PASSWORD_LETTER_AND_NUMBER.test(password) || VALIDATION_REGEX.PASSWORD_LETTER_AND_SPECIAL.test(password);
+
+  if (!password) {
+    return { valid: false, message: "Password is required" };
+  } else if (password.length < PASSWORD_REQUIREMENTS.MIN_LENGTH) {
+    return { valid: false, message: `Password must be at least ${PASSWORD_REQUIREMENTS.MIN_LENGTH} characters long` };
+  } else if (!hasLetterAndNumber) {
+    return { valid: false, message: "Password must contain letters with at least one number or special character" };
+  }
+  return { valid: true };
+}
+
+function showPasswordCriteria() {
+  $(".password-criteria").addClass("show");
+  updateFooterPosition();
+}
+
+function resetPasswordCriteria() {
+  $(".password-criteria").removeClass("show");
+  $(".password-progress-fill").removeClass("weak medium strong");
+  $(".password-progress-text").removeClass("weak medium strong").text(`0 of ${PASSWORD_REQUIREMENTS.TOTAL_REQUIREMENTS} requirements met`);
+}
+
+function updatePasswordCriteria(password) {
+  const lengthReq = $('.password-requirement[data-requirement="length"]');
+  const alphanumericReq = $('.password-requirement[data-requirement="alphanumeric"]');
+  const caseReq = $('.password-requirement[data-requirement="case"]');
+
+  let validCount = 0;
+
+  if (password.length >= PASSWORD_REQUIREMENTS.MIN_LENGTH) {
+    lengthReq.removeClass("invalid").addClass("valid");
+    validCount++;
+  } else {
+    lengthReq.removeClass("valid").addClass("invalid");
+  }
+
+  const hasLetterAndNumber = VALIDATION_REGEX.PASSWORD_LETTER_AND_NUMBER.test(password) || VALIDATION_REGEX.PASSWORD_LETTER_AND_SPECIAL.test(password);
+  if (hasLetterAndNumber) {
+    alphanumericReq.removeClass("invalid").addClass("valid");
+    validCount++;
+  } else {
+    alphanumericReq.removeClass("valid").addClass("invalid");
+  }
+
+  if (VALIDATION_REGEX.PASSWORD_UPPERCASE_LOWERCASE.test(password)) {
+    caseReq.removeClass("invalid").addClass("valid");
+    validCount++;
+  } else {
+    caseReq.removeClass("valid").addClass("invalid");
+  }
+
+  updatePasswordProgress(validCount);
+}
+
+function updatePasswordProgress(validCount) {
+  const progressFill = $(".password-progress-fill");
+  const progressText = $(".password-progress-text");
+
+  progressFill.removeClass("weak medium strong");
+  progressText.removeClass("weak medium strong");
+
+  if (validCount === 0) {
+    progressText.text(`0 of ${PASSWORD_REQUIREMENTS.TOTAL_REQUIREMENTS} requirements met`);
+  } else if (validCount === 1) {
+    progressFill.addClass("weak");
+    progressText.addClass("weak").text(`1 of ${PASSWORD_REQUIREMENTS.TOTAL_REQUIREMENTS} requirements met - Weak`);
+  } else if (validCount === 2) {
+    progressFill.addClass("medium");
+    progressText.addClass("medium").text(`2 of ${PASSWORD_REQUIREMENTS.TOTAL_REQUIREMENTS} requirements met - Medium`);
+  } else if (validCount === PASSWORD_REQUIREMENTS.TOTAL_REQUIREMENTS) {
+    progressFill.addClass("strong");
+    progressText.addClass("strong").text("All requirements met - Strong");
+  }
+}
+
+function showError(input, message) {
+  const formGroup = input.closest(".form-group");
+  const errorMessage = formGroup.find(".error-message");
+
+  input.addClass("input-error");
+  errorMessage.text(message).show();
+}
+
+function clearValidationState(input) {
+  const formGroup = input.closest(".form-group");
+  const errorMessage = formGroup.find(".error-message");
+
+  input.removeClass("input-error");
+  errorMessage.hide();
+}
+
+function validateForm(formId) {
+  let isValid = true;
+  const form = $(formId);
+  updateFooterPosition();
+
+  form.find(".input-error").removeClass("input-error");
+  form.find(".error-message").hide();
+
+  form.find("input").each(function () {
+    const input = $(this);
+    const inputName = input.attr("name");
+    const value = input.val().trim();
+    let validation = { valid: true };
+
+    switch (inputName) {
+      case "email":
+        validation = validateEmail(value);
+        break;
+      case "firstName":
+        validation = validateName(value, "First name");
+        break;
+      case "lastName":
+        validation = validateName(value, "Last name");
+        break;
+      case "birthdate":
+        validation = validateBirthdate(value);
+        break;
+      case "password":
+        validation = validatePassword(value);
+        break;
+    }
+
+    if (!validation.valid) {
+      showError(input, validation.message);
+      isValid = false;
+    }
+  });
+
+  if (!isValid) {
+    const firstError = form.find(".input-error").first();
+    if (firstError.length) {
+      firstError.focus();
+    }
+  }
+
+  return isValid;
+}
+
 let userEmail = "";
 
 function handleEmailSubmit(e) {
   e.preventDefault();
 
-  const email = $(this).find("input[name='email']").val().trim();
-
-  if (!email) {
-    alert("Please enter a valid email address.");
+  if (!validateForm("#emailFormData")) {
     return;
   }
 
+  const email = $(this).find("input[name='email']").val().trim();
   userEmail = email;
 
-  // TODO: Replace this with actual API call to check if user exists
   checkUserExists(email);
 }
 
+// TODO: Replace this with your actual API call to check if the user exists
 function checkUserExists(email) {
-  // Simulate API call with setTimeout
-  // TODO: Replace with actual backend API call
-
   console.log("Checking if user exists:", email);
 
   // Simulate loading state
@@ -75,6 +298,7 @@ function showSignupForm(email) {
   $("#signupForm").addClass("active");
 
   document.title = "HORIZON / Sign Up";
+
   setTimeout(() => {
     $("#signupForm input[name='firstName']").focus();
   }, 100);
@@ -89,6 +313,8 @@ function handleChangeEmail() {
 
   document.title = "HORIZON / Sign In";
 
+  resetPasswordCriteria();
+
   // Reset sun animation
   $(".auth-logo img").attr("src", "../sources/images/sun/sun-0.png");
 }
@@ -96,19 +322,26 @@ function handleChangeEmail() {
 function handleSignin(e) {
   e.preventDefault();
 
+  if (!validateForm("#signinFormData")) {
+    return;
+  }
+
   const formData = {
     email: userEmail,
     password: $(this).find("input[name='password']").val()
   };
 
   console.log("Sign in:", formData);
-
-  // TODO: Replace with actual authentication
   alert("Sign in successful! (This is just a demo)");
 }
 
+// TODO: Replace this with your actual API call to handle signup
 function handleSignup(e) {
   e.preventDefault();
+
+  if (!validateForm("#signupFormData")) {
+    return;
+  }
 
   const formData = {
     email: userEmail,
@@ -119,15 +352,12 @@ function handleSignup(e) {
   };
 
   console.log("Sign up:", formData);
-
-  // TODO: Replace with actual user creation
   alert("Account created! (This is just a demo)");
 }
 
+// TODO: Replace this with your actual API call to handle forgot password
 function handleForgotPassword(e) {
   e.preventDefault();
-
-  // TODO: Implement forgot password functionality
   alert(`Password reset link will be sent to: ${userEmail}`);
 }
 
@@ -305,7 +535,6 @@ function setupSunAnimation() {
       }
     }, 50);
   }
-
   // Define input selectors for different behaviors
   const firstNameInputSelector = "#signupFormData input[name='firstName']";
   const lastNameInputSelector = "#signupFormData input[name='lastName']";

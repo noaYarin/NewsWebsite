@@ -9,12 +9,12 @@
 }
 
 .auth-container {
-  padding: 20px;
+  padding: 0 20px;
   background-color: var(--c-light);
   border-radius: 20px;
   /*box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);*/
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -38,7 +38,7 @@
 .auth-logo h1 {
   font-size: 28px;
   color: var(--c-dark);
-  margin: 20px;
+  margin: 15px;
   font-weight: 600;
 }
 
@@ -103,7 +103,7 @@ input[type="date"] {
   border-radius: 10px;
   font-size: 16px;
   background: #f8f9fa;
-  color: var(--c-dark);
+  color: var(--c-placeholder); /* Default placeholder color */
   font-family: inherit;
 }
 
@@ -111,7 +111,7 @@ input[type="date"] {
 input[type="date"]:focus {
   outline: none;
   border-color: var(--c-primary);
-  background: white;
+  background: var(--c-light);
 }
 
 /* Style the calendar icon (WebKit browsers) */
@@ -122,16 +122,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   padding: 3px;
   transition: background-color var(--transition-fast), filter var(--transition-fast);
-  outline: none;
 }
-
-/*
-input[type="date"]:focus::-webkit-calendar-picker-indicator {
-  outline: 1px solid var(--c-primary);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--c-primary);
-}
-*/
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
   filter: none;
@@ -143,11 +134,8 @@ input[type="date"]::-moz-focus-inner {
   border: 0;
 }
 
-input[type="date"]:invalid {
-  color: var(--c-placeholder);
-}
-
-input[type="date"]:valid {
+/* JavaScript-controlled class for when date has actual value */
+input[type="date"].has-value {
   color: var(--c-dark);
 }
 
@@ -157,9 +145,12 @@ input[type="date"]:valid {
   gap: 12px;
 }
 
-.name-fields input {
+.name-fields .form-group {
   flex: 1;
-  width: 50%;
+}
+
+.name-fields input {
+  width: 100%;
 }
 
 /* ========== Email Display ========== */
@@ -171,7 +162,6 @@ input[type="date"]:valid {
   background: #f8f9fa;
   border: 2px solid #e9ecef;
   border-radius: 10px;
-  margin-bottom: 8px;
 }
 
 .email-text {
@@ -211,6 +201,182 @@ input[type="date"]:valid {
   font-size: 14px;
 }
 
+/* ========== Form Validation ========== */
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-error {
+  border-color: #dc3545 !important;
+  background: #fff5f5 !important;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ========== Password Criteria ========== */
+.password-criteria {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 10px;
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.password-criteria.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.password-criteria-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-dark);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-criteria-title::before {
+  content: "🔒";
+  font-size: 16px;
+}
+
+.password-requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  transition: color 0.3s ease;
+}
+
+.password-requirement:last-child {
+  margin-bottom: 0;
+}
+
+.password-requirement .icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.password-requirement.invalid .icon {
+  border: 2px solid var(--c-placeholder);
+}
+
+.password-requirement.valid .icon {
+  border: 2px solid #28a745;
+  color: #28a745;
+}
+
+.password-requirement.valid .icon::before {
+  content: "✓";
+}
+
+.password-requirement.invalid {
+  color: var(--c-placeholder);
+}
+
+.password-requirement.valid {
+  color: #28a745;
+}
+
+/* ========== Password Progress Bar ========== */
+.password-progress {
+  margin-bottom: 16px;
+}
+
+.password-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.password-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: #dc3545; /* Red by default */
+}
+
+.password-progress-fill.weak {
+  width: 33.33%;
+  background-color: #dc3545; /* Red */
+}
+
+.password-progress-fill.medium {
+  width: 66.66%;
+  background-color: #ffc107; /* Yellow */
+}
+
+.password-progress-fill.strong {
+  width: 100%;
+  background-color: #28a745; /* Green */
+}
+
+.password-progress-text {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  text-align: center;
+  font-weight: 500;
+}
+
+.password-progress-text.weak {
+  color: #dc3545;
+}
+
+.password-progress-text.medium {
+  color: #b8860b; /* Darker yellow for better readability */
+}
+
+.password-progress-text.strong {
+  color: #28a745;
+}
+
+/* ========== Success States ========== */
+.success-message {
+  color: #28a745;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.success-message::before {
+  content: "✓";
+  font-size: 10px;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 480px) {
   .auth-main {
@@ -218,7 +384,11 @@ input[type="date"]:valid {
   }
 
   .auth-container {
-    padding: 32px;
+    padding: 0;
+  }
+
+  .password-criteria {
+    padding: 8px;
   }
 
   .auth-logo img {
