@@ -118,6 +118,7 @@ $(document).ready(function () {
 
 function setupEventHandlers() {
   const MOBILE_BREAKPOINT = 1024;
+  let debounceTimer;
 
   // keyboard handler (Esc to close)
   $(document).on("keydown", function (e) {
@@ -153,30 +154,25 @@ function setupEventHandlers() {
     toggleSearch();
   });
 
-  $(document).on("keydown", ".search-input, .mobile-search-input", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const query = $(this).val().trim();
-      if (query) {
+  $(document).on("input", ".search-input, .mobile-search-input", function (e) {
+    clearTimeout(debounceTimer);
+
+    const query = $(this).val().trim();
+    debounceTimer = setTimeout(() => {
+      if (query.length > 2) {
         performSearch(query);
       }
-    }
+      // performSearch(query);
+    }, 500);
   });
 }
 
 function setupAuthNavLinks() {
-  $(document).on("click", ".login-btn", () => {
+  $(document).on("click", ".login-btn, .mobile-login-btn", () => {
     window.location.href = "auth.html";
-  });
-  $(document).on("click", ".subscribe-btn", () => {
-    // TODO: Implement subscription functionality
-    alert("Subscribe functionality coming soon!");
   });
 
-  $(document).on("click", ".mobile-login-btn", () => {
-    window.location.href = "auth.html";
-  });
-  $(document).on("click", ".mobile-subscribe-btn", () => {
+  $(document).on("click", ".subscribe-btn, .mobile-subscribe-btn", () => {
     // TODO: Implement subscription functionality
     alert("Subscribe functionality coming soon!");
   });

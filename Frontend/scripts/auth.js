@@ -18,7 +18,6 @@ const CONFIG = {
   }
 };
 
-// ========== Cached jQuery Selectors ==========
 let cache = {};
 let userEmail = "";
 
