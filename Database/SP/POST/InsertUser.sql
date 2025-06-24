@@ -4,8 +4,8 @@ INSERT INTO Users (
     [LastName],
     [BirthDate],
     [ImgUrl],
-    [MobileUrl],
     [IsAdmin],
+    [IsBlocked],
     [HashedPassword]
 ) VALUES (                                    
     'dan@test.com',                  

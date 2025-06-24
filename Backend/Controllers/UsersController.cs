@@ -18,6 +18,14 @@ namespace Horizon.Controllers
             return user.Read();
         }
 
+
+        // POST- register
+        [HttpPost("register")]
+        public bool Post([FromBody] User user)
+        {
+            return user.Register();
+        }
+
         // POST- login
         [HttpPost("logIn")]
         public User? Post([FromBody] JsonElement data)
@@ -28,12 +36,39 @@ namespace Horizon.Controllers
             return user.LogIn(email,password);
         }
 
-
-        // POST- register
-        [HttpPost("register")]
-        public bool Post([FromBody] User user)
+        // POST- Add user tags
+        [HttpPost("userTags")]
+        public int InsertUserTags([FromBody] JsonElement data)
         {
-            return user.Register();
+            int userId = data.GetProperty("UserId").GetInt32();
+
+            Tag tag = new Tag
+            {
+                Name = data.GetProperty("Name").GetString()
+            };
+
+            User user = new User();
+            return user.AddUserTags(userId, tag);
+        }
+
+        // POST- Add user articles
+
+        [HttpPost("userArticles")]
+        public int InsertUserSavedArticles([FromBody] JsonElement data)
+        {
+            int userId = data.GetProperty("UserId").GetInt32();
+
+            Article article = new Article
+            {
+                UserId = userId,
+                Title = data.GetProperty("Title").GetString(),
+                Tags = new List<Tag>(),
+                Comments = new List<Comment>(),
+                Reports = new List<Report>()
+            };
+
+            User user = new User();
+            return user.SavedUserArticles(userId, article);
         }
 
         // GET api/<UsersController>/5
