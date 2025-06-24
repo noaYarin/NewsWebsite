@@ -408,6 +408,7 @@ input[type="date"].has-value {
   z-index: 2;
 }
 
+/* Selected Interest Card */
 .interest-card.selected {
   outline: 3px solid var(--c-primary);
   filter: none;
@@ -415,6 +416,10 @@ input[type="date"].has-value {
 
 .interest-card.selected::before {
   background-color: transparent;
+}
+
+.interest-card-title.selected {
+  color: var(--c-primary);
 }
 
 /* Styles for the expanded interests view */

@@ -241,8 +241,10 @@ function handleSignup(e) {
 function handleInterestSelection() {
   const card = $(this);
   const interest = card.data("interest");
+  const title = card.find(".interest-card-title");
 
   card.toggleClass("selected");
+  title.toggleClass("selected");
 
   if (card.hasClass("selected")) {
     selectedInterests.push(interest);
