@@ -311,7 +311,6 @@ function setupSunAnimation() {
   });
 }
 
-// Wait for the document to be ready before initializing the animations.
 $(document).ready(function () {
   setupSunAnimation();
 });
