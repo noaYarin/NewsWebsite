@@ -1,3 +1,4 @@
+// ========== Configuration Constants ==========
 const CONFIG = {
   PASSWORD_REQUIREMENTS: {
     MIN_LENGTH: 8,
@@ -165,7 +166,6 @@ function switchForm(activeForm, title) {
   };
   document.title = docTitleMap[activeForm.attr("id")] || "HORIZON";
 
-  // Add the special class if switching TO the interests form
   if (activeForm.is(cache.interestsForm)) {
     cache.authContainer.addClass("interests-active");
   }
@@ -197,6 +197,24 @@ function populateInterestsGrid() {
     `;
     grid.append(card);
   });
+}
+
+function updateInterestSubtitle(isError = false) {
+  const count = selectedInterests.length;
+  const remaining = 3 - count;
+
+  cache.interestsSubtitle.removeClass("is-valid is-invalid");
+
+  if (isError) {
+    cache.interestsSubtitle.text("Please select at least 3 interests to continue.").addClass("is-invalid");
+    return;
+  }
+
+  if (count < 3) {
+    cache.interestsSubtitle.text(`Select ${remaining} more interest${remaining > 1 ? "s" : ""} to continue.`);
+  } else {
+    cache.interestsSubtitle.text(`You've selected ${count} interests. You're all set!`).addClass("is-valid");
+  }
 }
 
 // ========== API Call Simulation ==========
@@ -232,10 +250,9 @@ function handleSignup(e) {
   e.preventDefault();
   if (!validateForm("#signupFormData")) return;
 
-  // Store form data and move to next step
-  const form = $(e.target);
   signupData = Object.fromEntries(new FormData(e.target));
   switchForm(cache.interestsForm, "Tell Us What You Like");
+  updateInterestSubtitle();
 }
 
 function handleInterestSelection() {
@@ -251,12 +268,13 @@ function handleInterestSelection() {
   } else {
     selectedInterests = selectedInterests.filter((i) => i !== interest);
   }
+  updateInterestSubtitle();
 }
 
 function handleFinalSignup(e) {
   e.preventDefault();
   if (selectedInterests.length < 3) {
-    alert("Please select at least 3 interests to continue.");
+    updateInterestSubtitle(true);
     return;
   }
 
@@ -268,7 +286,6 @@ function handleFinalSignup(e) {
 
   console.log("Final account data:", finalUserData);
   alert("Account created successfully! Check the console for the final data object.");
-  // Here you would typically send finalUserData to your server
 }
 
 function handleChangeEmail() {
@@ -336,6 +353,7 @@ function init() {
     signinForm: $("#signinForm"),
     signupForm: $("#signupForm"),
     interestsForm: $("#interestsForm"),
+    interestsSubtitle: $(".interests-subtitle"),
     passwordCriteria: $(".password-criteria"),
     passwordProgressFill: $(".password-progress-fill")
   };

@@ -355,12 +355,6 @@ input[type="date"].has-value {
 }
 
 /* ========== Interests Form ========== */
-.interests-subtitle {
-  font-size: 16px;
-  color: var(--c-text-muted);
-  margin-bottom: 16px;
-}
-
 .interest-card {
   position: relative;
   cursor: pointer;
@@ -420,6 +414,24 @@ input[type="date"].has-value {
 
 .interest-card-title.selected {
   color: var(--c-primary);
+}
+
+/* Interest Selection Subtitle */
+.interests-subtitle {
+  font-size: 16px;
+  color: var(--c-text-muted);
+  margin-bottom: 16px;
+  transition: color 0.3s ease; /* ADDED for smooth color change */
+}
+
+.interests-subtitle.is-valid {
+  color: var(--c-primary); /* This will be the yellow color */
+  font-weight: 500;
+}
+
+.interests-subtitle.is-invalid {
+  color: var(--c-red); /* This will be the red error color */
+  font-weight: 500;
 }
 
 /* Styles for the expanded interests view */
