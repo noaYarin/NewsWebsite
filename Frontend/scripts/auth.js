@@ -1,4 +1,3 @@
-// ========== Configuration Constants ==========
 const CONFIG = {
   PASSWORD_REQUIREMENTS: {
     MIN_LENGTH: 8,
@@ -15,11 +14,14 @@ const CONFIG = {
   AGE_LIMITS: {
     MIN_AGE: 18,
     MAX_AGE: 120
-  }
+  },
+  INTERESTS: ["Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology", "Travel", "Culture"]
 };
 
 let cache = {};
 let userEmail = "";
+let signupData = {};
+let selectedInterests = [];
 
 // ========== Validation Logic ==========
 const validationMap = {
@@ -68,6 +70,9 @@ function validatePassword(val) {
 // ========== UI & State Update Functions ==========
 function showPasswordCriteria() {
   cache.passwordCriteria.addClass("show");
+  setTimeout(() => {
+    updateFooterPosition();
+  }, 100);
 }
 
 function resetPasswordCriteria() {
@@ -150,16 +155,22 @@ function validateForm(formId) {
 
 // ========== Page Flow & Form Switching ==========
 function switchForm(activeForm, title) {
+  cache.authContainer.removeClass("interests-active");
+
   $(".auth-form").removeClass("active");
   activeForm.addClass("active");
   cache.authTitle.text(title);
 
-  if (activeForm.is(cache.signupForm)) {
-    document.title = "HORIZON / Sign Up";
-  } else if (activeForm.is(cache.signinForm)) {
-    document.title = "HORIZON / Sign In";
-  } else {
-    document.title = "HORIZON";
+  const docTitleMap = {
+    signupForm: "HORIZON / Sign Up",
+    signinForm: "HORIZON / Sign In",
+    interestsForm: "HORIZON / Personalize"
+  };
+  document.title = docTitleMap[activeForm.attr("id")] || "HORIZON";
+
+  // Add the special class if switching TO the interests form
+  if (activeForm.is(cache.interestsForm)) {
+    cache.authContainer.addClass("interests-active");
   }
 }
 
@@ -173,6 +184,22 @@ function showSignupForm(email) {
   switchForm(cache.signupForm, "Create Your Account");
   cache.signupForm.find(".email-text").text(email);
   setTimeout(() => cache.signupForm.find("input[name='firstName']").focus(), 100);
+}
+
+function populateInterestsGrid() {
+  const grid = $("#interestsGrid");
+  CONFIG.INTERESTS.forEach((interest) => {
+    const interestSlug = interest.toLowerCase();
+    const imageUrl = `../sources/images/categories/${interest}.jpg`;
+    const card = `
+      <div class="col-4">
+        <div class="interest-card" data-interest="${interestSlug}" style="background-image: url('${imageUrl}');">
+          <span class="interest-card-title">${interest}</span>
+        </div>
+      </div>
+    `;
+    grid.append(card);
+  });
 }
 
 // ========== API Call Simulation ==========
@@ -207,9 +234,42 @@ function handleSignin(e) {
 function handleSignup(e) {
   e.preventDefault();
   if (!validateForm("#signupFormData")) return;
-  const formData = Object.fromEntries(new FormData(e.target));
-  console.log("Sign up:", { email: userEmail, ...formData });
-  alert("Account created! (This is just a demo)");
+
+  // Store form data and move to next step
+  const form = $(e.target);
+  signupData = Object.fromEntries(new FormData(e.target));
+  switchForm(cache.interestsForm, "Tell Us What You Like");
+}
+
+function handleInterestSelection() {
+  const card = $(this);
+  const interest = card.data("interest");
+
+  card.toggleClass("selected");
+
+  if (card.hasClass("selected")) {
+    selectedInterests.push(interest);
+  } else {
+    selectedInterests = selectedInterests.filter((i) => i !== interest);
+  }
+}
+
+function handleFinalSignup(e) {
+  e.preventDefault();
+  if (selectedInterests.length < 3) {
+    alert("Please select at least 3 interests to continue.");
+    return;
+  }
+
+  const finalUserData = {
+    email: userEmail,
+    ...signupData,
+    interests: selectedInterests
+  };
+
+  console.log("Final account data:", finalUserData);
+  alert("Account created successfully! Check the console for the final data object.");
+  // Here you would typically send finalUserData to your server
 }
 
 function handleChangeEmail() {
@@ -251,9 +311,11 @@ function setupAuthHandlers() {
     .on("submit", "#emailFormData", handleEmailSubmit)
     .on("submit", "#signinFormData", handleSignin)
     .on("submit", "#signupFormData", handleSignup)
+    .on("submit", "#interestsFormData", handleFinalSignup)
     .on("click", ".change-email-btn", handleChangeEmail)
     .on("click", ".forgot-password", handleForgotPassword)
-    .on("click", ".password-toggle-btn", handlePasswordToggle);
+    .on("click", ".password-toggle-btn", handlePasswordToggle)
+    .on("click", ".interest-card", handleInterestSelection);
 }
 
 function setupFormValidation() {
@@ -268,15 +330,18 @@ function setupFormValidation() {
 function init() {
   cache = {
     document: $(document),
+    authContainer: $(".auth-container"),
     sunImage: $(".auth-logo img"),
     authTitle: $(".auth-title"),
     emailForm: $("#emailForm"),
     signinForm: $("#signinForm"),
     signupForm: $("#signupForm"),
+    interestsForm: $("#interestsForm"),
     passwordCriteria: $(".password-criteria"),
     passwordProgressFill: $(".password-progress-fill")
   };
 
+  populateInterestsGrid();
   setupAuthHandlers();
   setupFormValidation();
 }

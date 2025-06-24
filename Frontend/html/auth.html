@@ -26,7 +26,6 @@
           <h1 class="auth-title">Welcome to Horizon</h1>
         </div>
 
-        <!-- Email Entry Form -->
         <div class="auth-form email-form active" id="emailForm">
           <form id="emailFormData">
             <div class="form-group">
@@ -37,7 +36,6 @@
           </form>
         </div>
 
-        <!-- Sign In Form -->
         <div class="auth-form signin-form" id="signinForm">
           <form id="signinFormData">
             <div class="email-display">
@@ -56,7 +54,6 @@
           </form>
         </div>
 
-        <!-- Sign Up Form -->
         <div class="auth-form signup-form" id="signupForm">
           <form id="signupFormData">
             <div class="email-display">
@@ -78,7 +75,6 @@
               <div class="error-message" style="display: none"></div>
             </div>
 
-            <!-- Password Section -->
             <div class="form-group password-input-group">
               <input type="password" name="password" placeholder="Create a password" />
               <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
@@ -86,13 +82,11 @@
               </button>
               <div class="error-message" style="display: none"></div>
               <div class="password-criteria">
-                <!-- Password Strength Indicator -->
                 <div class="password-progress">
                   <div class="password-progress-bar">
                     <div class="password-progress-fill"></div>
                   </div>
                 </div>
-                <!-- Password Requirements -->
                 <div class="password-requirement invalid" data-requirement="length">
                   <span class="icon"></span>
                   <span>Use a minimum of eight characters</span>
@@ -108,6 +102,14 @@
               </div>
             </div>
             <button type="submit" class="auth-button">Create Account</button>
+          </form>
+        </div>
+
+        <div class="auth-form" id="interestsForm">
+          <form id="interestsFormData">
+            <p class="interests-subtitle">Select at least 3 interests to personalize your news feed.</p>
+            <div id="interestsGrid" class="row g-3 mb-3"></div>
+            <button type="submit" class="auth-button">Finish</button>
           </form>
         </div>
       </div>
