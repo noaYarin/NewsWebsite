@@ -101,17 +101,18 @@ namespace Horizon.Controllers
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public User Get(int id)
         {
-            return "value";
+            User user = new User();
+            return user.GetUserById(id);
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public User Put(int userId, [FromBody] User updatedUser)
+        public bool Put(int id, [FromBody] User updatedUser)
         {
             User user = new User();
-            return user.UpdateUser(userId, updatedUser);
+            return user.UpdateUser(id, updatedUser);
         }
 
         // DELETE api/<UsersController>/5
@@ -121,33 +122,26 @@ namespace Horizon.Controllers
         }
 
         // Delete saved Article
-        [HttpDelete("{id}")]
-        public int DeleteSavedArticle(JsonElement data)
+        [HttpDelete("deleteSavedArticle/{userId}/{articleId}")]
+        public int DeleteSavedArticle(int userId, int articleId)
         {
-            int userId = data.GetProperty("UserId").GetInt32();
-            int articleId = data.GetProperty("ArticleId").GetInt32();
             User user = new User();
             return user.DeleteSavedArticle(userId,articleId);
         }
 
-        // Delete saved Article
-        [HttpDelete("{id}")]
-        public int DeleteUserTag(JsonElement data)
+        // Delete user tag
+        [HttpDelete("deleteUserTag/{userId}/{tagId}")]
+        public int DeleteUserTag(int userId, int tagId)
         {
-            int userId = data.GetProperty("UserId").GetInt32();
-            int tagId = data.GetProperty("TagId").GetInt32();
             User user = new User();
             return user.DeleteUserTag(userId, tagId);
         }
 
 
         // Delete blocked User
-        [HttpDelete("{id}")]
-        public int DeleteBlockedUser(JsonElement data)
-        {
-            int userId = data.GetProperty("UserId").GetInt32();
-            int blockedUserId = data.GetProperty("TagId").GetInt32();
-            User user = new User();
+        [HttpDelete("deleteBlockedUser/{userId}/{blockedUserId}")]
+        public int DeleteBlockedUser(int userId,int blockedUserId)
+        {   User user = new User();
             return user.DeleteBlockedUser(userId, blockedUserId);
         }
     }

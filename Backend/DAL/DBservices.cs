@@ -166,8 +166,8 @@ public class DBservices
 
     }
 
-    /*Update user by id*/
-    public User UpdateUser(int userId, User updatedUser)
+    /*Get user by id*/
+    public User GetUserById(int id)
     {
 
         SqlConnection con;
@@ -182,7 +182,66 @@ public class DBservices
             throw (ex);
         }
         Dictionary<string, object> paramDic = new Dictionary<string, object>();
-        paramDic.Add("@UserId", userId);
+        paramDic.Add("@Id", id);
+
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_GetUserById", con, paramDic);
+        SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+        try
+        {
+            User user = new User();
+            while (dataReader.Read())
+            {
+                user = new User
+                {
+                    Id = Convert.ToInt32(dataReader["Id"]),
+                    Email = dataReader["Email"].ToString(),
+                    FirstName = dataReader["FirstName"].ToString(),
+                    LastName = dataReader["LastName"].ToString(),
+                    BirthDate = dataReader["BirthDate"].ToString(),
+                    ImgUrl = dataReader["ImgUrl"].ToString(),
+                    IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
+                    IsLocked = Convert.ToBoolean(dataReader["IsLocked"]),
+                    HashedPassword = dataReader["HashedPassword"].ToString()
+                };
+            }
+
+            return user;
+        }
+
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+    /*Update user by id*/
+    public bool UpdateUser(int id, User updatedUser)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", id);
         paramDic.Add("@Id", updatedUser.Id);
         paramDic.Add("@Email", updatedUser.Email);
         paramDic.Add("@FirstName", updatedUser.FirstName);
@@ -195,26 +254,11 @@ public class DBservices
 
 
         cmd = CreateCommandWithStoredProcedureGeneral("SP_UpdateUser", con, paramDic);
-        SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
         try
         {
-            User user = new User();
-
-            while (dataReader.Read())
-            {
-                user.Id = Convert.ToInt32(dataReader["Id"]);
-                user.Email = dataReader["Email"].ToString();
-                user.FirstName = dataReader["FirstName"].ToString();
-                user.LastName = dataReader["LastName"].ToString();
-                user.BirthDate = dataReader["BirthDate"].ToString();
-                user.ImgUrl = dataReader["ImgUrl"].ToString();
-                user.IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]);
-                user.IsLocked = Convert.ToBoolean(dataReader["IsLocked"]);
-                user.HashedPassword = dataReader["HashedPassword"].ToString();
-                
-            }
-            return user;
+            cmd.ExecuteNonQuery();
+            return true;
         }
 
         catch (Exception ex)
@@ -534,6 +578,7 @@ public class DBservices
         }
         Dictionary<string, object> paramDic = new Dictionary<string, object>();
         paramDic.Add("@UserId", userId);
+        paramDic.Add("@Id", blockedUser.Id);
         paramDic.Add("@Email", blockedUser.Email);
         paramDic.Add("@FirstName", blockedUser.FirstName);
         paramDic.Add("@LastName", blockedUser.LastName);
@@ -628,7 +673,7 @@ public class DBservices
         paramDic.Add("@UserId", userId);
         paramDic.Add("@ArticleId", articleId);
 
-        cmd = CreateCommandWithStoredProcedureGeneral("SP_DeleteArticle", con, paramDic);
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_DeleteSavedArticle", con, paramDic);
 
         try
         {

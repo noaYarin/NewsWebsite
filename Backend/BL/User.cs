@@ -101,10 +101,22 @@ namespace Horizon.BL
             return db.DeleteBlockedUser(userId, blockedUserId);
         }
 
-        public User UpdateUser(int userId, User updatedUser)
+        public User GetUserById(int id)
         {
             DBservices db = new DBservices();
-            return db.UpdateUser(userId, updatedUser);
+            return db.GetUserById(id);
+        }
+
+        public bool UpdateUser(int id, User updatedUser)
+        {
+            DBservices db = new DBservices();
+            if (!db.IsUserExists(updatedUser.Email, updatedUser.HashedPassword, false))
+            {
+                updatedUser.HashedPassword = HashPassword(updatedUser.HashedPassword);
+                db.UpdateUser(id, updatedUser);
+                return true;
+            }
+            return false;
         }
     }
 }
