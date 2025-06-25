@@ -77,6 +77,11 @@ namespace Horizon.BL
             return db.InsertUserSavedArticles(UserId, article);
         }
 
+        public int DeleteSavedArticle(int userId, int articleId)
+        {
+            DBservices db = new DBservices();
+            return db.DeleteSavedArticle(userId, articleId);
+        }
 
         public static int LogOut(User user)// change params to relvent parms
         {
