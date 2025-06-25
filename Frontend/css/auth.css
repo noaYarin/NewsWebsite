@@ -88,9 +88,14 @@
   transform: translateY(-2px);
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
 .button-container .auth-button {
   max-width: 380px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; NEED TO FIX THIS LATER */
 }
 
 /* ========== Date Input Styling ========== */
