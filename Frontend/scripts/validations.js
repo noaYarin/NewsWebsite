@@ -84,7 +84,7 @@ function populateInterestsGrid() {
     const interestSlug = interest.toLowerCase();
     const imageUrl = `../sources/images/categories/${interest}.jpg`;
     const card = `
-      <div class="col-4">
+      <div class="col-12 col-md-4">
         <div class="interest-card" data-interest="${interestSlug}" style="background-image: url('${imageUrl}');">
           <span class="interest-card-title">${interest}</span>
         </div>
@@ -102,6 +102,9 @@ function updateInterestSubtitle(selectedCount, isError = false) {
 
   if (isError) {
     subtitle.text("Please select at least 3 interests to continue.").addClass("is-invalid");
+    if ($(window).width() <= MOBILE_BREAKPOINT) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
     return;
   }
 
