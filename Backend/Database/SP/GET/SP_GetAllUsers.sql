@@ -1,6 +1,5 @@
 USE [igroup107_test2]
 GO
-/****** Object:  StoredProcedure [dbo].[SP_GetAllUsers]    Script Date: 6/20/2025 2:32:08 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
