@@ -84,7 +84,7 @@ function populateInterestsGrid() {
     const interestSlug = interest.toLowerCase();
     const imageUrl = `../sources/images/categories/${interest}.jpg`;
     const card = `
-      <div class="col-12 col-md-4">
+      <div class="col-4">
         <div class="interest-card" data-interest="${interestSlug}" style="background-image: url('${imageUrl}');">
           <span class="interest-card-title">${interest}</span>
         </div>
@@ -102,9 +102,6 @@ function updateInterestSubtitle(selectedCount, isError = false) {
 
   if (isError) {
     subtitle.text("Please select at least 3 interests to continue.").addClass("is-invalid");
-    if ($(window).width() <= MOBILE_BREAKPOINT) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
     return;
   }
 
@@ -124,4 +121,42 @@ function handleInterestSelection(e) {
   title.toggleClass("selected");
 
   return interest;
+}
+
+// ========== Shared Password Criteria UI Logic ==========
+
+function showPasswordCriteria() {
+  $(".password-criteria").addClass("show");
+}
+
+function resetPasswordCriteria() {
+  $(".password-criteria").removeClass("show");
+  $(".password-progress-fill").removeClass("weak medium strong");
+}
+
+function updatePasswordProgress(validCount) {
+  const strengthLevels = { 0: "", 1: "weak", 2: "medium", 3: "strong" };
+  const level = strengthLevels[validCount];
+  $(".password-progress-fill").removeClass("weak medium strong").addClass(level);
+}
+
+function updatePasswordCriteria(password) {
+  const requirements = {
+    length: $('.password-requirement[data-requirement="length"]'),
+    alphanumeric: $('.password-requirement[data-requirement="alphanumeric"]'),
+    case: $('.password-requirement[data-requirement="case"]')
+  };
+
+  const validations = {
+    isLengthValid: password.length >= CONFIG.PASSWORD_REQUIREMENTS.MIN_LENGTH,
+    hasLetterAndNumber: CONFIG.VALIDATION_REGEX.PASSWORD_LETTER_AND_NUMBER.test(password) || CONFIG.VALIDATION_REGEX.PASSWORD_LETTER_AND_SPECIAL.test(password),
+    hasMixedCase: CONFIG.VALIDATION_REGEX.PASSWORD_UPPERCASE_LOWERCASE.test(password)
+  };
+
+  requirements.length.toggleClass("valid", validations.isLengthValid).toggleClass("invalid", !validations.isLengthValid);
+  requirements.alphanumeric.toggleClass("valid", validations.hasLetterAndNumber).toggleClass("invalid", !validations.hasLetterAndNumber);
+  requirements.case.toggleClass("valid", validations.hasMixedCase).toggleClass("invalid", !validations.hasMixedCase);
+
+  const validCount = Object.values(validations).filter(Boolean).length;
+  updatePasswordProgress(validCount);
 }

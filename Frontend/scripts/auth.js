@@ -11,43 +11,6 @@ const validationMap = {
   password: validatePassword
 };
 
-// ========== UI & State Functions ==========
-function showPasswordCriteria() {
-  cache.passwordCriteria.addClass("show");
-}
-
-function resetPasswordCriteria() {
-  cache.passwordCriteria.removeClass("show");
-  cache.passwordProgressFill.removeClass("weak medium strong");
-}
-
-function updatePasswordCriteria(password) {
-  const requirements = {
-    length: $('.password-requirement[data-requirement="length"]'),
-    alphanumeric: $('.password-requirement[data-requirement="alphanumeric"]'),
-    case: $('.password-requirement[data-requirement="case"]')
-  };
-
-  const validations = {
-    isLengthValid: password.length >= CONFIG.PASSWORD_REQUIREMENTS.MIN_LENGTH,
-    hasLetterAndNumber: CONFIG.VALIDATION_REGEX.PASSWORD_LETTER_AND_NUMBER.test(password) || CONFIG.VALIDATION_REGEX.PASSWORD_LETTER_AND_SPECIAL.test(password),
-    hasMixedCase: CONFIG.VALIDATION_REGEX.PASSWORD_UPPERCASE_LOWERCASE.test(password)
-  };
-
-  requirements.length.toggleClass("valid", validations.isLengthValid).toggleClass("invalid", !validations.isLengthValid);
-  requirements.alphanumeric.toggleClass("valid", validations.hasLetterAndNumber).toggleClass("invalid", !validations.hasLetterAndNumber);
-  requirements.case.toggleClass("valid", validations.hasMixedCase).toggleClass("invalid", !validations.hasMixedCase);
-
-  const validCount = Object.values(validations).filter(Boolean).length;
-  updatePasswordProgress(validCount);
-}
-
-function updatePasswordProgress(validCount) {
-  const strengthLevels = { 0: "", 1: "weak", 2: "medium", 3: "strong" };
-  const level = strengthLevels[validCount];
-  cache.passwordProgressFill.removeClass("weak medium strong").addClass(level);
-}
-
 function validateForm(formId) {
   let isValid = true;
   const form = $(formId);
@@ -76,7 +39,6 @@ function validateForm(formId) {
   return isValid;
 }
 
-// ========== Page Flow & Form Switching ==========
 function switchForm(activeForm, title) {
   cache.authContainer.removeClass("interests-active");
 
@@ -108,7 +70,6 @@ function showSignupForm(email) {
   setTimeout(() => cache.signupForm.find("input[name='firstName']").focus(), 100);
 }
 
-// ========== API Call Simulation ==========
 function checkUserExists(email) {
   console.log("Checking if user exists:", email);
   const button = $("#emailFormData .auth-button");
@@ -116,12 +77,11 @@ function checkUserExists(email) {
 
   setTimeout(() => {
     button.text("Continue").prop("disabled", false);
-    const userExists = Math.random() > 0.5; // Simulate API response
+    const userExists = Math.random() > 0.5;
     userExists ? showSigninForm(email) : showSignupForm(email);
   }, 1000);
 }
 
-// ========== Event Handlers ==========
 function handleEmailSubmit(e) {
   e.preventDefault();
   if (!validateForm("#emailFormData")) return;
@@ -197,26 +157,24 @@ function handleForgotPassword(e) {
 
 function handlePasswordToggle() {
   const button = $(this);
-  const passwordInput = button.siblings('input[name="password"]');
-  const icon = button.find(".password-toggle-icon");
+  const passwordInput = button.closest(".password-input-group").find("input");
   const isPassword = passwordInput.attr("type") === "password";
 
   const cursorPosition = passwordInput[0].selectionStart;
 
   passwordInput.attr("type", isPassword ? "text" : "password");
-  icon.attr("src", isPassword ? "../sources/icons/eye-off-svgrepo-com.svg" : "../sources/icons/eye-svgrepo-com.svg");
-  icon.attr("alt", isPassword ? "Hide password" : "Show password");
+  button.find(".password-toggle-icon").attr("src", isPassword ? "../sources/icons/eye-off-svgrepo-com.svg" : "../sources/icons/eye-svgrepo-com.svg");
 
   passwordInput.focus();
   passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
 
+  // Trigger sun animation
   setTimeout(() => {
     if (isPassword && window.animatePasswordShow) window.animatePasswordShow();
     if (!isPassword && window.animatePasswordHide) window.animatePasswordHide();
   }, 10);
 }
 
-// ========== Initialization ==========
 function setupAuthHandlers() {
   $(document)
     .on("submit", "#emailFormData", handleEmailSubmit)
@@ -246,10 +204,7 @@ function init() {
     emailForm: $("#emailForm"),
     signinForm: $("#signinForm"),
     signupForm: $("#signupForm"),
-    interestsForm: $("#interestsForm"),
-    interestsSubtitle: $(".interests-subtitle"),
-    passwordCriteria: $(".password-criteria"),
-    passwordProgressFill: $(".password-progress-fill")
+    interestsForm: $("#interestsForm")
   };
 
   populateInterestsGrid();
