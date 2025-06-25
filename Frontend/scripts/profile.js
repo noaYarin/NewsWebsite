@@ -120,6 +120,10 @@ function handleProfileUpdate(e) {
     console.log("Updated User Data:", updatedData);
     alert("Profile updated successfully! Check the console for the data.");
   }
+
+  if (!isValid) {
+    form.find(".input-error").first().focus();
+  }
 }
 
 function handlePasswordToggle() {
