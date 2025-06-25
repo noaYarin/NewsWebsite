@@ -70,7 +70,6 @@
 
 /* ========== Button ========== */
 .auth-button {
-  max-width: 380px;
   width: 100%;
   background: var(--c-primary);
   color: var(--c-dark);
@@ -87,6 +86,11 @@
 .auth-button:hover {
   background: var(--c-primary-light);
   transform: translateY(-2px);
+}
+
+.button-container .auth-button {
+  max-width: 380px;
+  margin-bottom: 20px;
 }
 
 /* ========== Date Input Styling ========== */
@@ -111,11 +115,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
   filter: none;
   background-color: var(--c-primary);
-}
-
-/* For Firefox */
-input[type="date"]::-moz-focus-inner {
-  border: 0;
 }
 
 input[type="date"].has-value {
@@ -223,138 +222,7 @@ input[type="date"].has-value {
   pointer-events: none;
 }
 
-/* ========== Form Validation ========== */
-.form-group {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.input-error {
-  border-color: var(--c-red) !important;
-  background: #fff5f5 !important;
-}
-
-.error-message {
-  color: var(--c-red);
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 4px;
-  margin-left: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* ========== Password Criteria ========== */
-.password-criteria {
-  background: var(--c-input-bg);
-  border: 2px solid var(--c-input-border);
-  border-radius: 10px;
-  padding: 0 16px;
-  margin-top: 10px;
-  opacity: 0;
-  transform: translateY(-10px);
-  max-height: 0;
-  overflow: hidden;
-  pointer-events: none;
-  transition: all 0.35s ease;
-  position: relative;
-  z-index: 1;
-}
-
-.password-criteria.show {
-  opacity: 1;
-  transform: translateY(0);
-  max-height: 200px;
-  padding: 16px;
-  pointer-events: auto;
-}
-
-.password-requirement {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 12px;
-  transition: color 0.3s ease;
-}
-
-.password-requirement:last-child {
-  margin-bottom: 0;
-}
-
-.password-requirement .icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.password-requirement.invalid .icon {
-  border: 2px solid var(--c-placeholder);
-}
-
-.password-requirement.valid .icon {
-  border: 2px solid var(--c-green);
-  color: var(--c-green);
-}
-
-.password-requirement.valid .icon::before {
-  content: "✓";
-}
-
-.password-requirement.invalid {
-  color: var(--c-placeholder);
-}
-
-.password-requirement.valid {
-  color: var(--c-green);
-}
-
-/* ========== Password Progress Bar ========== */
-.password-progress {
-  margin-bottom: 16px;
-}
-
-.password-progress-bar {
-  width: 100%;
-  height: 8px;
-  background-color: var(--c-input-border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.password-progress-fill {
-  height: 100%;
-  width: 0%;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  background-color: var(--c-red);
-}
-
-.password-progress-fill.weak {
-  width: 33.33%;
-  background-color: var(--c-red);
-}
-
-.password-progress-fill.medium {
-  width: 66.66%;
-  background-color: var(--c-yellow);
-}
-
-.password-progress-fill.strong {
-  width: 100%;
-  background-color: var(--c-green);
-}
-
-/* ========== Interests Form ========== */
+/* ========== Interests Form General Styles ========== */
 .interest-card {
   position: relative;
   cursor: pointer;
@@ -416,22 +284,12 @@ input[type="date"].has-value {
   color: var(--c-primary);
 }
 
-/* Interest Selection Subtitle */
+/* Interest Selection Subtitle General Style */
 .interests-subtitle {
   font-size: 16px;
   color: var(--c-text-muted);
   margin-bottom: 16px;
-  transition: color 0.3s ease; /* ADDED for smooth color change */
-}
-
-.interests-subtitle.is-valid {
-  color: var(--c-primary); /* This will be the yellow color */
-  font-weight: 500;
-}
-
-.interests-subtitle.is-invalid {
-  color: var(--c-red); /* This will be the red error color */
-  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 /* Styles for the expanded interests view */
@@ -448,15 +306,13 @@ input[type="date"].has-value {
 /* ========== Responsive ========== */
 @media (max-width: 480px) {
   .auth-main {
+    /*min-height: calc(100vh - var(--navbar-height-mobile));*/
+    min-height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
     padding: 12px;
   }
 
   .auth-container {
     padding: 0;
-  }
-
-  .password-criteria {
-    padding: 8px;
   }
 
   .auth-logo img {

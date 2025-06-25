@@ -1,3 +1,5 @@
+const MOBILE_BREAKPOINT = 1024;
+
 $(document).ready(function () {
   const isIndexPage = window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/");
   const isAuthPage = window.location.pathname.includes("auth.html");
@@ -108,13 +110,12 @@ $(document).ready(function () {
     setupAuthNavLinks();
   }
 
-  if ($(window).width() > 1024) {
+  if ($(window).width() > MOBILE_BREAKPOINT) {
     setupBackToTop();
   }
 });
 
 function setupEventHandlers() {
-  const MOBILE_BREAKPOINT = 1024;
   let debounceTimer;
 
   // keyboard handler (Esc to close)

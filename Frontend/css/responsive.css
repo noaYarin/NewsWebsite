@@ -10,11 +10,6 @@
 
 /* ========== Tablets & Small Laptops (max 1024px) ========== */
 @media (max-width: 1024px) {
-  /* Body adjustments */
-  body {
-    padding-top: var(--navbar-height-mobile);
-  }
-
   /* Navbar adjustments */
   #navbar {
     padding: 0 16px;

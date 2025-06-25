@@ -10,9 +10,11 @@
     <link rel="stylesheet" href="../css/components.css" />
     <link rel="stylesheet" href="../css/responsive.css" />
     <link rel="stylesheet" href="../css/auth.css" />
+    <link rel="stylesheet" href="../css/validations.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../scripts/components.js"></script>
     <script src="../scripts/sun.js"></script>
+    <script src="../scripts/validations.js"></script>
     <script src="../scripts/auth.js"></script>
   </head>
   <body>
@@ -28,7 +30,7 @@
           </div>
 
           <div class="auth-form email-form active" id="emailForm">
-            <form id="emailFormData">
+            <form id="emailFormData" novalidate>
               <div class="form-group">
                 <input type="email" name="email" placeholder="Enter your email" />
                 <div class="error-message" style="display: none"></div>
@@ -38,7 +40,7 @@
           </div>
 
           <div class="auth-form signin-form" id="signinForm">
-            <form id="signinFormData">
+            <form id="signinFormData" novalidate>
               <div class="email-display">
                 <span class="email-text"></span>
                 <button type="button" class="change-email-btn">Change</button>
@@ -56,7 +58,7 @@
           </div>
 
           <div class="auth-form signup-form" id="signupForm">
-            <form id="signupFormData">
+            <form id="signupFormData" novalidate>
               <div class="email-display">
                 <span class="email-text"></span>
                 <button type="button" class="change-email-btn">Change</button>

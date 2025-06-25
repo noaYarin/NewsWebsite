@@ -1,0 +1,66 @@
+.profile-container {
+  padding: 40px;
+  background-color: var(--c-light); /* */
+  border-radius: 20px;
+  width: 100%;
+  max-width: 680px;
+  color: var(--c-dark); /* */
+}
+
+.profile-image-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--c-border-light); /* */
+  flex-shrink: 0;
+}
+
+.profile-container .form-group {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.profile-container .form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 14px;
+  display: block;
+}
+
+.section-divider {
+  border-color: var(--c-border-light); /* */
+  margin: 30px 0;
+}
+
+.interests-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Reusing auth styles for inputs */
+.profile-container input[type="text"],
+.profile-container input[type="url"],
+.profile-container input[type="date"] {
+  padding: 10px;
+  border: 2px solid var(--c-input-border); /* */
+  border-radius: 10px;
+  font-size: 16px;
+  background: var(--c-input-bg); /* */
+  width: 100%;
+  transition: all var(--transition-fast); /* */
+}
+
+.profile-container input:focus {
+  outline: none;
+  border-color: var(--c-primary); /* */
+  background: white;
+}
