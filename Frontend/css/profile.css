@@ -1,10 +1,10 @@
 .profile-container {
   padding: 40px;
-  background-color: var(--c-light); /* */
+  background-color: var(--c-light);
   border-radius: 20px;
   width: 100%;
   max-width: 680px;
-  color: var(--c-dark); /* */
+  color: var(--c-dark);
 }
 
 .profile-image-section {
@@ -19,7 +19,7 @@
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--c-border-light); /* */
+  border: 3px solid var(--c-border-light);
   flex-shrink: 0;
 }
 
@@ -36,31 +36,102 @@
 }
 
 .section-divider {
-  border-color: var(--c-border-light); /* */
+  border-color: var(--c-border-light);
   margin: 30px 0;
 }
 
-.interests-title {
+.section-title {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
 }
 
-/* Reusing auth styles for inputs */
+.section-subtitle {
+  font-size: 16px;
+  color: var(--c-text-muted);
+  margin-bottom: 16px;
+  transition: color 0.3s ease;
+}
+
 .profile-container input[type="text"],
 .profile-container input[type="url"],
-.profile-container input[type="date"] {
+.profile-container input[type="date"],
+.profile-container input[type="password"] {
   padding: 10px;
-  border: 2px solid var(--c-input-border); /* */
+  border: 2px solid var(--c-input-border);
   border-radius: 10px;
   font-size: 16px;
-  background: var(--c-input-bg); /* */
+  background: var(--c-input-bg);
   width: 100%;
-  transition: all var(--transition-fast); /* */
+  transition: all var(--transition-fast);
 }
 
 .profile-container input:focus {
   outline: none;
-  border-color: var(--c-primary); /* */
+  border-color: var(--c-primary);
   background: white;
+}
+
+.confirm-password-container {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.4s ease-out, opacity 0.3s ease-out, margin-top 0.4s ease-out;
+  margin-top: 0;
+}
+
+.confirm-password-container.show {
+  max-height: 120px;
+  opacity: 1;
+  pointer-events: auto;
+  margin-top: 16px;
+}
+
+.password-input-group {
+  position: relative;
+}
+
+.password-input-group input[type="password"] {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  z-index: 10;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.password-toggle-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* fix for laggy animation, no clue why it is happening - it's the same exact code */
+.profile-container .password-criteria {
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.profile-container .password-requirement.valid .icon {
+  color: var(--c-green);
 }

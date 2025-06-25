@@ -26,7 +26,8 @@
         <div class="profile-container">
           <h1 class="auth-title">Edit Your Profile</h1>
 
-          <form id="profileForm">
+          <form id="profileForm" novalidate>
+            <!-- Profile Image Section -->
             <div class="profile-image-section">
               <img src="../sources/images/test.avif" alt="User Avatar" class="profile-avatar" id="avatarPreview" />
               <div class="form-group flex-grow-1">
@@ -38,13 +39,13 @@
 
             <hr class="section-divider" />
 
+            <!-- User Details Section -->
             <div class="form-group">
               <label>Email (cannot be changed)</label>
               <div class="email-display">
                 <span class="email-text" id="emailDisplay"></span>
               </div>
             </div>
-
             <div class="name-fields">
               <div class="form-group">
                 <label for="firstName">First Name</label>
@@ -57,7 +58,6 @@
                 <div class="error-message" style="display: none"></div>
               </div>
             </div>
-
             <div class="form-group">
               <label for="birthdate">Birthdate</label>
               <input type="date" id="birthdate" name="birthdate" />
@@ -66,11 +66,52 @@
 
             <hr class="section-divider" />
 
-            <h2 class="interests-title">Manage Your Interests</h2>
-            <p class="interests-subtitle">Select at least 3 interests to personalize your news feed.</p>
+            <!-- Change Password Section -->
+            <h2 class="section-title">Change Password</h2>
+            <p class="section-subtitle" style="margin-bottom: 20px">Leave blank if you don't want to change your password.</p>
+
+            <!-- This container now exactly matches the structure from auth.html -->
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <div class="password-input-group">
+                <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" />
+                <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                  <img src="../sources/icons/eye-svgrepo-com.svg" alt="Show password" class="password-toggle-icon" />
+                </button>
+              </div>
+              <div class="error-message" style="display: none"></div>
+              <div class="password-criteria">
+                <div class="password-progress">
+                  <div class="password-progress-bar">
+                    <div class="password-progress-fill"></div>
+                  </div>
+                </div>
+                <div class="password-requirement invalid" data-requirement="length"><span class="icon"></span><span>Use a minimum of eight characters</span></div>
+                <div class="password-requirement invalid" data-requirement="case"><span class="icon"></span><span>Include both uppercase and lowercase letters</span></div>
+                <div class="password-requirement invalid" data-requirement="alphanumeric">
+                  <span class="icon"></span><span>Use letters with at least one number or special character</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- This container will be animated by javascript -->
+            <div class="confirm-password-container">
+              <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" />
+                <div class="error-message" style="display: none"></div>
+              </div>
+            </div>
+
+            <hr class="section-divider" />
+
+            <!-- Interests Section -->
+            <h2 class="section-title">Manage Your Interests</h2>
+            <p class="section-subtitle">Select at least 3 interests to personalize your news feed.</p>
             <div id="interestsGrid" class="row g-3 mb-3"></div>
             <div class="error-message" id="interestsError" style="display: none"></div>
 
+            <!-- Save Button -->
             <div class="button-container mt-4">
               <button type="submit" class="auth-button">Save Changes</button>
             </div>
