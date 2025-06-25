@@ -89,10 +89,22 @@ namespace Horizon.BL
             return db.DeleteSavedArticle(userId, articleId);
         }
 
-        public static int LogOut(User user)// change params to relvent parms
+        public int DeleteUserTag(int userId, int articleId)
         {
-            //TODO DB
-            return 0;
+            DBservices db = new DBservices();
+            return db.DeleteUserTag(userId, articleId);
+        }
+
+        public int DeleteBlockedUser(int userId, int blockedUserId)
+        {
+            DBservices db = new DBservices();
+            return db.DeleteBlockedUser(userId, blockedUserId);
+        }
+
+        public User UpdateUser(int userId, User updatedUser)
+        {
+            DBservices db = new DBservices();
+            return db.UpdateUser(userId, updatedUser);
         }
     }
 }
