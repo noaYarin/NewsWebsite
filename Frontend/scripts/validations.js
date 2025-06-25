@@ -49,10 +49,16 @@ function validateBirthdate(val) {
 
 function validatePassword(val) {
   const hasLetterAndNumber = CONFIG.VALIDATION_REGEX.PASSWORD_LETTER_AND_NUMBER.test(val) || CONFIG.VALIDATION_REGEX.PASSWORD_LETTER_AND_SPECIAL.test(val);
+  const hasMixedCase = CONFIG.VALIDATION_REGEX.PASSWORD_UPPERCASE_LOWERCASE.test(val);
+
   if (!val) return { valid: false, message: "Password is required" };
   if (val.length < CONFIG.PASSWORD_REQUIREMENTS.MIN_LENGTH)
     return { valid: false, message: `Password must be at least ${CONFIG.PASSWORD_REQUIREMENTS.MIN_LENGTH} characters long` };
+
+  if (!hasMixedCase) return { valid: false, message: "Password must include both uppercase and lowercase letters" };
+
   if (!hasLetterAndNumber) return { valid: false, message: "Password must contain letters with a number or special character" };
+
   return { valid: true };
 }
 
