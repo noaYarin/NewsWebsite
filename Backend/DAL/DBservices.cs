@@ -166,6 +166,72 @@ public class DBservices
 
     }
 
+    /*Update user by id*/
+    public User UpdateUser(int userId, User updatedUser)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@Id", updatedUser.Id);
+        paramDic.Add("@Email", updatedUser.Email);
+        paramDic.Add("@FirstName", updatedUser.FirstName);
+        paramDic.Add("@LastName", updatedUser.LastName);
+        paramDic.Add("@HashedPassword", updatedUser.HashedPassword);
+        paramDic.Add("@ImgUrl", updatedUser.ImgUrl);
+        paramDic.Add("@BirthDate", updatedUser.BirthDate);
+        paramDic.Add("@IsAdmin", updatedUser.IsAdmin);
+        paramDic.Add("@IsLocked", updatedUser.IsAdmin);
+
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_UpdateUser", con, paramDic);
+        SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+        try
+        {
+            User user = new User();
+
+            while (dataReader.Read())
+            {
+                user.Id = Convert.ToInt32(dataReader["Id"]);
+                user.Email = dataReader["Email"].ToString();
+                user.FirstName = dataReader["FirstName"].ToString();
+                user.LastName = dataReader["LastName"].ToString();
+                user.BirthDate = dataReader["BirthDate"].ToString();
+                user.ImgUrl = dataReader["ImgUrl"].ToString();
+                user.IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]);
+                user.IsLocked = Convert.ToBoolean(dataReader["IsLocked"]);
+                user.HashedPassword = dataReader["HashedPassword"].ToString();
+                
+            }
+            return user;
+        }
+
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
 
     /*Insert user - login */
 
@@ -452,6 +518,183 @@ public class DBservices
 
     }
 
+    /*Add blocked user*/
+    public int InsertBlockedUser(int userId, User blockedUser)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@Email", blockedUser.Email);
+        paramDic.Add("@FirstName", blockedUser.FirstName);
+        paramDic.Add("@LastName", blockedUser.LastName);
+        paramDic.Add("@HashedPassword", blockedUser.HashedPassword);
+        paramDic.Add("@ImgUrl", blockedUser.ImgUrl);
+        paramDic.Add("@BirthDate", blockedUser.BirthDate);
+        paramDic.Add("@IsAdmin", blockedUser.IsAdmin);
+        paramDic.Add("@IsLocked", blockedUser.IsAdmin);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertBlockedUser", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+    /* Delete blocked user*/
+    public int DeleteBlockedUser(int userId, int blockedUserId)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@BlockedUserId", blockedUserId);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_DeleteBlockedUser", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+
+    /* Delete saved article by id*/
+    public int DeleteSavedArticle(int userId, int articleId)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@ArticleId", articleId);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_DeleteArticle", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+
+    /* Delete saved article by id*/
+    public int DeleteUserTag(int userId, int tagId)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+        paramDic.Add("@UserId", userId);
+        paramDic.Add("@TagId", tagId);
+
+        cmd = CreateCommandWithStoredProcedureGeneral("SP_DeleteUserTag", con, paramDic);
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery();
+            return numEffected;
+
+        }
+        catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+
+    }
+
+
     /*
     ----------------------------------------------------------------------------
     Article
@@ -513,7 +756,6 @@ public class DBservices
         }
 
     }
-
 
     private SqlCommand CreateCommandWithStoredProcedureGeneral(String spName, SqlConnection con, Dictionary<string, object> paramDic)
     {
