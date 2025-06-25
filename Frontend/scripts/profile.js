@@ -4,10 +4,16 @@ const currentUser = {
   lastName: "Doe",
   birthdate: "1990-05-15",
   imageUrl: "https://randomuser.me/api/portraits/men/75.jpg",
-  interests: ["business", "technology", "sports"]
+  interests: ["business", "technology", "sports"],
+  blockedUsers: [
+    { id: "u001", name: "Jane Smith", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
+    { id: "u002", name: "Mike Johnson", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
+    { id: "u003", name: "Emily White", avatar: "https://randomuser.me/api/portraits/women/65.jpg" }
+  ]
 };
 
 let selectedInterests = [];
+let currentBlockedUsers = [];
 
 function validatePasswordMatch() {
   const newPassword = $("#newPassword").val();
@@ -39,6 +45,30 @@ function populateForm(user) {
   selectedInterests.forEach((interest) => {
     $(`.interest-item[data-interest="${interest}"]`).addClass("selected");
   });
+
+  currentBlockedUsers = [...user.blockedUsers];
+  populateBlockedUsersList(currentBlockedUsers);
+}
+
+function populateBlockedUsersList(users) {
+  const listContainer = $("#blockedUsersList");
+  listContainer.empty();
+
+  if (users.length === 0) {
+    listContainer.html('<p class="empty-list-message">You have no blocked users.</p>');
+    return;
+  }
+
+  users.forEach((user) => {
+    const userHtml = `
+      <div class="blocked-user-item" data-user-id="${user.id}">
+        <img src="${user.avatar}" alt="${user.name}" class="blocked-user-avatar" />
+        <span class="blocked-user-name">${user.name}</span>
+        <button type="button" class="unblock-btn">Unblock</button>
+      </div>
+    `;
+    listContainer.append(userHtml);
+  });
 }
 
 function handleInterestListItemSelection(e) {
@@ -54,6 +84,19 @@ function handleInterestListItemSelection(e) {
   }
 
   updateInterestSubtitle(selectedInterests.length);
+}
+
+function handleUnblockUser(e) {
+  const item = $(e.currentTarget).closest(".blocked-user-item");
+  const userId = item.data("user-id");
+
+  item.fadeOut(300, function () {
+    $(this).remove();
+    currentBlockedUsers = currentBlockedUsers.filter((user) => user.id !== userId);
+    if (currentBlockedUsers.length === 0) {
+      populateBlockedUsersList(currentBlockedUsers);
+    }
+  });
 }
 
 function handleImagePreview() {
@@ -112,7 +155,9 @@ function handleProfileUpdate(e) {
       lastName: $("#lastName").val(),
       birthdate: $("#birthdate").val(),
       imageUrl: $("#imageUrl").val(),
-      interests: selectedInterests
+      interests: selectedInterests,
+      // Add the updated blocked users list to the final data
+      blockedUsers: currentBlockedUsers
     };
 
     if (newPassword) {
@@ -162,6 +207,7 @@ $(document).ready(function () {
   $(document)
     .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()))
     .on("click", ".interest-item", handleInterestListItemSelection)
+    .on("click", ".unblock-btn", handleUnblockUser) // Add listener for unblock button
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("input", ".form-group input", function () {
@@ -176,8 +222,6 @@ $(document).ready(function () {
     const relatedTarget = e.relatedTarget;
     const isClickingToggle = $(relatedTarget).is(".password-toggle-btn");
 
-    // If the user is clicking the toggle button while the password input is focused,
-    // we don't want to reset the criteria immediately.
     if (isClickingToggle) {
       return;
     }
