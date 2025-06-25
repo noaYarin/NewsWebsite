@@ -84,6 +84,19 @@ function clearValidationState(input) {
 
 // ========== Shared Interest Handling Logic ==========
 
+function populateInterestsList() {
+  const listContainer = $("#interestsList");
+  CONFIG.INTERESTS.forEach((interest) => {
+    const interestSlug = interest.toLowerCase();
+    const item = `
+      <div class="interest-item" data-interest="${interestSlug}">
+        ${interest}
+      </div>
+    `;
+    listContainer.append(item);
+  });
+}
+
 function populateInterestsGrid() {
   const grid = $("#interestsGrid");
   CONFIG.INTERESTS.forEach((interest) => {

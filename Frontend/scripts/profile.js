@@ -37,20 +37,22 @@ function populateForm(user) {
 
   selectedInterests = [...user.interests];
   selectedInterests.forEach((interest) => {
-    $(`.interest-card[data-interest="${interest}"]`).addClass("selected").find(".interest-card-title").addClass("selected");
+    $(`.interest-item[data-interest="${interest}"]`).addClass("selected");
   });
-  updateInterestSubtitle(selectedInterests.length);
 }
 
-function localHandleInterestSelection(e) {
-  const interest = handleInterestSelection(e);
-  const card = $(e.currentTarget);
+function handleInterestListItemSelection(e) {
+  const item = $(e.currentTarget);
+  const interest = item.data("interest");
 
-  if (card.hasClass("selected")) {
+  item.toggleClass("selected");
+
+  if (item.hasClass("selected")) {
     selectedInterests.push(interest);
   } else {
     selectedInterests = selectedInterests.filter((i) => i !== interest);
   }
+
   updateInterestSubtitle(selectedInterests.length);
 }
 
@@ -154,12 +156,12 @@ function handleNewPasswordInput() {
 }
 
 $(document).ready(function () {
-  populateInterestsGrid();
+  populateInterestsList();
   populateForm(currentUser);
 
   $(document)
     .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()))
-    .on("click", ".interest-card", localHandleInterestSelection)
+    .on("click", ".interest-item", handleInterestListItemSelection)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("input", ".form-group input", function () {
