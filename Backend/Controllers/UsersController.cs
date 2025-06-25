@@ -19,14 +19,14 @@ namespace Horizon.Controllers
         }
 
 
-        // POST- register
+        // register
         [HttpPost("register")]
         public bool Post([FromBody] User user)
         {
             return user.Register();
         }
 
-        // POST- login
+        // login
         [HttpPost("logIn")]
         public User? Post([FromBody] JsonElement data)
         {
@@ -36,7 +36,7 @@ namespace Horizon.Controllers
             return user.LogIn(email,password);
         }
 
-        // POST- Add user tags
+        // Add user tags
         [HttpPost("userTags")]
         public int InsertUserTags([FromBody] JsonElement data)
         {
@@ -51,7 +51,7 @@ namespace Horizon.Controllers
             return user.AddUserTags(userId, tag);
         }
 
-        // POST- Add user articles
+        //Add user articles
 
         [HttpPost("userArticles")]
         public int InsertUserSavedArticles([FromBody] JsonElement data)
@@ -71,6 +71,34 @@ namespace Horizon.Controllers
             return user.SavedUserArticles(userId, article);
         }
 
+        // Add blocked user 
+        [HttpPost("blockedUsers")]
+        public int InsertBlockedUser([FromBody] JsonElement data)
+        {
+            int userId = data.GetProperty("UserId").GetInt32();
+
+            User blockedUser = new User
+            {
+
+                Id = userId,
+                Email = data.GetProperty("Email").GetString(),
+                FirstName = data.GetProperty("FirstName").GetString(),
+                LastName = data.GetProperty("LastName").GetString(),
+                BirthDate = data.GetProperty("BirthDate").GetString(),
+                ImgUrl = data.GetProperty("ImgUrl").GetString(),
+                IsAdmin = data.GetProperty("IsAdmin").GetBoolean(),
+                IsLocked = data.GetProperty("IsLocked").GetBoolean(),
+                HashedPassword = data.GetProperty("HashedPassword").GetString(),
+                Tags = new List<Tag>(),
+                BlockedUsers = new List<User>(),
+                SavedArticles = new List<Article>()
+            };
+
+            User user = new User();
+            return user.AddBlockedUser(userId, blockedUser);
+        }
+
+
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
         public string Get(int id)
@@ -80,14 +108,47 @@ namespace Horizon.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public User Put(int userId, [FromBody] User updatedUser)
         {
+            User user = new User();
+            return user.UpdateUser(userId, updatedUser);
         }
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        // Delete saved Article
+        [HttpDelete("{id}")]
+        public int DeleteSavedArticle(JsonElement data)
+        {
+            int userId = data.GetProperty("UserId").GetInt32();
+            int articleId = data.GetProperty("ArticleId").GetInt32();
+            User user = new User();
+            return user.DeleteSavedArticle(userId,articleId);
+        }
+
+        // Delete saved Article
+        [HttpDelete("{id}")]
+        public int DeleteUserTag(JsonElement data)
+        {
+            int userId = data.GetProperty("UserId").GetInt32();
+            int tagId = data.GetProperty("TagId").GetInt32();
+            User user = new User();
+            return user.DeleteUserTag(userId, tagId);
+        }
+
+
+        // Delete blocked User
+        [HttpDelete("{id}")]
+        public int DeleteBlockedUser(JsonElement data)
+        {
+            int userId = data.GetProperty("UserId").GetInt32();
+            int blockedUserId = data.GetProperty("TagId").GetInt32();
+            User user = new User();
+            return user.DeleteBlockedUser(userId, blockedUserId);
         }
     }
 }
