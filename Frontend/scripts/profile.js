@@ -146,7 +146,6 @@ function handleNewPasswordInput() {
     confirmContainer.removeClass("show");
   }
 
-  // Always update the criteria based on the current value
   updatePasswordCriteria(passwordValue);
 }
 
@@ -166,7 +165,16 @@ $(document).ready(function () {
   $(document).on("input", "#newPassword", handleNewPasswordInput);
   $(document).on("click", ".password-toggle-btn", handlePasswordToggle);
 
-  $(document).on("blur", "#newPassword", function () {
+  $(document).on("blur", "#newPassword", function (e) {
+    const relatedTarget = e.relatedTarget;
+    const isClickingToggle = $(relatedTarget).is(".password-toggle-btn");
+
+    // If the user is clicking the toggle button while the password input is focused,
+    // we don't want to reset the criteria immediately.
+    if (isClickingToggle) {
+      return;
+    }
+
     if (!$(this).val()) {
       resetPasswordCriteria();
     }
