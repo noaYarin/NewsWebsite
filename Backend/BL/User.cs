@@ -65,6 +65,12 @@ namespace Horizon.BL
             return null;
       }
 
+        public int AddBlockedUser(int userId, User blockedUser)
+        {
+            DBservices db = new DBservices();
+            return db.InsertBlockedUser(userId, blockedUser);
+        }
+
         public int AddUserTags(int UserId, Tag tag)
         {
             DBservices db = new DBservices();
