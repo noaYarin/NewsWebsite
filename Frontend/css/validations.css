@@ -3,6 +3,40 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 14px;
+  display: block;
+}
+
+/* ========== Base Input Styling ========== */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="date"],
+input[type="password"] {
+  padding: 10px;
+  border: 2px solid var(--c-input-border);
+  border-radius: 10px;
+  font-size: 16px;
+  background: var(--c-input-bg);
+  width: 100%;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  background: white;
+}
+
+input::placeholder {
+  color: var(--c-placeholder);
 }
 
 .input-error {
@@ -20,6 +54,93 @@
   align-items: center;
   gap: 4px;
   text-align: left;
+}
+
+/* ========== Date Input Styling ========== */
+input[type="date"] {
+  color: var(--c-placeholder);
+}
+
+input[type="date"]:focus {
+  background: var(--c-light);
+}
+
+input[type="date"].has-value {
+  color: var(--c-dark);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color-scheme: light dark;
+  filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px;
+  transition: background-color var(--transition-fast), filter var(--transition-fast);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: none;
+  background-color: var(--c-primary);
+}
+
+/* ========== Shared Button ========== */
+.auth-button {
+  width: 100%;
+  background: var(--c-primary);
+  color: var(--c-dark);
+  border: none;
+  padding: 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.auth-button:hover {
+  background: var(--c-primary-light);
+  transform: translateY(-2px);
+}
+
+/* ========== Password Input Group & Toggle Button ========== */
+.password-input-group {
+  position: relative;
+}
+
+.password-input-group input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  z-index: 10;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.password-toggle-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+  pointer-events: none;
 }
 
 /* ========== Password Criteria ========== */

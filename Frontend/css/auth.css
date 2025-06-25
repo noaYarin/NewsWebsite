@@ -48,46 +48,11 @@
   gap: 16px;
 }
 
-/* ========== Inputs ========== */
 .auth-form input {
-  padding: 10px;
-  border: 2px solid var(--c-input-border);
-  border-radius: 10px;
-  font-size: 16px;
-  background: var(--c-input-bg);
-  transition: all var(--transition-fast);
+  padding: 10px; /* Kept for auth page consistency */
 }
 
-.auth-form input:focus {
-  outline: none;
-  border-color: var(--c-primary);
-  background: white;
-}
-
-.auth-form input::placeholder {
-  color: var(--c-placeholder);
-}
-
-/* ========== Button ========== */
-.auth-button {
-  width: 100%;
-  background: var(--c-primary);
-  color: var(--c-dark);
-  border: none;
-  padding: 20px;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-transform: uppercase;
-}
-
-.auth-button:hover {
-  background: var(--c-primary-light);
-  transform: translateY(-2px);
-}
-
+/* ========== Button Container ========== */
 .button-container {
   display: flex;
   justify-content: center;
@@ -95,35 +60,6 @@
 
 .button-container .auth-button {
   max-width: 380px;
-  /* margin-bottom: 20px; NEED TO FIX THIS LATER */
-}
-
-/* ========== Date Input Styling ========== */
-input[type="date"] {
-  color: var(--c-placeholder);
-  font-family: inherit;
-}
-
-input[type="date"]:focus {
-  background: var(--c-light);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  color-scheme: light dark;
-  filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
-  border-radius: 3px;
-  cursor: pointer;
-  padding: 3px;
-  transition: background-color var(--transition-fast), filter var(--transition-fast);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  filter: none;
-  background-color: var(--c-primary);
-}
-
-input[type="date"].has-value {
-  color: var(--c-dark);
 }
 
 /* ========== Name Fields ========== */
@@ -186,45 +122,6 @@ input[type="date"].has-value {
 .forgot-password {
   color: var(--c-primary);
   font-size: 14px;
-}
-
-/* ========== Password Input Group ========== */
-.password-input-group {
-  position: relative;
-}
-
-.password-input-group input {
-  padding-right: 50px;
-}
-
-.password-toggle-btn {
-  position: absolute;
-  right: 10px;
-  top: 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all var(--transition-fast);
-  z-index: 10;
-  height: 24px;
-  width: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.password-toggle-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.password-toggle-icon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.6;
-  transition: opacity var(--transition-fast);
-  user-select: none;
-  pointer-events: none;
 }
 
 /* ========== Interests Form General Styles ========== */
@@ -308,10 +205,15 @@ input[type="date"].has-value {
   display: none;
 }
 
+.auth-form .password-input-group .password-toggle-btn {
+  top: 9px;
+  right: 7px;
+  transform: none;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 480px) {
   .auth-main {
-    /*min-height: calc(100vh - var(--navbar-height-mobile));*/
     min-height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
     padding: 12px;
   }
@@ -339,7 +241,8 @@ input[type="date"].has-value {
     font-size: 14px;
   }
 
-  .password-toggle-btn {
+  /* Adjust password toggle for mobile view */
+  .auth-form .password-toggle-btn {
     top: 20px;
     right: 16px;
   }

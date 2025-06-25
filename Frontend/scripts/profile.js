@@ -158,6 +158,7 @@ $(document).ready(function () {
   populateForm(currentUser);
 
   $(document)
+    .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()))
     .on("click", ".interest-card", localHandleInterestSelection)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)

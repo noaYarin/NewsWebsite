@@ -24,15 +24,7 @@
 }
 
 .profile-container .form-group {
-  text-align: left;
   margin-bottom: 16px;
-}
-
-.profile-container .form-group label {
-  font-weight: 500;
-  margin-bottom: 6px;
-  font-size: 14px;
-  display: block;
 }
 
 .section-divider {
@@ -53,25 +45,6 @@
   transition: color 0.3s ease;
 }
 
-.profile-container input[type="text"],
-.profile-container input[type="url"],
-.profile-container input[type="date"],
-.profile-container input[type="password"] {
-  padding: 10px;
-  border: 2px solid var(--c-input-border);
-  border-radius: 10px;
-  font-size: 16px;
-  background: var(--c-input-bg);
-  width: 100%;
-  transition: all var(--transition-fast);
-}
-
-.profile-container input:focus {
-  outline: none;
-  border-color: var(--c-primary);
-  background: white;
-}
-
 .confirm-password-container {
   max-height: 0;
   opacity: 0;
@@ -90,52 +63,4 @@
 
 .form-group-password {
   margin-bottom: 0;
-}
-
-.password-input-group {
-  position: relative;
-}
-
-.password-input-group input[type="password"] {
-  padding-right: 50px;
-}
-
-.password-toggle-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all var(--transition-fast);
-  z-index: 10;
-  height: 32px;
-  width: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.password-toggle-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.password-toggle-icon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.6;
-  transition: opacity var(--transition-fast);
-  user-select: none;
-  pointer-events: none;
-}
-
-/* fix for laggy animation, no clue why it is happening - it's the same exact code */
-.profile-container .password-criteria {
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-
-.profile-container .password-requirement.valid .icon {
-  color: var(--c-green);
 }
