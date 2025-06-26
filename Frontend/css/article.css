@@ -1,3 +1,10 @@
+/* ==========================================================================
+   ARTICLE PAGE STYLES
+   ========================================================================== */
+
+/* --------------------
+   Page-Specific Base & Layout
+   -------------------- */
 body {
   background-color: var(--c-light);
 }
@@ -10,6 +17,9 @@ body {
   color: var(--c-dark);
 }
 
+/* --------------------
+   Article Header
+   -------------------- */
 .article-source {
   font-size: 16px;
   font-weight: 600;
@@ -34,6 +44,9 @@ body {
   flex-wrap: wrap;
 }
 
+/* --------------------
+   Article Image & Content
+   -------------------- */
 .article-image-container {
   margin-bottom: 24px;
   position: relative;
@@ -64,50 +77,13 @@ body {
   margin-bottom: 16px;
 }
 
-.article-error {
-  height: calc(100vh - var(--navbar-height-desktop) - var(--footer-height-desktop));
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: var(--c-dark);
-}
-
-.article-error h2 {
-  font-size: 28px;
-  margin-bottom: 16px;
-}
-.article-error p {
-  color: var(--c-text-muted);
-  margin-bottom: 24px;
-}
-
 .highlight {
   color: var(--c-dark);
 }
 
-@media (max-width: 768px) {
-  .article-container {
-    padding: 20px;
-    margin: 20px 10px;
-  }
-
-  .article-title {
-    font-size: 32px;
-  }
-
-  .article-content {
-    font-size: 16px;
-  }
-
-  .article-error {
-    height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
-  }
-}
-
-/* --- New Action Buttons Styles --- */
-
+/* --------------------
+   Component: Article Actions
+   -------------------- */
 .article-actions {
   display: flex;
   gap: 12px;
@@ -137,14 +113,16 @@ body {
   height: 20px;
 }
 
-/* --- New Comments Section Styles --- */
-
+/* --------------------
+   Component: Comments Section
+   -------------------- */
 .comments-section h2 {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 24px;
 }
 
+/* Comment Form */
 #comment-form {
   display: flex;
   gap: 16px;
@@ -178,6 +156,7 @@ body {
   float: right;
 }
 
+/* Comments List */
 #comments-list {
   display: flex;
   flex-direction: column;
@@ -201,4 +180,48 @@ body {
 
 .comment-text {
   line-height: 1.6;
+}
+
+/* --------------------
+   Article Error State
+   -------------------- */
+.article-error {
+  height: calc(100vh - var(--navbar-height-desktop) - var(--footer-height-desktop));
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--c-dark);
+}
+
+.article-error h2 {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+.article-error p {
+  color: var(--c-text-muted);
+  margin-bottom: 24px;
+}
+
+/* --------------------
+   Responsive Adjustments
+   -------------------- */
+@media (max-width: 768px) {
+  .article-container {
+    padding: 20px;
+    margin: 20px 10px;
+  }
+
+  .article-title {
+    font-size: 32px;
+  }
+
+  .article-content {
+    font-size: 16px;
+  }
+
+  .article-error {
+    height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
+  }
 }

@@ -1,6 +1,11 @@
-/* ========== COMPONENT STYLES ========== */
+/* ==========================================================================
+   MAJOR LAYOUT COMPONENTS
+   ========================================================================== */
 
-/* ========== Main Content Containers ========== */
+/* --------------------
+   Main Content Containers
+   -------------------- */
+
 #container,
 #secondary-container,
 #third-container,
@@ -12,7 +17,10 @@
   color: var(--c-light);
 }
 
-/* ========== Navigation Bar ========== */
+/* --------------------
+   Component: Navigation Bar
+   -------------------- */
+
 #navbar {
   background-color: var(--c-light);
   display: flex;
@@ -25,16 +33,12 @@
   right: 0;
   z-index: var(--z-fixed-element);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-}
-
-/* Centering for navbar and search overlay */
-#navbar,
-.search-overlay.active {
+  /* Centering for wide screens */
   padding-left: calc(50vw - 720px);
   padding-right: calc(50vw - 720px);
 }
 
-/* ========== Navigation Elements ========== */
+/* Left side: Logo & Nav Items */
 .nav-left {
   display: flex;
   align-items: center;
@@ -53,13 +57,12 @@
 }
 
 .nav-items a {
-  text-decoration: none;
+  display: block;
+  position: relative;
+  padding: 21px 0;
   color: var(--c-dark);
   font-size: 14px;
   font-weight: 500;
-  padding: 21px 0;
-  position: relative;
-  display: block;
   transition: color var(--transition-fast);
 }
 
@@ -83,7 +86,7 @@
   transform: scaleX(1);
 }
 
-/* ========== Navigation Right Side ========== */
+/* Right side: Actions */
 .nav-right {
   display: flex;
   align-items: center;
@@ -94,10 +97,10 @@
 .login-btn {
   background: none;
   border: none;
-  font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
   padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
   transition: color var(--transition-fast);
 }
 
@@ -116,6 +119,11 @@
   position: relative;
   overflow: hidden;
   transition: color var(--transition-medium);
+}
+
+.subscribe-btn span {
+  position: relative;
+  z-index: 1;
 }
 
 .subscribe-btn::before {
@@ -138,30 +146,10 @@
   left: 0;
 }
 
-.subscribe-btn span {
-  position: relative;
-  z-index: 1;
-}
+/* --------------------
+   Component: Search Functionality (Desktop)
+   -------------------- */
 
-/* ========== Mobile Menu Button ========== */
-.mobile-menu-btn {
-  display: none; /* Hidden by default, shown in mobile view */
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-}
-
-.mobile-menu-btn span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background-color: var(--c-dark);
-  margin: 5px 0;
-  transition: 0.3s;
-}
-
-/* ========== Search Functionality ========== */
 .search-icon {
   cursor: pointer;
   width: 20px;
@@ -176,9 +164,7 @@
   pointer-events: none;
 }
 
-/* Shared styles for search icon pseudo-elements */
-.search-icon::before,
-.mobile-search-icon::before {
+.search-icon::before {
   content: "";
   position: absolute;
   width: 18px;
@@ -189,8 +175,7 @@
   left: 0;
 }
 
-.search-icon::after,
-.mobile-search-icon::after {
+.search-icon::after {
   content: "";
   position: absolute;
   width: 2px;
@@ -202,15 +187,18 @@
 }
 
 .search-overlay {
+  display: none; /* Hidden until .active */
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 100%;
   background-color: var(--c-light);
-  display: none; /* Hidden until .active */
   align-items: center;
   z-index: var(--z-overlay-content);
+  /* Centering for wide screens */
+  padding-left: calc(50vw - 720px);
+  padding-right: calc(50vw - 720px);
 }
 
 .search-overlay.active {
@@ -229,10 +217,10 @@
 .search-input {
   flex: 1;
   border: none;
-  font-size: 16px;
-  padding: 8px 0;
   outline: none;
   background: none;
+  font-size: 16px;
+  padding: 8px 0;
 }
 
 .search-input::placeholder {
@@ -241,13 +229,33 @@
 
 .close-search {
   cursor: pointer;
-  font-size: 24px;
-  padding: 8px;
   background: none;
   border: none;
+  font-size: 24px;
+  padding: 8px;
 }
 
-/* ========== Mobile Menu ========== */
+/* --------------------
+   Component: Mobile Menu
+   -------------------- */
+
+.mobile-menu-btn {
+  display: none; /* Hidden by default, shown in mobile view */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu-btn span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--c-dark);
+  margin: 5px 0;
+  transition: 0.3s;
+}
+
 #mobileMenu {
   position: fixed;
   top: 0;
@@ -276,8 +284,8 @@
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
   cursor: pointer;
+  font-size: 24px;
   padding: 8px;
 }
 
@@ -332,29 +340,55 @@
   border: 2px solid var(--c-dark);
 }
 
-/* ========== Mobile Search Specifics ========== */
+/* --------------------
+   Component: Mobile Search
+   -------------------- */
+
 .mobile-search-header {
-  background-color: var(--c-light);
-  padding: 12px 12px 12px 25px;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 12px 12px 12px 25px;
   height: var(--navbar-height-mobile);
+  background-color: var(--c-light);
 }
 
 .mobile-search-icon {
+  position: relative;
   width: 20px;
   height: 20px;
-  position: relative;
   flex-shrink: 0;
+}
+
+/* Shared styles with desktop search icon */
+.mobile-search-icon::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--c-dark);
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+}
+
+.mobile-search-icon::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 8px;
+  background-color: var(--c-dark);
+  transform: rotate(-52deg);
+  bottom: 0;
+  right: 0;
 }
 
 .mobile-search-input {
   flex: 1;
   border: none;
-  font-size: 16px;
   outline: none;
   background: none;
+  font-size: 16px;
   color: var(--c-dark);
 }
 
@@ -364,29 +398,30 @@
 
 .mobile-close-search {
   cursor: pointer;
-  font-size: 24px;
-  padding: 4px;
   background: none;
   border: none;
+  font-size: 24px;
+  padding: 4px;
   color: var(--c-dark);
 }
 
-/* ========== Footer ========== */
+/* --------------------
+   Component: Footer
+   -------------------- */
+
 #footer {
   background-color: var(--c-dark);
   border-top: 1px solid var(--c-border-dark);
   color: var(--c-text-footer);
   font-size: 12px;
-  height: 70px;
+  height: var(--footer-height-desktop);
   width: 100%;
   z-index: var(--z-footer);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; /* Prevents the footer from shrinking */
+  flex-shrink: 0; /* Prevents footer from shrinking */
 }
-
-/* REMOVED .fixed-footer class as it's no longer needed */
 
 .footer-content {
   display: flex;
@@ -418,17 +453,18 @@
   font-size: 14px;
 }
 
-/* ========== Back-To-Top Button ========== */
+/* --------------------
+   Component: Back-To-Top Button
+   -------------------- */
+
 .back-to-top {
   position: fixed;
   bottom: 30px;
   right: 30px;
   width: 50px;
   height: 50px;
-
   background: var(--c-light);
   mix-blend-mode: exclusion;
-
   border: none;
   border-radius: 50%;
   cursor: pointer;

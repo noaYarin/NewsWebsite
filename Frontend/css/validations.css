@@ -1,4 +1,11 @@
-/* ========== Form Validation Base ========== */
+/* ==========================================================================
+   FORM VALIDATION & INPUT STYLES
+   ========================================================================== */
+
+/* --------------------
+   Base Form Group
+   -------------------- */
+
 .form-group {
   position: relative;
   display: flex;
@@ -13,7 +20,10 @@
   display: block;
 }
 
-/* ========== Base Input Styling ========== */
+/* --------------------
+   Base Input Styling
+   -------------------- */
+
 input[type="text"],
 input[type="email"],
 input[type="url"],
@@ -39,6 +49,7 @@ input::placeholder {
   color: var(--c-placeholder);
 }
 
+/* Input Validation States */
 .input-error {
   border-color: var(--c-red) !important;
   background: #fff5f5 !important;
@@ -56,17 +67,20 @@ input::placeholder {
   text-align: left;
 }
 
-/* ========== Date Input Styling ========== */
+/* --------------------
+   Component: Date Input
+   -------------------- */
+
 input[type="date"] {
   color: var(--c-placeholder);
 }
 
-input[type="date"]:focus {
-  background: var(--c-light);
-}
-
 input[type="date"].has-value {
   color: var(--c-dark);
+}
+
+input[type="date"]:focus {
+  background: var(--c-light);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -83,27 +97,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-color: var(--c-primary);
 }
 
-/* ========== Shared Button ========== */
-.auth-button {
-  width: 100%;
-  background: var(--c-primary);
-  color: var(--c-dark);
-  border: none;
-  padding: 20px;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-transform: uppercase;
-}
+/* --------------------
+   Component: Password Input Group
+   -------------------- */
 
-.auth-button:hover {
-  background: var(--c-primary-light);
-  transform: translateY(-2px);
-}
-
-/* ========== Password Input Group & Toggle Button ========== */
 .password-input-group {
   position: relative;
 }
@@ -143,7 +140,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   pointer-events: none;
 }
 
-/* ========== Password Criteria ========== */
+/* --------------------
+   Component: Password Criteria & Progress
+   -------------------- */
+
 .password-criteria {
   background: var(--c-input-bg);
   border: 2px solid var(--c-input-border);
@@ -193,28 +193,25 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   transition: all 0.3s ease;
 }
 
-.password-requirement.invalid .icon {
-  border: 2px solid var(--c-placeholder);
-}
-
-.password-requirement.valid .icon {
-  border: 2px solid var(--c-green);
-  color: var(--c-green);
-}
-
-.password-requirement.valid .icon::before {
-  content: "✓";
-}
-
 .password-requirement.invalid {
   color: var(--c-placeholder);
+}
+.password-requirement.invalid .icon {
+  border: 2px solid var(--c-placeholder);
 }
 
 .password-requirement.valid {
   color: var(--c-green);
 }
+.password-requirement.valid .icon {
+  border: 2px solid var(--c-green);
+  color: var(--c-green);
+}
+.password-requirement.valid .icon::before {
+  content: "✓";
+}
 
-/* ========== Password Progress Bar ========== */
+/* Progress Bar */
 .password-progress {
   margin-bottom: 16px;
 }
@@ -235,23 +232,46 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   transition: all 0.3s ease;
   background-color: var(--c-red);
 }
-
 .password-progress-fill.weak {
   width: 33.33%;
   background-color: var(--c-red);
 }
-
 .password-progress-fill.medium {
   width: 66.66%;
   background-color: var(--c-yellow);
 }
-
 .password-progress-fill.strong {
   width: 100%;
   background-color: var(--c-green);
 }
 
-/* ========== Interest Selection Validation ========== */
+/* --------------------
+   Component: Shared Auth Button
+   -------------------- */
+
+.auth-button {
+  width: 100%;
+  background: var(--c-primary);
+  color: var(--c-dark);
+  border: none;
+  padding: 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.auth-button:hover {
+  background: var(--c-primary-light);
+  transform: translateY(-2px);
+}
+
+/* --------------------
+   Component: Interest Selection Validation
+   -------------------- */
+
 .interests-subtitle.is-valid {
   color: var(--c-primary);
   font-weight: 500;

@@ -1,6 +1,11 @@
-/* ========== RESPONSIVE STYLES ========== */
+/* ==========================================================================
+   RESPONSIVE STYLES (MUST BE LOADED LAST)
+   ========================================================================== */
 
-/* ========== Desktop & Large Tablets (1025px+) ========== */
+/* --------------------
+   Desktop & Large Tablets (1025px+)
+   - Hides mobile-only elements
+   -------------------- */
 @media (min-width: 1025px) {
   #mobileMenu,
   .mobile-search-header {
@@ -8,41 +13,36 @@
   }
 }
 
-/* ========== Tablets & Small Laptops (max 1024px) ========== */
+/* --------------------
+   Tablets & Small Laptops (max 1024px)
+   -------------------- */
 @media (max-width: 1024px) {
-  /* Navbar adjustments */
+  /* --- Navbar adjustments --- */
   #navbar {
     padding: 0 16px;
     height: var(--navbar-height-mobile);
   }
-
-  /* Hide desktop nav elements */
   .nav-items,
   .login-btn,
   .subscribe-btn,
   .search-container {
     display: none;
   }
-
-  /* Show mobile menu button */
   .mobile-menu-btn {
     display: block;
   }
-
-  /* Navigation layout adjustments */
   .nav-left {
     flex: 1;
     justify-content: space-between;
     gap: 0;
   }
-
   .logo {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
 
-  /* Mobile Search Overlay adjustments */
+  /* --- Mobile Search Overlay adjustments --- */
   .search-overlay {
     position: fixed;
     bottom: 0;
@@ -54,13 +54,12 @@
     align-items: stretch;
     justify-content: flex-start;
   }
-
   .search-overlay .logo,
   .search-overlay .nav-right {
     display: none;
   }
 
-  /* Main content adjustments */
+  /* --- Main content adjustments --- */
   #container,
   #secondary-container,
   #third-container,
@@ -68,62 +67,51 @@
     padding: 16px 12px;
   }
 
-  /* Sidebar adjustments */
+  /* --- Page layout adjustments --- */
   .today-picks-sidebar {
     min-height: auto;
     position: relative;
     margin-bottom: 2rem;
   }
-
-  /* Featured article adjustments */
   .featured-article {
     height: 300px;
   }
-
-  /* Title adjustments */
   .titles h1 {
     font-size: 36px;
   }
+  .discover-more {
+    display: none; /* Hide discover more section on smaller screens */
+  }
 
-  /* Video section adjustments */
+  /* --- Video section adjustments --- */
   .video-background,
   .bg-video,
   .video-content {
     height: 500px !important;
   }
-
   .video-content {
     padding-top: 100px !important;
   }
 
-  /* Hide discover more section on mobile */
-  .discover-more {
-    display: none;
-  }
-
-  /* Footer adjustments */
+  /* --- Footer adjustments --- */
   #footer {
-    height: 110px;
+    height: var(--footer-height-mobile);
     padding: 16px 20px;
     justify-content: flex-start;
   }
-
   .footer-content {
     flex-direction: column;
     align-items: center;
     gap: 12px;
     width: 100%;
   }
-
   .footer-logo {
     font-size: 14px;
     gap: 6px;
   }
-
   .footer-logo img {
     height: 28px;
   }
-
   .footer-copy {
     flex-direction: column;
     align-items: center;
@@ -131,69 +119,65 @@
     gap: 4px;
     line-height: 1.4;
   }
-
   .footer-copy .pipe {
     display: none;
   }
 
-  /* Back to top button adjustments */
+  /* --- Back to top button --- */
   .back-to-top {
     display: none;
   }
 }
 
-/* ========== Mobile Phones (max 768px) ========== */
+/* --------------------
+   Mobile Phones (max 768px)
+   -------------------- */
 @media (max-width: 768px) {
-  /* Video section further adjustments */
+  /* --- Video section adjustments --- */
   .video-background,
   .bg-video,
   .video-content {
     height: 750px !important;
   }
+  .video-title {
+    font-size: 36px;
+  }
+  .video-description {
+    font-size: 16px;
+  }
 
-  /* Newsletter button adjustments */
+  /* --- Newsletter button adjustments --- */
   .newsletter-signup .styled-button {
     padding: 12px 120px !important;
   }
 
-  /* Typography adjustments */
+  /* --- Typography adjustments --- */
   .titles h1 {
     font-size: 28px;
     letter-spacing: 2px;
   }
 
-  /* Card adjustments */
-  .image-container {
-    height: 150px;
-  }
-
+  /* --- Card adjustments --- */
+  .image-container,
   .card img {
     height: 150px;
   }
 
-  /* Video title adjustments */
-  .video-title {
-    font-size: 36px;
-  }
-
-  .video-description {
-    font-size: 16px;
-  }
-
-  /* Our picks section adjustments */
+  /* --- Our picks section adjustments --- */
   .our-picks h1 {
     font-size: 28px;
     letter-spacing: 4px;
   }
-
   .our-picks p {
     letter-spacing: 1px;
   }
 }
 
-/* ========== Small Mobile Phones (max 480px) ========== */
+/* --------------------
+   Small Mobile Phones (max 480px)
+   -------------------- */
 @media (max-width: 480px) {
-  /* Container padding adjustments */
+  /* --- Container padding adjustments --- */
   #container,
   #secondary-container,
   #third-container,
@@ -201,42 +185,37 @@
     padding: 12px 8px;
   }
 
-  /* Further reduce typography */
+  /* --- Further typography reduction --- */
   .titles h1 {
     font-size: 24px;
     letter-spacing: 1px;
   }
-
   .video-title {
     font-size: 28px;
   }
 
-  /* Newsletter adjustments */
+  /* --- Newsletter adjustments --- */
   .newsletter-signup h1 {
     font-size: 24px;
   }
-
   .newsletter-signup p {
     font-size: 16px;
   }
-
   .newsletter-signup .styled-button {
     padding: 10px 60px !important;
     font-size: 14px;
   }
 
-  /* Pick item image adjustments */
+  /* --- Sidebar adjustments --- */
   .pick-item-image {
     width: 80px;
     height: 80px;
   }
 
-  /* Card body adjustments */
+  /* --- Card adjustments --- */
   .article-card .card-body {
     min-height: 140px;
   }
-
-  /* Our picks card adjustments */
   .our-picks-card {
     height: 350px;
   }

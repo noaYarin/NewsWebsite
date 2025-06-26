@@ -1,3 +1,10 @@
+/* ==========================================================================
+   AUTHENTICATION PAGE STYLES
+   ========================================================================== */
+
+/* --------------------
+   Main Layout
+   -------------------- */
 .auth-main {
   min-height: calc(100vh - var(--navbar-height-desktop) - var(--footer-height-desktop));
   display: flex;
@@ -19,7 +26,9 @@
   justify-content: space-between;
 }
 
-/* ========== Logo ========== */
+/* --------------------
+   Logo & Title
+   -------------------- */
 .auth-logo {
   display: flex;
   flex-direction: column;
@@ -33,7 +42,16 @@
   transition: transform 0.5s ease, opacity 0.3s ease;
 }
 
-/* ========== Forms ========== */
+.auth-title {
+  font-size: 28px;
+  color: var(--c-dark);
+  margin: 20px;
+  font-weight: 600;
+}
+
+/* --------------------
+   Authentication Forms
+   -------------------- */
 .auth-form {
   display: none;
 }
@@ -52,7 +70,6 @@
   padding: 10px; /* Kept for auth page consistency */
 }
 
-/* ========== Button Container ========== */
 .button-container {
   display: flex;
   justify-content: center;
@@ -62,7 +79,6 @@
   max-width: 380px;
 }
 
-/* ========== Name Fields ========== */
 .name-fields {
   display: flex;
   gap: 12px;
@@ -76,7 +92,14 @@
   width: 100%;
 }
 
-/* ========== Email Display ========== */
+.forgot-password {
+  color: var(--c-primary);
+  font-size: 14px;
+}
+
+/* --------------------
+   Component: Email Display
+   -------------------- */
 .email-display {
   display: flex;
   align-items: center;
@@ -110,21 +133,9 @@
   color: white;
 }
 
-/* ========== Title Updates ========== */
-.auth-title {
-  font-size: 28px;
-  color: var(--c-dark);
-  margin: 20px;
-  font-weight: 600;
-}
-
-/* ========== Links ========== */
-.forgot-password {
-  color: var(--c-primary);
-  font-size: 14px;
-}
-
-/* ========== Interests Form General Styles ========== */
+/* --------------------
+   Component: Interest Selection
+   -------------------- */
 .interest-card {
   position: relative;
   cursor: pointer;
@@ -172,7 +183,7 @@
   z-index: 2;
 }
 
-/* Selected Interest Card */
+/* Selected State */
 .interest-card.selected {
   outline: 3px solid var(--c-primary);
   filter: none;
@@ -182,11 +193,10 @@
   background-color: transparent;
 }
 
-.interest-card-title.selected {
+.interest-card.selected .interest-card-title {
   color: var(--c-primary);
 }
 
-/* Interest Selection Subtitle General Style */
 .interests-subtitle {
   font-size: 16px;
   color: var(--c-text-muted);
@@ -194,7 +204,9 @@
   transition: color 0.3s ease;
 }
 
-/* Styles for the expanded interests view */
+/* --------------------
+   Interests View (Container State)
+   -------------------- */
 .auth-container.interests-active {
   max-width: 100%;
   padding-left: calc(50vw - 420px);
@@ -211,7 +223,9 @@
   transform: none;
 }
 
-/* ========== Responsive ========== */
+/* --------------------
+   Responsive Adjustments
+   -------------------- */
 @media (max-width: 480px) {
   .auth-main {
     min-height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
@@ -241,7 +255,6 @@
     font-size: 14px;
   }
 
-  /* Adjust password toggle for mobile view */
   .auth-form .password-toggle-btn {
     top: 20px;
     right: 16px;
