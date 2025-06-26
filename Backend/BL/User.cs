@@ -65,6 +65,12 @@ namespace Horizon.BL
             return null;
       }
 
+        public int AddBlockedUser(int userId, User blockedUser)
+        {
+            DBservices db = new DBservices();
+            return db.InsertBlockedUser(userId, blockedUser);
+        }
+
         public int AddUserTags(int UserId, Tag tag)
         {
             DBservices db = new DBservices();
@@ -77,11 +83,40 @@ namespace Horizon.BL
             return db.InsertUserSavedArticles(UserId, article);
         }
 
-
-        public static int LogOut(User user)// change params to relvent parms
+        public int DeleteSavedArticle(int userId, int articleId)
         {
-            //TODO DB
-            return 0;
+            DBservices db = new DBservices();
+            return db.DeleteSavedArticle(userId, articleId);
+        }
+
+        public int DeleteUserTag(int userId, int articleId)
+        {
+            DBservices db = new DBservices();
+            return db.DeleteUserTag(userId, articleId);
+        }
+
+        public int DeleteBlockedUser(int userId, int blockedUserId)
+        {
+            DBservices db = new DBservices();
+            return db.DeleteBlockedUser(userId, blockedUserId);
+        }
+
+        public User GetUserById(int id)
+        {
+            DBservices db = new DBservices();
+            return db.GetUserById(id);
+        }
+
+        public bool UpdateUser(int id, User updatedUser)
+        {
+            DBservices db = new DBservices();
+            if (!db.IsUserExists(updatedUser.Email, updatedUser.HashedPassword, false))
+            {
+                updatedUser.HashedPassword = HashPassword(updatedUser.HashedPassword);
+                db.UpdateUser(id, updatedUser);
+                return true;
+            }
+            return false;
         }
     }
 }
