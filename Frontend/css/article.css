@@ -50,7 +50,6 @@ body {
 .article-image-container {
   margin-bottom: 24px;
   position: relative;
-  line-height: 0;
 }
 
 .article-image-container::after {
@@ -148,12 +147,20 @@ body {
   border: 1px solid var(--c-border-light);
   border-radius: 8px;
   font-size: 16px;
-  resize: vertical;
+  resize: none;
   margin-bottom: 12px;
 }
 
-#comment-form .auth-button {
+#comment-form .styled-button {
   float: right;
+}
+
+#comment-form .styled-button::before {
+  background-color: var(--c-dark);
+}
+
+#comment-form .styled-button:hover span {
+  color: var(--c-light);
 }
 
 /* Comments List */
@@ -179,7 +186,8 @@ body {
 }
 
 .comment-text {
-  line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 /* --------------------

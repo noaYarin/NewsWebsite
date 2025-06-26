@@ -153,7 +153,6 @@ input:focus {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: color var(--transition-medium);
   font-family: var(--font-primary);
 }
 
@@ -161,6 +160,7 @@ input:focus {
   position: relative;
   z-index: 1;
   text-transform: uppercase;
+  transition: color var(--transition-fast);
 }
 
 .styled-button::before {

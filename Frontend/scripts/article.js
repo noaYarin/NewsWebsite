@@ -27,9 +27,6 @@ const mockComments = [
   }
 ];
 
-// =================================================================
-// --- HELPER FUNCTIONS ---
-// =================================================================
 function formatContent(content) {
   if (!content) return "<p>No content available. Please read the full story on the source website.</p>";
   const cleanedContent = content.replace(/^Skip to content\s*/, "").replace(/\s*\[\+\d+\s*chars\]\s*$/, "");
@@ -64,11 +61,7 @@ function populateComments(comments) {
   });
 }
 
-// =================================================================
-// --- MAIN DOCUMENT READY ---
-// =================================================================
 $(document).ready(function () {
-  // Hardcoded article for testing
   const article = {
     source: { id: "the-hill", name: "The Hill" },
     author: "Ashleigh Fields",
@@ -79,7 +72,6 @@ $(document).ready(function () {
     content: "A federal judge on Tuesday issued a ruling blocking the Trump administration from withholding funds for electric vehicle charger infrastructure from 14 states."
   };
 
-  // Populate the main article content
   if (article) {
     document.title = `${article.title || "Article"} | HORIZON`;
     $(".article-source").text(article.source.name || "Unknown Source");
@@ -95,19 +87,14 @@ $(document).ready(function () {
     $("#article-error-message").show();
   }
 
-  // Populate comments
   populateComments(mockComments);
 
-  // --- Logic for Signed-In Users ---
   if (isSignedIn) {
-    // Show action buttons and comment form
     $(".article-actions").show();
     $("#comment-form").show();
 
-    // Set the user's avatar in the comment form
     $("#comment-form-avatar").attr("src", currentUser.imageUrl);
 
-    // --- Event Handlers for Actions ---
     $("#bookmark-btn").on("click", function () {
       alert("Article saved to bookmarks! (Functionality to be added)");
     });
@@ -120,19 +107,16 @@ $(document).ready(function () {
       alert("Generating AI summary... (Functionality to be added)");
     });
 
-    // Handle new comment submission
     $("#comment-form").on("submit", function (e) {
       e.preventDefault();
       const commentText = $("#comment-textarea").val().trim();
 
       if (commentText) {
-        // Create the new comment object
         const newComment = {
           author: { name: `${currentUser.firstName} ${currentUser.lastName}`, avatar: currentUser.imageUrl },
           text: commentText
         };
 
-        // Add the new comment to the top of the list in the UI
         const newCommentHtml = `
           <div class="comment-item">
             <img src="${newComment.author.avatar}" alt="${newComment.author.name}" class="comment-avatar" />
@@ -143,7 +127,6 @@ $(document).ready(function () {
           </div>`;
         $("#comments-list").prepend(newCommentHtml);
 
-        // Clear the textarea
         $("#comment-textarea").val("");
       }
     });
