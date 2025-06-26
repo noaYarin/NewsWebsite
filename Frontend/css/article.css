@@ -38,10 +38,30 @@ body {
 .article-meta {
   font-size: 14px;
   color: var(--c-text-muted);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+/* --------------------
+   Article Tags
+   -------------------- */
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tag-item {
+  background-color: var(--c-border-light);
+  color: var(--c-text-muted);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 /* --------------------
@@ -252,6 +272,11 @@ body {
 
   .article-title {
     font-size: 32px;
+  }
+
+  .tag-item {
+    font-size: 12px;
+    padding: 4px 10px;
   }
 
   .article-content {

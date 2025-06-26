@@ -46,6 +46,17 @@ function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString(undefined, options);
 }
 
+function populateTags(tags) {
+  const tagsContainer = $(".article-tags");
+  tagsContainer.empty();
+  if (tags && tags.length > 0) {
+    tags.forEach((tag) => {
+      const tagElement = `<span class="tag-item">${tag}</span>`;
+      tagsContainer.append(tagElement);
+    });
+  }
+}
+
 function populateComments(comments, blockedUsers) {
   const commentsList = $("#comments-list");
   commentsList.empty();
@@ -90,7 +101,8 @@ $(document).ready(function () {
     url: "https://thehill.com/homenews/administration/5367974-judge-blocks-trump-from-withholding-ev-funds/",
     urlToImage: "https://thehill.com/wp-content/uploads/sites/2/2024/05/biden_joe_electric_vehicle_ev_11022022_GettyImages-1244434118.jpg?w=1280",
     publishedAt: "2025-06-25T02:34:00Z",
-    content: "A federal judge on Tuesday issued a ruling blocking the Trump administration from withholding funds for electric vehicle charger infrastructure from 14 states."
+    content: "A federal judge on Tuesday issued a ruling blocking the Trump administration from withholding funds for electric vehicle charger infrastructure from 14 states.",
+    tags: ["Politics", "Electric Vehicles", "Infrastructure", "US"]
   };
 
   if (article) {
@@ -99,10 +111,12 @@ $(document).ready(function () {
     $(".article-title").text(article.title || "No Title Provided");
     $(".article-author").text(`By ${article.author || "No Author Provided"}`);
     $(".article-date").text(formatDate(article.publishedAt));
+    populateTags(article.tags);
     $(".article-image")
       .attr("src", article.urlToImage || "../sources/images/placeholder.jpg")
       .attr("alt", article.title || "Article image");
     $(".article-content").html(formatContent(article.content));
+    $(".read-full-article-btn").attr("href", article.url);
   } else {
     $("#article-main-content").hide();
     $("#article-error-message").show();
