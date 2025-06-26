@@ -8,6 +8,8 @@ using System.Text;
 using Horizon.BL;
 using System.Xml.Linq;
 using System.Data.Common;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 
 public class DBservices
@@ -458,93 +460,27 @@ public class DBservices
         }
 
         cmd = CreateCommandWithStoredProcedureGeneral("SP_GetAllUsers", con, null);
-
-        List<User> users = new List<User>();
+        string res = "";
 
         SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
         try
         {
+                while (dataReader.Read())
+                {
+                    res += dataReader.GetString(0); 
+                }
 
-            while (dataReader.Read())
+            if (!string.IsNullOrWhiteSpace(res))
             {
-
-                int userId = Convert.ToInt32(dataReader["Id"]);
-                User user = users.FirstOrDefault(u => u.Id == userId);
-                if (user == null)
-                {
-                    user = new User
-                    {
-                        Id = userId,
-                        Email = dataReader["Email"].ToString(),
-                        FirstName = dataReader["FirstName"].ToString(),
-                        LastName = dataReader["LastName"].ToString(),
-                        BirthDate = dataReader["BirthDate"].ToString(),
-                        ImgUrl = dataReader["ImgUrl"].ToString(),
-                        IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]),
-                        IsLocked = Convert.ToBoolean(dataReader["IsLocked"]),
-                        HashedPassword = dataReader["HashedPassword"].ToString(),
-                        Tags = new List<Tag>(),
-                        BlockedUsers = new List<User>(),
-                        SavedArticles = new List<Article>()
-                    };
-
-                    users.Add(user);
-
-                }
-
-                if (dataReader["TagId"] != DBNull.Value)
-                {
-                    Tag userTag = new Tag
-                    {
-                        Id = Convert.ToInt32(dataReader["TagId"]),
-                        Name = dataReader["TagName"].ToString(),
-                        CreateDate = Convert.ToDateTime(dataReader["TagCreateDate"])
-                    };
-
-                    if (!user.Tags.Any(tag => tag.Id == userTag.Id))
-                        user.Tags.Add(userTag);
-                }
-
-                if (dataReader["BlockedUserId"] != DBNull.Value)
-                {
-                    User blockedUser = new User
-                    {
-                        Id = Convert.ToInt32(dataReader["BlockedUserId"]),
-                        FirstName = dataReader["BlockedUserFirstName"].ToString(),
-                        LastName = dataReader["BlockedUserLastName"].ToString(),
-                        Email = dataReader["BlockedUserEmail"].ToString(),
-                        HashedPassword = dataReader["BlockedUserPassword"].ToString(),
-                        ImgUrl = dataReader["BlockedUserImgUrl"].ToString(),
-                        BirthDate = dataReader["BlockedUserBirthDate"].ToString(),
-                        IsAdmin = Convert.ToBoolean(dataReader["BlockedUserIsAdmin"]),
-                        Tags = new List<Tag>(),
-                        BlockedUsers = new List<User>(),
-                        SavedArticles = new List<Article>()
-                    };
-
-                    if (!user.BlockedUsers.Any(b => b.Id == blockedUser.Id))
-                        user.BlockedUsers.Add(blockedUser);
-                }
-
-                if (dataReader["ArticleId"] != DBNull.Value)
-                {
-                    Article userArticle = new Article
-                    {
-                        Id = Convert.ToInt32(dataReader["ArticleId"]),
-                        UserId = Convert.ToInt32(dataReader["Id"]),
-                        Title = dataReader["ArticleTitle"].ToString(),
-                        PublishDate = Convert.ToDateTime(dataReader["ArticlePublishDate"]),
-                        Tags = new List<Tag>(),
-                        Comments = new List<Comment>(),
-                        Reports = new List<Report>()
-                    };
-
-                    if (!user.SavedArticles.Any(a => a.Id == userArticle.Id))
-                        user.SavedArticles.Add(userArticle);
-                }
+                //Convert it to JSON obj
+                List<User> users = JsonSerializer.Deserialize<List<User>>(res);
+                return users ?? new List<User>(); // If users not null return it
             }
-            return users;
+            else
+            {
+                return new List<User>();
+            }
         }
 
         catch (Exception ex)

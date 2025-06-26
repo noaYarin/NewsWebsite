@@ -5,43 +5,67 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 -- =============================================
--- Author:		<Author,,Name>
--- Create date: <Create Date,,>
+-- Author:		<Noa Yarin Levi>
+-- Create date: <26.6.25>
 -- Description:	<Description,,>
 -- =============================================
-CREATE PROCEDURE SP_GetAllUsers
+ALTER PROCEDURE [dbo].[SP_GetAllUsers]
 	
 AS
 BEGIN
 
 	--SET NOCOUNT ON;
 
-    SELECT U.Id, U.Email, U.FirstName, U.LastName,U.HashedPassword,U.ImgUrl,U.BirthDate,U.IsAdmin,U.IsLocked,
-    BU.Id AS BlockedUserId,
-    BU.FirstName AS BlockedUserFirstName,
-    BU.LastName AS BlockedUserLastName,
-    BU.Email AS BlockedUserEmail,
-	BU.HashedPassword AS BlockedUserPassword,
-    BU.ImgUrl AS BlockedUserImgUrl,
-    BU.BirthDate AS BlockedUserBirthDate,
-    BU.IsAdmin AS BlockedUserIsAdmin,
-    BU.IsLocked AS BlockedLockedUser,
+    SELECT 
+        U.Id,
+        U.Email,
+        U.FirstName,
+        U.LastName,
+        U.HashedPassword,
+        U.ImgUrl,
+        U.BirthDate,
+        U.IsAdmin,
+        U.IsLocked,
 
-	T.TagId AS TagId,
-	T.[Name] AS TagName,
-    T.CreateDate AS TagCreateDate,
+        (
+            SELECT 
+                BU.Id,
+                BU.FirstName,
+                BU.LastName,
+                BU.Email,
+                BU.HashedPassword,
+                BU.ImgUrl,
+                BU.BirthDate,
+                BU.IsAdmin,
+                BU.IsLocked
+            FROM BlockedUsers AS B
+            INNER JOIN Users AS BU ON B.BlockedUserId = BU.Id
+            WHERE B.UserId = U.Id
+            FOR JSON PATH, INCLUDE_NULL_VALUES
+        ) AS BlockedUsers,
 
-	A.Id AS ArticleId,
-    A.Title AS ArticleTitle,
-    A.PublishDate AS ArticlePublishDate
-	
+        (
+            SELECT 
+                T.TagId,
+                T.[Name],
+                T.CreateDate
+            FROM UserTags AS UT
+            INNER JOIN Tags AS T ON UT.TagId = T.TagId
+            WHERE UT.UserId = U.Id
+            FOR JSON PATH, INCLUDE_NULL_VALUES
+        ) AS Tags,
+
+        (
+            SELECT 
+                A.Id,
+                A.Title,
+                A.PublishDate
+            FROM SavedArticles AS SA
+            INNER JOIN Articles AS A ON SA.ArticleId = A.Id
+            WHERE SA.UserId = U.Id
+            FOR JSON PATH, INCLUDE_NULL_VALUES
+        ) AS SavedArticles
+
     FROM Users AS U
-    LEFT JOIN UserTags AS UT ON U.Id = UT.UserId
-    LEFT JOIN Tags AS T ON UT.TagId = T.TagId
-
-    LEFT JOIN SavedArticles AS SA ON U.Id = SA.UserId
-    LEFT JOIN Articles AS A ON SA.ArticleId = A.Id
-
-	LEFT JOIN BlockedUsers AS B ON U.Id = B.UserId
-    LEFT JOIN Users AS BU ON B.BlockedUserId =BU.Id
+    FOR JSON PATH, INCLUDE_NULL_VALUES
 END
