@@ -46,7 +46,9 @@ $(document).ready(function () {
             placeholder="Search Here..."
             autofocus
           />
-          <button class="close-search">✕</button>
+          <button class="close-search">
+            <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
+          </button>
         </div>        <div class="nav-right">
           <button class="login-btn">Log In</button>
           <button class="subscribe-btn"><span>Subscribe</span></button>
@@ -59,13 +61,17 @@ $(document).ready(function () {
             placeholder="Search Here..."
             autofocus
           />
-          <button class="mobile-close-search">✕</button>
+          <button class="mobile-close-search">
+            <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
+          </button>
         </div>
       </div>
     `,
     mobileMenu: `
       <div class="mobile-menu-header">
-        <button class="close-btn">✕</button>
+        <button class="close-btn">
+          <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
+        </button>
         <div class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""}></div>
       </div>
       <ul class="mobile-nav-items">

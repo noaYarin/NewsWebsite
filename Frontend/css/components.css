@@ -227,14 +227,6 @@
   color: var(--c-text-muted);
 }
 
-.close-search {
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-size: 24px;
-  padding: 8px;
-}
-
 /* --------------------
    Component: Mobile Menu
    -------------------- */
@@ -281,12 +273,30 @@
   max-height: 60px;
 }
 
-.close-btn {
+/* Close buttons */
+.close-btn,
+.close-search,
+.mobile-close-search {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px;
+  line-height: 0;
+}
+
+.close-btn,
+.close-search {
   padding: 8px;
+}
+
+.mobile-close-search {
+  padding: 4px;
+}
+
+.close-btn img,
+.close-search img,
+.mobile-close-search img {
+  width: 20px;
+  height: 20px;
 }
 
 .mobile-nav-items {
@@ -394,15 +404,6 @@
 
 .mobile-search-input::placeholder {
   color: var(--c-text-muted);
-}
-
-.mobile-close-search {
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-size: 24px;
-  padding: 4px;
-  color: var(--c-dark);
 }
 
 /* --------------------
