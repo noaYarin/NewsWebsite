@@ -6,8 +6,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 -- =============================================
 -- Author:		<Noa Yarin Levi>
--- Create date: <26.6.25>
--- Description:	<Description,,>
+-- Create date: <26/06/2025>
+-- Description:	<Get all users>
 -- =============================================
 ALTER PROCEDURE [dbo].[SP_GetAllUsers]
 	
@@ -45,12 +45,12 @@ BEGIN
         ) AS BlockedUsers,
 
         (
-            SELECT 
-                T.TagId,
+              SELECT 
+                T.Id,
                 T.[Name],
                 T.CreateDate
             FROM UserTags AS UT
-            INNER JOIN Tags AS T ON UT.TagId = T.TagId
+            INNER JOIN Tags AS T ON UT.TagId = T.Id
             WHERE UT.UserId = U.Id
             FOR JSON PATH, INCLUDE_NULL_VALUES
         ) AS Tags,
@@ -59,10 +59,11 @@ BEGIN
             SELECT 
                 A.Id,
                 A.Title,
+                A.UserId,
                 A.PublishDate
-            FROM SavedArticles AS SA
-            INNER JOIN Articles AS A ON SA.ArticleId = A.Id
-            WHERE SA.UserId = U.Id
+            FROM UserArticles AS UA
+            INNER JOIN Articles AS A ON UA.ArticleId = A.Id
+            WHERE UA.UserId = U.Id
             FOR JSON PATH, INCLUDE_NULL_VALUES
         ) AS SavedArticles
 

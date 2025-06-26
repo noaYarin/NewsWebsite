@@ -100,7 +100,7 @@ public class DBservices
         }
         Dictionary<string, object> paramDic = new Dictionary<string, object>();
         paramDic.Add("@UserId", userId);
-        paramDic.Add("@TagName", tag.Name);
+        paramDic.Add("@Name", tag.Name);
 
         cmd = CreateCommandWithStoredProcedureGeneral("SP_InsertUserTags", con, paramDic);
 
