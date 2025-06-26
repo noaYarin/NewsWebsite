@@ -156,7 +156,6 @@ function handleProfileUpdate(e) {
       birthdate: $("#birthdate").val(),
       imageUrl: $("#imageUrl").val(),
       interests: selectedInterests,
-      // Add the updated blocked users list to the final data
       blockedUsers: currentBlockedUsers
     };
 
@@ -207,7 +206,7 @@ $(document).ready(function () {
   $(document)
     .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()))
     .on("click", ".interest-item", handleInterestListItemSelection)
-    .on("click", ".unblock-btn", handleUnblockUser) // Add listener for unblock button
+    .on("click", ".unblock-btn", handleUnblockUser)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("input", ".form-group input", function () {

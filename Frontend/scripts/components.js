@@ -243,7 +243,6 @@ function toggleMobileMenu() {
 
 function toggleSearch() {
   const $overlay = $("#searchOverlay");
-  const MOBILE_BREAKPOINT = 1024;
 
   if (!$overlay.length) {
     console.warn("Search overlay (#searchOverlay) not found. Cannot toggle.");
