@@ -121,9 +121,7 @@ function updateInterestSubtitle(selectedCount, isError = false) {
 
   if (isError) {
     subtitle.text("Please select at least 3 interests to continue.").addClass("is-invalid");
-    if ($(window).width() <= MOBILE_BREAKPOINT) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
 

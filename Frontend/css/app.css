@@ -82,7 +82,7 @@
 }
 
 body {
-  background-color: var(--c-dark);
+  background-color: var(--c-light);
   font-family: var(--font-primary);
   color: var(--c-light);
   line-height: 1.6;
