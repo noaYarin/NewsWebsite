@@ -52,8 +52,16 @@ namespace Horizon.BL
             }
 
         }
-      public User LogIn(string email, string password)
-      {
+
+        public bool CheckIfUserExists(string email)
+        {
+            DBservices db = new DBservices();
+            User user = db.GetUserByEmail(email);
+            return user.Id != null;
+        }
+
+        public User LogIn(string email, string password)
+        {
             DBservices db = new DBservices();
             string hashedPassword = HashPassword(password);
 
@@ -63,7 +71,7 @@ namespace Horizon.BL
             }
 
             return null;
-      }
+        }
 
         public int AddBlockedUser(int userId, User blockedUser)
         {

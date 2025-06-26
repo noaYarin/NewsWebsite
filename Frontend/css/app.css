@@ -216,6 +216,55 @@ input:focus {
 }
 
 /* --------------------
+   Component: Popup Notification
+   -------------------- */
+
+.popup {
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--c-light);
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  font-weight: bold;
+  font-family: "Helvetica", "Arial", sans-serif;
+  text-align: center;
+  max-width: 90%;
+}
+
+.popup.success {
+  background-color: rgba(50, 205, 50, 0.85);
+}
+
+.popup.failure {
+  background-color: rgba(220, 20, 60, 0.85);
+}
+
+.popup.warning {
+  background-color: rgba(255, 204, 0, 0.85);
+}
+
+.popup.info {
+  background-color: rgba(23, 162, 184, 0.85);
+}
+
+.popup.muted {
+  background-color: rgba(108, 117, 125, 0.85);
+}
+
+.popup.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
+  pointer-events: auto;
+}
+
+/* --------------------
    Utility Classes
    -------------------- */
 

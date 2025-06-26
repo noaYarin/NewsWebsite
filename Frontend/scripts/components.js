@@ -284,3 +284,32 @@ function performSearch(query) {
 
   alert(`Search functionality not yet implemented. Query: "${query}"`);
 }
+
+function showPopup(message, colorFlag) {
+  if (colorFlag) {
+    colorFlag = "success";
+  } else {
+    colorFlag = "failure";
+  }
+
+  let $popup = $("#popup");
+  if ($popup.length > 0) {
+    $popup.remove();
+  }
+
+  $popup = $("<div></div>").attr("id", "popup").addClass("popup").addClass(colorFlag).text(message).css({
+    "z-index": "10001"
+  });
+
+  $("body").append($popup);
+
+  $popup[0].offsetHeight;
+  $popup.addClass("show");
+
+  setTimeout(() => {
+    $popup.removeClass("show");
+    setTimeout(() => {
+      $popup.remove();
+    }, 500);
+  }, 2000);
+}

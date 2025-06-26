@@ -39,108 +39,34 @@ function validateForm(formId) {
   return isValid;
 }
 
-function switchForm(activeForm, title) {
-  cache.authContainer.removeClass("interests-active");
-
-  $(".auth-form").removeClass("active");
-  activeForm.addClass("active");
-  cache.authTitle.text(title);
-
-  const docTitleMap = {
-    signupForm: "HORIZON / Sign Up",
-    signinForm: "HORIZON / Sign In",
-    interestsForm: "HORIZON / Personalize"
-  };
-  document.title = docTitleMap[activeForm.attr("id")] || "HORIZON";
-
-  if (activeForm.is(cache.interestsForm)) {
-    cache.authContainer.addClass("interests-active");
-  }
-}
-
-function showSigninForm(email) {
-  switchForm(cache.signinForm, "Welcome back!");
-  cache.signinForm.find(".email-text").text(email);
-  setTimeout(() => cache.signinForm.find("input[name='password']").focus(), 100);
-}
-
-function showSignupForm(email) {
-  switchForm(cache.signupForm, "Create Your Account");
-  cache.signupForm.find(".email-text").text(email);
-  setTimeout(() => cache.signupForm.find("input[name='firstName']").focus(), 100);
-}
-
-function checkUserExists(email) {
-  console.log("Checking if user exists:", email);
-  const button = $("#emailFormData .auth-button");
-  button.text("Checking...").prop("disabled", true);
-
-  setTimeout(() => {
-    button.text("Continue").prop("disabled", false);
-    const userExists = Math.random() > 0.5;
-    userExists ? showSigninForm(email) : showSignupForm(email);
-  }, 1000);
-}
-
+/* Email Submit Form */
 function handleEmailSubmit(e) {
   e.preventDefault();
   if (!validateForm("#emailFormData")) return;
   const email = $(this).find("input[name='email']").val().trim();
   userEmail = email;
-  checkUserExists(email);
+  handleUserExistsCheck(email);
 }
 
-function handleSignin(e) {
-  e.preventDefault();
+function handleUserExistsCheck(email) {
+  const button = $("#emailFormData .auth-button");
+  button.text("Checking...").prop("disabled", true);
 
-  const passwordInput = $(this).find('input[name="password"]');
-  const password = passwordInput.val();
-
-  if (!password) {
-    showError(passwordInput, "Password is required.");
-    return;
-  }
-
-  console.log("Sign in:", { email: userEmail, password: password });
-  alert("Sign in successful! (This is just a demo)");
-}
-
-function handleSignup(e) {
-  e.preventDefault();
-  if (!validateForm("#signupFormData")) return;
-
-  signupData = Object.fromEntries(new FormData(e.target));
-  switchForm(cache.interestsForm, "Tell Us What You Like");
-  updateInterestSubtitle(selectedInterests.length);
-}
-
-function localHandleInterestSelection(e) {
-  const interest = handleInterestSelection(e);
-  const card = $(e.currentTarget);
-
-  if (card.hasClass("selected")) {
-    selectedInterests.push(interest);
-  } else {
-    selectedInterests = selectedInterests.filter((i) => i !== interest);
-  }
-  updateInterestSubtitle(selectedInterests.length);
-}
-
-function handleFinalSignup(e) {
-  e.preventDefault();
-  if (selectedInterests.length < 3) {
-    updateInterestSubtitle(selectedInterests.length, true);
-    return;
-  }
-
-  const finalUserData = {
-    email: userEmail,
-    ...signupData,
-    interests: selectedInterests
-  };
-
-  console.log("Final account data:", finalUserData);
-  alert("Account created successfully! Check the console for the final data object.");
+  checkUserExists(
+    email,
+    (userExists) => {
+      button.text("Continue").prop("disabled", false);
+      if (userExists) {
+        showSigninForm(email);
+      } else {
+        showSignupForm(email);
+      }
+    },
+    (err) => {
+      showPopup("An error occurred while checking your email. Please try again.", false);
+      button.text("Continue").prop("disabled", false);
+    }
+  );
 }
 
 function handleChangeEmail() {
@@ -152,6 +78,7 @@ function handleChangeEmail() {
 
 function handleForgotPassword(e) {
   e.preventDefault();
+  // TODO: Implement actual password reset logic
   alert(`Password reset link will be sent to: ${userEmail}`);
 }
 
@@ -175,11 +102,146 @@ function handlePasswordToggle() {
   }, 10);
 }
 
+/* Form Switching */
+function showSigninForm(email) {
+  switchForm(cache.signinForm, "Welcome back!");
+  cache.signinForm.find(".email-text").text(email);
+  setTimeout(() => cache.signinForm.find("input[name='password']").focus(), 100);
+}
+
+function showSignupForm(email) {
+  switchForm(cache.signupForm, "Create Your Account");
+  cache.signupForm.find(".email-text").text(email);
+  setTimeout(() => cache.signupForm.find("input[name='firstName']").focus(), 100);
+}
+
+function switchForm(activeForm, title) {
+  cache.authContainer.removeClass("interests-active");
+
+  $(".auth-form").removeClass("active");
+  activeForm.addClass("active");
+  cache.authTitle.text(title);
+
+  const docTitleMap = {
+    signupForm: "HORIZON / Sign Up",
+    signinForm: "HORIZON / Sign In",
+    interestsForm: "HORIZON / Personalize"
+  };
+  document.title = docTitleMap[activeForm.attr("id")] || "HORIZON";
+
+  if (activeForm.is(cache.interestsForm)) {
+    cache.authContainer.addClass("interests-active");
+  }
+}
+
+/* Sign in Form */
+function handleSignin(e) {
+  e.preventDefault();
+  const form = $(this);
+  const passwordInput = form.find('input[name="password"]');
+  const password = passwordInput.val();
+  const button = form.find(".auth-button");
+
+  if (!password) {
+    showError(passwordInput, "Password is required.");
+    return;
+  }
+
+  const credentials = {
+    email: userEmail,
+    hashedPassword: password
+  };
+
+  button.text("Signing In...").prop("disabled", true);
+
+  loginUser(
+    credentials,
+    (userData) => {
+      if (userData && userData.id) {
+        delete userData.hashedPassword;
+        localStorage.setItem("currentUser", JSON.stringify(userData));
+        window.location.href = "index.html";
+      } else {
+        showPopup("Invalid email or password.", false);
+        button.text("Sign In").prop("disabled", false);
+      }
+    },
+    (err) => {
+      showPopup("Invalid email or password. Please try again.", false);
+      button.text("Sign In").prop("disabled", false);
+    }
+  );
+}
+
+/* Sign up Form */
+function handleSignupFormSubmit(e) {
+  e.preventDefault();
+  if (!validateForm("#signupFormData")) return;
+
+  // Store data from the first form temporarily
+  signupData = Object.fromEntries(new FormData(e.target));
+
+  switchForm(cache.interestsForm, "Tell Us What You Like");
+  updateInterestSubtitle(selectedInterests.length);
+}
+
+function localHandleInterestSelection(e) {
+  const interest = handleInterestSelection(e);
+  const card = $(e.currentTarget);
+
+  if (card.hasClass("selected")) {
+    selectedInterests.push(interest);
+  } else {
+    selectedInterests = selectedInterests.filter((i) => i !== interest);
+  }
+  updateInterestSubtitle(selectedInterests.length);
+}
+
+function handleFinalSignup(e) {
+  e.preventDefault();
+  if (selectedInterests.length < 3) {
+    updateInterestSubtitle(selectedInterests.length, true);
+    return;
+  }
+  const button = $(e.currentTarget).find(".auth-button");
+  const finalUserData = {
+    Email: userEmail,
+    FirstName: signupData.firstName,
+    LastName: signupData.lastName,
+    BirthDate: signupData.birthdate,
+    HashedPassword: signupData.password,
+    ImgUrl: null,
+    IsAdmin: false,
+    IsLocked: false,
+    Tags: selectedInterests.map((interestName) => ({ Name: interestName }))
+  };
+  console.log("Final user data:", finalUserData);
+  button.text("Creating Account...").prop("disabled", true);
+  registerUser(
+    finalUserData,
+    (success) => {
+      if (success) {
+        showPopup("Account created! Please sign in to continue.", true);
+        showSigninForm(userEmail);
+        cache.signinForm.find("input[name='password']").val("");
+      } else {
+        showPopup("Registration failed. Email may already be in use.", false);
+        button.text("Finish").prop("disabled", false);
+      }
+    },
+    (err) => {
+      showPopup("An error occurred during registration. Please try again.", false);
+      button.text("Finish").prop("disabled", false);
+    }
+  );
+}
+
+/* General Utility Functions */
 function setupAuthHandlers() {
   $(document)
     .on("submit", "#emailFormData", handleEmailSubmit)
     .on("submit", "#signinFormData", handleSignin)
-    .on("submit", "#signupFormData", handleSignup)
+    .on("submit", "#signupFormData", handleSignupFormSubmit)
     .on("submit", "#interestsFormData", handleFinalSignup)
     .on("click", ".change-email-btn", handleChangeEmail)
     .on("click", ".forgot-password", handleForgotPassword)

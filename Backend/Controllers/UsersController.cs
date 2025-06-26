@@ -18,6 +18,13 @@ namespace Horizon.Controllers
             return user.Read();
         }
 
+        // Check if user exists by email
+        [HttpGet("exists/{email}")]
+        public bool CheckUserExists(string email)
+        {
+            User user = new User();
+            return user.CheckIfUserExists(email);
+        }
 
         // register
         [HttpPost("register")]
