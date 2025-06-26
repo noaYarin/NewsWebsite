@@ -28,7 +28,7 @@ $(document).ready(function () {
           <li><a href="#">More</a></li>
         </ul>
       </div>      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
-        <div class="search-icon"></div>
+        <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" />
         <button class="login-btn">Log In</button>
         <button class="subscribe-btn"><span>Subscribe</span></button>
       </div>
@@ -39,7 +39,7 @@ $(document).ready(function () {
           </div>
         </a>
         <div class="search-container">
-          <div class="search-icon" style="display: none"></div>
+          <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" style="display: none" />
           <input
             type="text"
             class="search-input"
@@ -54,7 +54,7 @@ $(document).ready(function () {
           <button class="subscribe-btn"><span>Subscribe</span></button>
         </div>
         <div class="mobile-search-header">
-          <div class="mobile-search-icon"></div>
+          <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="mobile-search-icon" />
           <input
             type="text"
             class="mobile-search-input"
@@ -72,7 +72,7 @@ $(document).ready(function () {
         <button class="close-btn">
           <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
         </button>
-        <div class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""}></div>
+        <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""}/>
       </div>
       <ul class="mobile-nav-items">
         <li><a href="#">Business</a></li>
