@@ -7,7 +7,6 @@ const currentUser = {
   interests: ["business", "technology", "sports"],
   blockedUsers: [
     { id: "u001", name: "Jane Smith", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { id: "u002", name: "Mike Johnson", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
     { id: "u003", name: "Emily White", avatar: "https://randomuser.me/api/portraits/women/65.jpg" }
   ]
 };
@@ -27,6 +26,10 @@ const mockComments = [
   }
 ];
 
+function isUserBlocked(name, blockedUsers) {
+  return blockedUsers.some((blockedUser) => blockedUser.name === name);
+}
+
 function formatContent(content) {
   if (!content) return "<p>No content available. Please read the full story on the source website.</p>";
   const cleanedContent = content.replace(/^Skip to content\s*/, "").replace(/\s*\[\+\d+\s*chars\]\s*$/, "");
@@ -43,20 +46,38 @@ function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString(undefined, options);
 }
 
-function populateComments(comments) {
+function populateComments(comments, blockedUsers) {
   const commentsList = $("#comments-list");
-  commentsList.empty(); // Clear before adding new comments
+  commentsList.empty();
 
   comments.forEach((comment) => {
-    const commentHtml = `
-      <div class="comment-item">
-        <img src="${comment.author.avatar}" alt="${comment.author.name}" class="comment-avatar" />
-        <div class="comment-body">
-          <p class="comment-author">${comment.author.name}</p>
-          <p class="comment-text">${comment.text}</p>
+    let commentHtml;
+
+    if (isUserBlocked(comment.author.name, blockedUsers)) {
+      commentHtml = `
+        <div class="comment-item">
+          <div class="blocked-comment-message">
+            <span>Comment from a blocked user.</span>
+            <button class="show-comment-btn" 
+                    data-author-name="${comment.author.name}" 
+                    data-author-avatar="${comment.author.avatar}" 
+                    data-text="${comment.text}">
+              Show Comment
+            </button>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      commentHtml = `
+        <div class="comment-item">
+          <img src="${comment.author.avatar}" alt="${comment.author.name}" class="comment-avatar" />
+          <div class="comment-body">
+            <p class="comment-author">${comment.author.name}</p>
+            <p class="comment-text">${comment.text}</p>
+          </div>
+        </div>
+      `;
+    }
     commentsList.append(commentHtml);
   });
 }
@@ -87,7 +108,28 @@ $(document).ready(function () {
     $("#article-error-message").show();
   }
 
-  populateComments(mockComments);
+  if (isSignedIn) {
+    populateComments(mockComments, currentUser.blockedUsers);
+  } else {
+    populateComments(mockComments, []);
+  }
+
+  $("#comments-list").on("click", ".show-comment-btn", function () {
+    const button = $(this);
+    const authorName = button.data("author-name");
+    const authorAvatar = button.data("author-avatar");
+    const text = button.data("text");
+
+    const originalCommentHtml = `
+      <img src="${authorAvatar}" alt="${authorName}" class="comment-avatar" />
+      <div class="comment-body">
+        <p class="comment-author">${authorName}</p>
+        <p class="comment-text">${text}</p>
+      </div>
+    `;
+
+    $(this).closest(".comment-item").html(originalCommentHtml);
+  });
 
   if (isSignedIn) {
     $(".article-actions").show();
