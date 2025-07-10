@@ -298,6 +298,10 @@ function toggleSearch() {
         console.warn(`Search input (${inputToFocus}) not found. Cannot focus.`);
       }
     }, 100);
+  } else {
+    if ($("main").is(":hidden")) {
+      $("main").show();
+    }
   }
 }
 
