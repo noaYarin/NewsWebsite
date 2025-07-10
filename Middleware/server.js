@@ -9,9 +9,8 @@ const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-
 // Middleware
+app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
