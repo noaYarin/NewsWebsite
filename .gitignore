@@ -67,11 +67,11 @@ Backend/appsettings.json
 Backend/appsettings.Development.json
 
 # dot env environment variable files
-Middleware/.env
-Middleware/.env.development.local
-Middleware/.env.test.local
-Middleware/.env.production.local
-Middleware/.env.local
+API/.env
+API/.env.development.local
+API/.env.test.local
+API/.env.production.local
+API/.env.local
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
