@@ -124,6 +124,7 @@ $(document).ready(function () {
 
 function setupEventHandlers() {
   let debounceTimer;
+  let lastQuery = "";
 
   // keyboard handler (Esc to close)
   $(document).on("keydown", function (e) {
@@ -159,17 +160,45 @@ function setupEventHandlers() {
     toggleSearch();
   });
 
-  $(document).on("input", ".search-input, .mobile-search-input", function (e) {
+  // Debounced search on typing
+  $(document).on("input", ".search-input, .mobile-search-input", function () {
     clearTimeout(debounceTimer);
-
     const query = $(this).val().trim();
+
     debounceTimer = setTimeout(() => {
-      if (query.length > 2) {
-        performSearch(query);
-      }
-      // performSearch(query);
+      handleSearch(query);
     }, 500);
   });
+
+  // Immediate search on "Enter" key press
+  $(document).on("keydown", ".search-input, .mobile-search-input", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      clearTimeout(debounceTimer);
+      const query = $(this).val().trim();
+      handleSearch(query);
+    }
+  });
+
+  function handleSearch(query) {
+    if (query.length > 2) {
+      if (query !== lastQuery) {
+        lastQuery = query;
+        performSearch(query);
+      }
+    } else {
+      $("main").show();
+      lastQuery = "";
+    }
+  }
+
+  function performSearch(query) {
+    console.log("Performing search for:", query);
+    $("main").hide();
+
+    // TODO: Implement actual search functionality here
+    alert(`Search functionality not yet implemented. Query: "${query}"`);
+  }
 }
 
 function setupAuthNavLinks() {
@@ -270,20 +299,6 @@ function toggleSearch() {
       }
     }, 100);
   }
-}
-
-function performSearch(query) {
-  if (!query || !query.trim()) {
-    console.warn("Empty search query provided.");
-    return;
-  }
-
-  console.log("Performing search for:", query);
-
-  // TODO: Implement actual search functionality here
-  // This is a placeholder for future search implementation
-
-  alert(`Search functionality not yet implemented. Query: "${query}"`);
 }
 
 function showPopup(message, colorFlag) {
