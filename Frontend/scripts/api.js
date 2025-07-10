@@ -1,5 +1,11 @@
-const apiBaseUrl = "https://localhost:7171/api";
-const usersEndpoint = `${apiBaseUrl}/Users`;
+const dotnetPort = 7171;
+const nodePort = 3000;
+
+const dotnetBaseUrl = `http://localhost:${dotnetPort}/api`;
+const nodeBaseUrl = `http://localhost:${nodePort}/api`;
+
+const usersEndpoint = `${dotnetBaseUrl}/Users`;
+const newsEndpoint = `${nodeBaseUrl}/News`;
 
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({
@@ -14,6 +20,16 @@ function ajaxCall(method, api, data, successCB, errorCB) {
   });
 }
 
+/* Node.js API calls */
+function searchNews(query, successCallback, errorCallback) {
+  ajaxCall("GET", `${newsEndpoint}?query=${encodeURIComponent(query)}`, null, successCallback, errorCallback);
+}
+
+function getTopHeadlines(category, successCallback, errorCallback) {
+  ajaxCall("GET", `${newsEndpoint}/top-headlines?category=${encodeURIComponent(category)}`, null, successCallback, errorCallback);
+}
+
+/* DOT.NET API calls */
 function checkUserExists(email, successCallback, errorCallback) {
   ajaxCall("GET", `${usersEndpoint}/exists/${encodeURIComponent(email)}`, null, successCallback, errorCallback);
 }
