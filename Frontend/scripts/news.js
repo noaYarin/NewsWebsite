@@ -42,28 +42,36 @@ function updateMonthTitle() {
 }
 
 function loadAllNewsSections() {
-  fetchAndDisplayNews({
-    query: "world",
-    containerSelector: "#container",
-    title: "Latest News"
-  });
+  const newsPromises = [];
 
-  /* CONSTANT NEWS, maybe change later */
-  fetchAndDisplayNews({
-    query: "travel",
-    containerSelector: ".discover-articles-section"
-  });
+  newsPromises.push(
+    fetchAndDisplayNews({
+      query: "world",
+      containerSelector: "#container",
+      title: "Latest News"
+    })
+  );
+
+  newsPromises.push(
+    fetchAndDisplayNews({
+      query: "travel",
+      containerSelector: ".discover-articles-section"
+    })
+  );
 
   for (const [selector, category] of Object.entries(interestSections)) {
-    fetchAndDisplayNews({
-      category: category,
-      containerSelector: selector,
-      title: `${category.toUpperCase()} NEWS`
-    });
+    newsPromises.push(
+      fetchAndDisplayNews({
+        category: category,
+        containerSelector: selector,
+        title: `${category.toUpperCase()} NEWS`
+      })
+    );
   }
+  Promise.all(newsPromises);
 }
 
-function fetchAndDisplayNews({ category, query, containerSelector, title }) {
+async function fetchAndDisplayNews({ category, query, containerSelector, title }) {
   const container = $(containerSelector);
   if (!container.length) return;
 
@@ -89,10 +97,14 @@ function fetchAndDisplayNews({ category, query, containerSelector, title }) {
     console.error(`Error fetching news for ${containerSelector}:`, err);
   };
 
-  if (query) {
-    searchNews(query, successCallback, errorCallback);
-  } else if (category) {
-    getTopHeadlines(category, successCallback, errorCallback);
+  try {
+    if (query) {
+      await searchNews(query, successCallback, errorCallback);
+    } else if (category) {
+      await getTopHeadlines(category, successCallback, errorCallback);
+    }
+  } catch (error) {
+    console.error(`Error in fetchAndDisplayNews for ${containerSelector}:`, error);
   }
 }
 
