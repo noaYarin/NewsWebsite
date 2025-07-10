@@ -11,10 +11,8 @@ const currentUser = {
   ]
 };
 
-// For demonstration, let's assume if currentUser exists, the user is signed in.
 const isSignedIn = !!currentUser;
 
-// Mock comments to display on the page
 const mockComments = [
   {
     author: { name: "Jane Smith", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
@@ -32,7 +30,7 @@ function isUserBlocked(name, blockedUsers) {
 
 function formatContent(content) {
   if (!content) return "<p>No content available. Please read the full story on the source website.</p>";
-  const cleanedContent = content.replace(/^Skip to content\s*/, "").replace(/\s*\[\+\d+\s*chars\]\s*$/, "");
+  const cleanedContent = content.replace(/\s*\[\+\d+\s*chars\]\s*$/, "");
   return cleanedContent
     .split(/[\r\n]+/)
     .filter((p) => p.trim() !== "")
@@ -46,78 +44,26 @@ function formatDate(isoString) {
   return new Date(isoString).toLocaleDateString(undefined, options);
 }
 
-function populateTags(tags) {
-  const tagsContainer = $(".article-tags");
-  tagsContainer.empty();
-  if (tags && tags.length > 0) {
-    tags.forEach((tag) => {
-      const tagElement = `<span class="tag-item">${tag}</span>`;
-      tagsContainer.append(tagElement);
-    });
-  }
-}
-
-function populateComments(comments, blockedUsers) {
-  const commentsList = $("#comments-list");
-  commentsList.empty();
-
-  comments.forEach((comment) => {
-    let commentHtml;
-
-    if (isUserBlocked(comment.author.name, blockedUsers)) {
-      commentHtml = `
-        <div class="comment-item">
-          <div class="blocked-comment-message">
-            <span>Comment from a blocked user.</span>
-            <button class="show-comment-btn" 
-                    data-author-name="${comment.author.name}" 
-                    data-author-avatar="${comment.author.avatar}" 
-                    data-text="${comment.text}">
-              Show Comment
-            </button>
-          </div>
-        </div>
-      `;
-    } else {
-      commentHtml = `
-        <div class="comment-item">
-          <img src="${comment.author.avatar}" alt="${comment.author.name}" class="comment-avatar" />
-          <div class="comment-body">
-            <p class="comment-author">${comment.author.name}</p>
-            <p class="comment-text">${comment.text}</p>
-          </div>
-        </div>
-      `;
-    }
-    commentsList.append(commentHtml);
-  });
-}
-
 $(document).ready(function () {
-  const article = {
-    source: { id: "the-hill", name: "The Hill" },
-    author: "Ashleigh Fields",
-    title: "Judge blocks Trump from withholding EV charger infrastructure funds",
-    url: "https://thehill.com/homenews/administration/5367974-judge-blocks-trump-from-withholding-ev-funds/",
-    urlToImage: "https://thehill.com/wp-content/uploads/sites/2/2024/05/biden_joe_electric_vehicle_ev_11022022_GettyImages-1244434118.jpg?w=1280",
-    publishedAt: "2025-06-25T02:34:00Z",
-    content: "A federal judge on Tuesday issued a ruling blocking the Trump administration from withholding funds for electric vehicle charger infrastructure from 14 states.",
-    tags: ["Politics", "Electric Vehicles", "Infrastructure", "US"]
-  };
+  const articleJSON = sessionStorage.getItem("currentArticle");
+  const article = JSON.parse(articleJSON);
 
   if (article) {
     document.title = `${article.title || "Article"} | HORIZON`;
-    $(".article-source").text(article.source.name || "Unknown Source");
+    $(".article-source").text(article.source || "Unknown Source");
     $(".article-title").text(article.title || "No Title Provided");
     $(".article-author").text(`By ${article.author || "No Author Provided"}`);
-    $(".article-date").text(formatDate(article.publishedAt));
-    populateTags(article.tags);
+    $(".article-date").text(formatDate(article.published));
+
+    $(".article-tags").hide();
+
     $(".article-image")
-      .attr("src", article.urlToImage || "../sources/images/placeholder.jpg")
+      .attr("src", article.image || "../sources/images/placeholder.jpg")
       .attr("alt", article.title || "Article image");
-    $(".article-content").html(formatContent(article.content));
+    $(".article-content").html(formatContent(article.description));
     $(".read-full-article-btn").attr("href", article.url);
   } else {
+    // If no article is in storage, show an error message
     $("#article-main-content").hide();
     $("#article-error-message").show();
   }
@@ -188,3 +134,40 @@ $(document).ready(function () {
     });
   }
 });
+
+// Helper functions for comments
+function populateComments(comments, blockedUsers) {
+  const commentsList = $("#comments-list");
+  commentsList.empty();
+
+  comments.forEach((comment) => {
+    let commentHtml;
+
+    if (isUserBlocked(comment.author.name, blockedUsers)) {
+      commentHtml = `
+        <div class="comment-item">
+          <div class="blocked-comment-message">
+            <span>Comment from a blocked user.</span>
+            <button class="show-comment-btn" 
+                    data-author-name="${comment.author.name}" 
+                    data-author-avatar="${comment.author.avatar}" 
+                    data-text="${comment.text}">
+              Show Comment
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      commentHtml = `
+        <div class="comment-item">
+          <img src="${comment.author.avatar}" alt="${comment.author.name}" class="comment-avatar" />
+          <div class="comment-body">
+            <p class="comment-author">${comment.author.name}</p>
+            <p class="comment-text">${comment.text}</p>
+          </div>
+        </div>
+      `;
+    }
+    commentsList.append(commentHtml);
+  });
+}

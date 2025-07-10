@@ -1,4 +1,5 @@
 const MOBILE_BREAKPOINT = 1024;
+const SCROLL_THRESHOLD = 1200;
 
 $(document).ready(function () {
   const isIndexPage = window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/");
@@ -199,7 +200,7 @@ function setupBackToTop() {
     const scrollTop = $(window).scrollTop();
     const windowHeight = $(window).height();
 
-    if (scrollTop > 600) {
+    if (scrollTop > SCROLL_THRESHOLD) {
       $backToTop.addClass("visible");
     } else {
       $backToTop.removeClass("visible");

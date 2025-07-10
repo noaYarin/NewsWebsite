@@ -3,6 +3,7 @@ const DEFAULT_IMAGE = "../sources/images/placeholder.jpg";
 const userInterests = ["technology", "health", "sports"];
 /* const userInterests = JSON.parse(localStorage.getItem("userInterests") || "[]"); */
 
+/* might change later */
 const interestSections = {
   "#secondary-container": userInterests[0] || "business",
   ".our-picks-cards": userInterests[1] || "science",
@@ -14,6 +15,7 @@ $(document).ready(function () {
   updateMonthTitle();
   loadAllNewsSections();
 
+  // Handle click on website link to save article data in sessionStorage
   $(document).on("click", ".website-link", function (e) {
     const articleElement = $(this).closest("[data-article-index]");
     if (articleElement.length) {
@@ -46,12 +48,12 @@ function loadAllNewsSections() {
     title: "Latest News"
   });
 
+  /* CONSTANT NEWS, maybe change later */
   fetchAndDisplayNews({
-    category: "travel",
+    query: "travel",
     containerSelector: ".discover-articles-section"
   });
 
-  // Fetch news for each user interest and populate the corresponding section
   for (const [selector, category] of Object.entries(interestSections)) {
     fetchAndDisplayNews({
       category: category,
@@ -104,7 +106,6 @@ function updateArticleElement(element, article) {
     .attr("data-article-author", article.author || "Unknown Author")
     .attr("data-article-published", article.publishedAt || "");
 
-  element.find("[data-url-target]").attr("href", article.url || "#");
   element.find("[data-image-target]").attr("src", article.urlToImage || DEFAULT_IMAGE);
   element.find("[data-source-target]").text(article.source?.name || "N/A");
   element.find("[data-title-target]").text(article.title || "No title available.");
