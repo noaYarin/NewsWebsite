@@ -43,3 +43,15 @@ function registerUser(user, successCallback, errorCallback) {
 function loginUser(credentials, successCallback, errorCallback) {
   ajaxCall("POST", `${usersEndpoint}/login`, JSON.stringify(credentials), successCallback, errorCallback);
 }
+
+function getProfile(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${usersEndpoint}/profile/${userId}`, null, successCallback, errorCallback);
+}
+
+function updateProfile(userId, data, successCallback, errorCallback) {
+  ajaxCall("PUT", `${usersEndpoint}/profile/${userId}`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+function unblockUser(userId, blockedUserId, successCallback, errorCallback) {
+  ajaxCall("DELETE", `${usersEndpoint}/${userId}/blocked/${blockedUserId}`, null, successCallback, errorCallback);
+}

@@ -1,53 +1,40 @@
-const currentUser = {
-  email: "testuser@horizon.com",
-  firstName: "John",
-  lastName: "Doe",
-  birthdate: "1990-05-15",
-  imageUrl: "https://randomuser.me/api/portraits/men/75.jpg",
-  interests: ["business", "technology", "sports"],
-  blockedUsers: [
-    { id: "u001", name: "Jane Smith", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { id: "u002", name: "Mike Johnson", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-    { id: "u003", name: "Emily White", avatar: "https://randomuser.me/api/portraits/women/65.jpg" }
-  ]
-};
-
+let currentUser = null;
 let selectedInterests = [];
-let currentBlockedUsers = [];
-
-function validatePasswordMatch() {
-  const newPassword = $("#newPassword").val();
-  const confirmPassword = $("#confirmPassword").val();
-  if (newPassword !== confirmPassword) {
-    return { valid: false, message: "Passwords do not match." };
-  }
-  return { valid: true };
-}
 
 const validationMap = {
   firstName: (val) => validateName(val, "First name"),
   lastName: (val) => validateName(val, "Last name"),
   birthdate: validateBirthdate,
   imageUrl: validateImageUrl,
-  newPassword: validatePassword,
-  confirmPassword: validatePasswordMatch
+  newPassword: (val) => {
+    return val ? validatePassword(val) : { valid: true };
+  },
+  confirmPassword: () => {
+    const newPassword = $("#newPassword").val();
+    const confirmPassword = $("#confirmPassword").val();
+    if (newPassword !== confirmPassword) {
+      return { valid: false, message: "Passwords do not match." };
+    }
+    return { valid: true };
+  }
 };
 
-function populateForm(user) {
-  $("#emailDisplay").text(user.email);
-  $("#firstName").val(user.firstName);
-  $("#lastName").val(user.lastName);
-  $("#birthdate").val(user.birthdate);
-  $("#imageUrl").val(user.imageUrl);
-  $("#avatarPreview").attr("src", user.imageUrl);
+function populateForm(userProfile) {
+  $("#emailDisplay").text(userProfile.email);
+  $("#firstName").val(userProfile.firstName);
+  $("#lastName").val(userProfile.lastName);
+  $("#birthdate").val(userProfile.birthDate);
+  $("#imageUrl").val(userProfile.imageUrl);
+  $("#avatarPreview").attr("src", userProfile.imageUrl || "../sources/images/placeholder.jpg");
 
-  selectedInterests = [...user.interests];
+  selectedInterests = [...userProfile.interests];
+  $(".interest-item").removeClass("selected");
   selectedInterests.forEach((interest) => {
     $(`.interest-item[data-interest="${interest}"]`).addClass("selected");
   });
+  updateInterestSubtitle(selectedInterests.length);
 
-  currentBlockedUsers = [...user.blockedUsers];
-  populateBlockedUsersList(currentBlockedUsers);
+  populateBlockedUsersList(userProfile.blockedUsers);
 }
 
 function populateBlockedUsersList(users) {
@@ -62,7 +49,7 @@ function populateBlockedUsersList(users) {
   users.forEach((user) => {
     const userHtml = `
       <div class="blocked-user-item" data-user-id="${user.id}">
-        <img src="${user.avatar}" alt="${user.name}" class="blocked-user-avatar" />
+        <img src="${user.avatar || "../sources/images/placeholder.jpg"}" alt="${user.name}" class="blocked-user-avatar" />
         <span class="blocked-user-name">${user.name}</span>
         <button type="button" class="unblock-btn">Unblock</button>
       </div>
@@ -74,7 +61,6 @@ function populateBlockedUsersList(users) {
 function handleInterestListItemSelection(e) {
   const item = $(e.currentTarget);
   const interest = item.data("interest");
-
   item.toggleClass("selected");
 
   if (item.hasClass("selected")) {
@@ -82,27 +68,31 @@ function handleInterestListItemSelection(e) {
   } else {
     selectedInterests = selectedInterests.filter((i) => i !== interest);
   }
-
   updateInterestSubtitle(selectedInterests.length);
 }
 
 function handleUnblockUser(e) {
   const item = $(e.currentTarget).closest(".blocked-user-item");
-  const userId = item.data("user-id");
+  const blockedUserId = item.data("user-id");
 
-  item.fadeOut(300, function () {
-    $(this).remove();
-    currentBlockedUsers = currentBlockedUsers.filter((user) => user.id !== userId);
-    if (currentBlockedUsers.length === 0) {
-      populateBlockedUsersList(currentBlockedUsers);
+  unblockUser(
+    currentUser.id,
+    blockedUserId,
+    (response) => {
+      item.fadeOut(300, () => item.remove());
+    },
+    (err) => {
+      alert("Failed to unblock user.");
     }
-  });
+  );
 }
 
 function handleImagePreview() {
   const newUrl = $(this).val();
-  if (newUrl && CONFIG.VALIDATION_REGEX.URL.test(newUrl)) {
+  if (newUrl && validateImageUrl(newUrl).valid) {
     $("#avatarPreview").attr("src", newUrl);
+  } else if (!newUrl) {
+    $("#avatarPreview").attr("src", "../sources/images/placeholder.jpg");
   }
 }
 
@@ -147,41 +137,58 @@ function handleProfileUpdate(e) {
   if (selectedInterests.length < 3) {
     $("#interestsError").text("Please select at least 3 interests.").show();
     isValid = false;
-  }
-
-  if (isValid) {
-    const updatedData = {
-      firstName: $("#firstName").val(),
-      lastName: $("#lastName").val(),
-      birthdate: $("#birthdate").val(),
-      imageUrl: $("#imageUrl").val(),
-      interests: selectedInterests,
-      blockedUsers: currentBlockedUsers
-    };
-
-    if (newPassword) {
-      updatedData.newPassword = newPassword;
-    }
-
-    console.log("Updated User Data:", updatedData);
-    alert("Profile updated successfully! Check the console for the data.");
+  } else {
+    $("#interestsError").hide();
   }
 
   if (!isValid) {
     form.find(".input-error").first().focus();
+    return;
   }
+
+  const updatedData = {
+    firstName: $("#firstName").val(),
+    lastName: $("#lastName").val(),
+    birthdate: $("#birthdate").val(),
+    imageUrl: $("#imageUrl").val(),
+    interests: selectedInterests,
+    newPassword: newPassword || null
+  };
+
+  const button = $(this).find('button[type="submit"]');
+  button.text("Saving...").prop("disabled", true);
+
+  updateProfile(
+    currentUser.id,
+    updatedData,
+    (response) => {
+      alert("Profile updated successfully!");
+
+      const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+      storedUser.firstName = updatedData.firstName;
+      storedUser.lastName = updatedData.lastName;
+      storedUser.imageUrl = updatedData.imageUrl;
+      storedUser.interests = updatedData.interests;
+      localStorage.setItem("currentUser", JSON.stringify(storedUser));
+
+      currentUser = storedUser;
+
+      button.text("Save Changes").prop("disabled", false);
+    },
+    (err) => {
+      alert("Failed to update profile. Please check your inputs.");
+      button.text("Save Changes").prop("disabled", false);
+    }
+  );
 }
 
 function handlePasswordToggle() {
   const button = $(this);
   const passwordInput = button.closest(".password-input-group").find("input");
   const isPassword = passwordInput.attr("type") === "password";
-
   const cursorPosition = passwordInput[0].selectionStart;
-
   passwordInput.attr("type", isPassword ? "text" : "password");
   button.find(".password-toggle-icon").attr("src", isPassword ? "../sources/icons/eye-off-svgrepo-com.svg" : "../sources/icons/eye-svgrepo-com.svg");
-
   passwordInput.focus();
   passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
 }
@@ -189,48 +196,51 @@ function handlePasswordToggle() {
 function handleNewPasswordInput() {
   const confirmContainer = $(".confirm-password-container");
   const passwordValue = $(this).val();
-
-  if (passwordValue) {
-    confirmContainer.addClass("show");
-  } else {
-    confirmContainer.removeClass("show");
-  }
-
+  confirmContainer.toggleClass("show", !!passwordValue);
   updatePasswordCriteria(passwordValue);
 }
 
+function loadUserProfile() {
+  if (!currentUser || !currentUser.id) return;
+
+  getProfile(
+    currentUser.id,
+    (profileData) => {
+      populateForm(profileData);
+    },
+    (err) => {
+      alert("Could not load your profile data. Please log in again.");
+      localStorage.removeItem("currentUser");
+      window.location.href = "auth.html";
+    }
+  );
+}
+
 $(document).ready(function () {
+  const userJson = localStorage.getItem("currentUser");
+  if (!userJson) {
+    window.location.href = "auth.html";
+    return;
+  }
+  currentUser = JSON.parse(userJson);
+
   populateInterestsList();
-  populateForm(currentUser);
+  loadUserProfile();
 
   $(document)
-    .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()))
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
+    .on("click", ".password-toggle-btn", handlePasswordToggle)
+    .on("input", "#newPassword", handleNewPasswordInput)
+    .on("focus", "#newPassword", showPasswordCriteria)
     .on("input", ".form-group input", function () {
       clearValidationState($(this));
-    });
-
-  $(document).on("focus", "#newPassword", showPasswordCriteria);
-  $(document).on("input", "#newPassword", handleNewPasswordInput);
-  $(document).on("click", ".password-toggle-btn", handlePasswordToggle);
-
-  $(document).on("blur", "#newPassword", function (e) {
-    const relatedTarget = e.relatedTarget;
-    const isClickingToggle = $(relatedTarget).is(".password-toggle-btn");
-
-    if (isClickingToggle) {
-      return;
-    }
-
-    if (!$(this).val()) {
-      resetPasswordCriteria();
-    }
-  });
+    })
+    .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()));
 
   $("#avatarPreview").on("error", function () {
-    $(this).attr("src", "../sources/images/test.avif");
+    $(this).off("error").attr("src", "../sources/images/placeholder.jpg");
   });
 });
