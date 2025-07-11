@@ -71,7 +71,7 @@ function loadAllNewsSections() {
   Promise.all(newsPromises);
 }
 
-async function fetchAndDisplayNews({ category, query, containerSelector, title }) {
+async function fetchAndDisplayNews({ category, query, containerSelector, title, page = 1 }) {
   const container = $(containerSelector);
   if (!container.length) return;
 
@@ -99,9 +99,9 @@ async function fetchAndDisplayNews({ category, query, containerSelector, title }
 
   try {
     if (query) {
-      await searchNews(query, successCallback, errorCallback);
+      await searchNews(query, page, successCallback, errorCallback);
     } else if (category) {
-      await getTopHeadlines(category, successCallback, errorCallback);
+      await getTopHeadlines(category, page, successCallback, errorCallback);
     }
   } catch (error) {
     console.error(`Error in fetchAndDisplayNews for ${containerSelector}:`, error);

@@ -6,11 +6,11 @@ export const router = express.Router();
 const baseApiUrl = "https://newsapi.org/v2";
 
 router.get("/", async (req, res) => {
-  const query = req.query["query"];
+  const { query, page = 1, pageSize = 10 } = req.query;
   if (!query) return res.status(400).json({ error: "Must add a `query` query" });
 
   try {
-    const requestUrl = formatRequest(`/everything?q=${query}`);
+    const requestUrl = formatRequest(`/everything?q=${query}&page=${page}&pageSize=${pageSize}`);
     const { data } = await axios.get(requestUrl);
 
     const filteredArticles = data.articles.filter((article) => !article.source.name.includes("Al Jazeera"));
@@ -22,11 +22,11 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/top-headlines", async (req, res) => {
-  const category = req.query["category"];
+  const { category, page = 1, pageSize = 10 } = req.query;
   if (!category) return res.status(400).json({ error: "Must add a `category` query" });
 
   try {
-    const requestUrl = formatRequest(`/top-headlines?category=${category}`);
+    const requestUrl = formatRequest(`/top-headlines?category=${category}&page=${page}&pageSize=${pageSize}`);
     const { data } = await axios.get(requestUrl);
 
     const filteredArticles = data.articles.filter((article) => !article.source.name.includes("Al Jazeera"));

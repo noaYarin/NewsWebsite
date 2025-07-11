@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import * as http from "http";
 import morgan from "morgan";
-import { router as newsRouter } from "./routes/news.js";
+import { router as newsRouter } from "./routes/NewsRouter.js";
 
 const app = express();
 const server = http.createServer(app);

@@ -7,6 +7,8 @@ const nodeBaseUrl = `http://localhost:${nodePort}/api`;
 const usersEndpoint = `${dotnetBaseUrl}/Users`;
 const newsEndpoint = `${nodeBaseUrl}/News`;
 
+const NEWS_PAGE_SIZE = 15;
+
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({
     type: method,
@@ -21,12 +23,12 @@ function ajaxCall(method, api, data, successCB, errorCB) {
 }
 
 /* Node.js API calls */
-function searchNews(query, successCallback, errorCallback) {
-  ajaxCall("GET", `${newsEndpoint}?query=${encodeURIComponent(query)}`, null, successCallback, errorCallback);
+function searchNews(query, page = 1, successCallback, errorCallback) {
+  ajaxCall("GET", `${newsEndpoint}?query=${encodeURIComponent(query)}&page=${page}&pageSize=${NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
 }
 
-function getTopHeadlines(category, successCallback, errorCallback) {
-  ajaxCall("GET", `${newsEndpoint}/top-headlines?category=${encodeURIComponent(category)}`, null, successCallback, errorCallback);
+function getTopHeadlines(category, page = 1, successCallback, errorCallback) {
+  ajaxCall("GET", `${newsEndpoint}/top-headlines?category=${encodeURIComponent(category)}&page=${page}&pageSize=${NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
 }
 
 /* DOT.NET API calls */
