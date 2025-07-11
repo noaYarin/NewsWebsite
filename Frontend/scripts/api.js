@@ -1,8 +1,8 @@
 const dotnetPort = 7171;
 const nodePort = 3000;
 
-const dotnetBaseUrl = `http://localhost:${dotnetPort}/api`;
-const nodeBaseUrl = `http://localhost:${nodePort}/api`;
+const dotnetBaseUrl = `https://localhost:${dotnetPort}/api`;
+const nodeBaseUrl = `https://localhost:${nodePort}/api`;
 
 const usersEndpoint = `${dotnetBaseUrl}/Users`;
 const newsEndpoint = `${nodeBaseUrl}/News`;
@@ -41,5 +41,5 @@ function registerUser(user, successCallback, errorCallback) {
 }
 
 function loginUser(credentials, successCallback, errorCallback) {
-  ajaxCall("POST", `${usersEndpoint}/logIn`, JSON.stringify(credentials), successCallback, errorCallback);
+  ajaxCall("POST", `${usersEndpoint}/login`, JSON.stringify(credentials), successCallback, errorCallback);
 }

@@ -1,130 +1,50 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using Horizon.DAL;
 
-namespace Horizon.BL
+namespace Horizon.BL;
+
+public class User
 {
-    public class User
+    public int? Id { get; set; }
+    public string Email { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string BirthDate { get; set; }
+    public string? ImgUrl { get; set; }
+    public bool IsAdmin { get; set; }
+    public bool IsLocked { get; set; }
+    public string HashedPassword { get; set; }
+
+    public bool Register(List<string> tagNames)
     {
-        public int ?Id { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string BirthDate { get; set; }
-        public string ImgUrl { get; set; }
-        public bool IsAdmin { get; set; }
-        public bool IsLocked { get; set; }
-        public string HashedPassword { get; set; }
-        public List<User> ?BlockedUsers { get; set; }
-        public List<Tag> ?Tags { get; set; }
-        public List<Article> ?SavedArticles { get; set; }
+        UserService userService = new UserService();
+        TagService tagService = new TagService();
 
-        public User() { }
-
-        public List<User> Read()
+        if (!tagService.TagsExist(tagNames))
         {
-            DBservices db = new DBservices();
-            return db.GetAllUsers();
-        }
-      
-       public bool Register()
-       {
-            DBservices db = new DBservices();
-            if (!db.IsUserExists(this.Email,"",false))
-            {
-                this.HashedPassword = HashPassword(this.HashedPassword);
-                db.InsertUser(this);
-                return true;
-            }
-          
             return false;
         }
 
-
-        public static string HashPassword(string password)
+        if (userService.GetUserByEmail(this.Email, out _) != null)
         {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                Byte[] inputBytes = Encoding.UTF8.GetBytes(password);
-                Byte[] hashBytes = sha256.ComputeHash(inputBytes);
-
-                string hashedPassword = Convert.ToBase64String(hashBytes);
-                return hashedPassword;
-            }
-
-        }
-
-        public bool CheckIfUserExists(string email)
-        {
-            DBservices db = new DBservices();
-            User user = db.GetUserByEmail(email);
-            return user.Id != null;
-        }
-
-        public User LogIn(string email, string password)
-        {
-            DBservices db = new DBservices();
-            string hashedPassword = HashPassword(password);
-
-            if (db.IsUserExists(email, hashedPassword, true))
-            {
-                return db.GetUserByEmail(email);
-            }
-
-            return null;
-        }
-
-        public int AddBlockedUser(int userId, User blockedUser)
-        {
-            DBservices db = new DBservices();
-            return db.InsertBlockedUser(userId, blockedUser);
-        }
-
-        public int AddUserTags(int UserId, Tag tag)
-        {
-            DBservices db = new DBservices();
-            return db.InsertUserTags(UserId, tag);
-        }
-
-        public int SavedUserArticles(int UserId, Article article)
-        {
-            DBservices db = new DBservices();
-            return db.InsertUserSavedArticles(UserId, article);
-        }
-
-        public int DeleteSavedArticle(int userId, int articleId)
-        {
-            DBservices db = new DBservices();
-            return db.DeleteSavedArticle(userId, articleId);
-        }
-
-        public int DeleteUserTag(int userId, int articleId)
-        {
-            DBservices db = new DBservices();
-            return db.DeleteUserTag(userId, articleId);
-        }
-
-        public int DeleteBlockedUser(int userId, int blockedUserId)
-        {
-            DBservices db = new DBservices();
-            return db.DeleteBlockedUser(userId, blockedUserId);
-        }
-
-        public User GetUserById(int id)
-        {
-            DBservices db = new DBservices();
-            return db.GetUserById(id);
-        }
-
-        public bool UpdateUser(int id, User updatedUser)
-        {
-            DBservices db = new DBservices();
-            if (!db.IsUserExists(updatedUser.Email, updatedUser.HashedPassword, false))
-            {
-                updatedUser.HashedPassword = HashPassword(updatedUser.HashedPassword);
-                db.UpdateUser(id, updatedUser);
-                return true;
-            }
             return false;
         }
+
+        this.HashedPassword = BCrypt.Net.BCrypt.HashPassword(this.HashedPassword);
+        int newId = userService.InsertUserAndTags(this, tagNames);
+        return newId > 0;
+    }
+
+    public static User? Login(string email, string password, out List<string> tags)
+    {
+        UserService userService = new UserService();
+        User? userFromDb = userService.GetUserByEmail(email, out tags);
+
+        if (userFromDb != null && BCrypt.Net.BCrypt.Verify(password, userFromDb.HashedPassword))
+        {
+            return userFromDb;
+        }
+
+        tags = new List<string>();
+        return null;
     }
 }

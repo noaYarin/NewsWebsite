@@ -149,7 +149,7 @@ function handleSignin(e) {
 
   const credentials = {
     email: userEmail,
-    hashedPassword: password
+    password: password
   };
 
   button.text("Signing In...").prop("disabled", true);
@@ -158,7 +158,6 @@ function handleSignin(e) {
     credentials,
     (userData) => {
       if (userData && userData.id) {
-        delete userData.hashedPassword;
         localStorage.setItem("currentUser", JSON.stringify(userData));
         window.location.href = "index.html";
       } else {
@@ -204,33 +203,28 @@ function handleFinalSignup(e) {
     return;
   }
   const button = $(e.currentTarget).find(".auth-button");
+
   const finalUserData = {
     Email: userEmail,
     FirstName: signupData.firstName,
     LastName: signupData.lastName,
     BirthDate: signupData.birthdate,
-    HashedPassword: signupData.password,
-    ImgUrl: null,
-    IsAdmin: false,
-    IsLocked: false,
+    Password: signupData.password,
     Tags: selectedInterests.map((interestName) => ({ Name: interestName }))
   };
-  console.log("Final user data:", finalUserData);
+
   button.text("Creating Account...").prop("disabled", true);
+
   registerUser(
     finalUserData,
-    (success) => {
-      if (success) {
-        showPopup("Account created! Please sign in to continue.", true);
-        showSigninForm(userEmail);
-        cache.signinForm.find("input[name='password']").val("");
-      } else {
-        showPopup("Registration failed. Email may already be in use.", false);
-        button.text("Finish").prop("disabled", false);
-      }
+    (response) => {
+      showPopup("Account created! Please sign in to continue.", true);
+      showSigninForm(userEmail);
+      cache.signinForm.find("input[name='password']").val("");
     },
     (err) => {
-      showPopup("An error occurred during registration. Please try again.", false);
+      const errorMessage = err.responseJSON?.message || "An error occurred during registration. Please try again.";
+      showPopup(errorMessage, false);
       button.text("Finish").prop("disabled", false);
     }
   );

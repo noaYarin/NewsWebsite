@@ -1,155 +1,97 @@
 ﻿using Horizon.BL;
+using Horizon.DAL;
+using Horizon.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+using System.Text.RegularExpressions;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+namespace Horizon.Controllers;
 
-namespace Horizon.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class UsersController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public UsersController() { }
+
+    [HttpGet("exists/{email}")]
+    public IActionResult UserExists(string email)
     {
-        // GET: api/<UsersController>
-        [HttpGet]
-        public IEnumerable<User> Get()
+        var userService = new UserService();
+        bool exists = userService.GetUserByEmail(email, out _) != null;
+        return Ok(exists);
+    }
+
+    [HttpPost("register")]
+    public IActionResult Register([FromBody] RegisterRequestDto request)
+    {
+        var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+        var nameRegex = new Regex(@"^[a-zA-Z\s'-]{2,30}$");
+
+        var hasMixedCase = new Regex(@"(?=.*[a-z])(?=.*[A-Z])");
+        var hasLetterAndNumber = new Regex(@"(?=.*[a-zA-Z])(?=.*\d)");
+        var hasLetterAndSpecial = new Regex(@"(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?])");
+
+        if (string.IsNullOrEmpty(request.Email) || !emailRegex.IsMatch(request.Email))
+            return BadRequest("A valid email is required.");
+
+        if (string.IsNullOrEmpty(request.Password) || request.Password.Length < 8)
+            return BadRequest("Password must be at least 8 characters.");
+
+        if (!hasMixedCase.IsMatch(request.Password))
+            return BadRequest("Password must include both uppercase and lowercase letters.");
+
+        if (!hasLetterAndNumber.IsMatch(request.Password) && !hasLetterAndSpecial.IsMatch(request.Password))
+            return BadRequest("Password must contain letters with a number or special character.");
+
+        if (string.IsNullOrEmpty(request.FirstName) || !nameRegex.IsMatch(request.FirstName) ||
+            string.IsNullOrEmpty(request.LastName) || !nameRegex.IsMatch(request.LastName))
+            return BadRequest("First and last name are required and must be valid.");
+
+        if (string.IsNullOrEmpty(request.BirthDate) || !DateTime.TryParse(request.BirthDate, out _))
+            return BadRequest("A valid birthdate is required in YYYY-MM-DD format.");
+
+        if (request.Tags == null || request.Tags.Count < 3)
+            return BadRequest("At least 3 interests are required.");
+
+        var user = new User
         {
-            User user = new User();
-            return user.Read();
-        }
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            BirthDate = request.BirthDate,
+            HashedPassword = request.Password
+        };
 
-        // Check if user exists by email
-        [HttpGet("exists/{email}")]
-        public bool CheckUserExists(string email)
+        List<string> tagNames = request.Tags.Select(t => t.Name).ToList();
+
+        bool success = user.Register(tagNames);
+
+        if (!success)
         {
-            User user = new User();
-            return user.CheckIfUserExists(email);
+            return BadRequest("Registration failed. The user may already exist or one or more tags are invalid.");
         }
 
-        // register
-        [HttpPost("register")]
-        public bool Post([FromBody] User user)
+        return Ok(new { message = "User registered successfully." });
+    }
+
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] LoginRequestDto request)
+    {
+        User? loggedInUser = Horizon.BL.User.Login(request.Email, request.Password, out List<string> userTags);
+
+        if (loggedInUser == null)
         {
-            return user.Register();
+            return Unauthorized("Invalid email or password.");
         }
 
-        // login
-        [HttpPost("logIn")]
-        public User? Post([FromBody] JsonElement data)
+        var response = new UserResponseDto
         {
-            string email = data.GetProperty("email").GetString();
-            string password = data.GetProperty("hashedPassword").GetString();
-            User user = new User();
-            return user.LogIn(email,password);
-        }
-
-        // Add user tags
-        [HttpPost("userTags")]
-        public int InsertUserTags([FromBody] JsonElement data)
-        {
-            int userId = data.GetProperty("UserId").GetInt32();
-
-            Tag tag = new Tag
-            {
-                Name = data.GetProperty("Name").GetString()
-            };
-
-            User user = new User();
-            return user.AddUserTags(userId, tag);
-        }
-
-        //Add user articles
-
-        [HttpPost("userArticles")]
-        public int InsertUserSavedArticles([FromBody] JsonElement data)
-        {
-            int userId = data.GetProperty("UserId").GetInt32();
-
-            Article article = new Article
-            {
-                UserId = userId,
-                Title = data.GetProperty("Title").GetString(),
-                Tags = new List<Tag>(),
-                Comments = new List<Comment>(),
-                Reports = new List<Report>()
-            };
-
-            User user = new User();
-            return user.SavedUserArticles(userId, article);
-        }
-
-        // Add blocked user 
-        [HttpPost("blockedUsers")]
-        public int InsertBlockedUser([FromBody] JsonElement data)
-        {
-            int userId = data.GetProperty("UserId").GetInt32();
-
-            User blockedUser = new User
-            {
-
-                Id = userId,
-                Email = data.GetProperty("Email").GetString(),
-                FirstName = data.GetProperty("FirstName").GetString(),
-                LastName = data.GetProperty("LastName").GetString(),
-                BirthDate = data.GetProperty("BirthDate").GetString(),
-                ImgUrl = data.GetProperty("ImgUrl").GetString(),
-                IsAdmin = data.GetProperty("IsAdmin").GetBoolean(),
-                IsLocked = data.GetProperty("IsLocked").GetBoolean(),
-                HashedPassword = data.GetProperty("HashedPassword").GetString(),
-                Tags = new List<Tag>(),
-                BlockedUsers = new List<User>(),
-                SavedArticles = new List<Article>()
-            };
-
-            User user = new User();
-            return user.AddBlockedUser(userId, blockedUser);
-        }
-
-
-        // GET api/<UsersController>/5
-        [HttpGet("{id}")]
-        public User Get(int id)
-        {
-            User user = new User();
-            return user.GetUserById(id);
-        }
-
-        // PUT api/<UsersController>/5
-        [HttpPut("{id}")]
-        public bool Put(int id, [FromBody] User updatedUser)
-        {
-            User user = new User();
-            return user.UpdateUser(id, updatedUser);
-        }
-
-        // DELETE api/<UsersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
-        // Delete saved Article
-        [HttpDelete("deleteSavedArticle/{userId}/{articleId}")]
-        public int DeleteSavedArticle(int userId, int articleId)
-        {
-            User user = new User();
-            return user.DeleteSavedArticle(userId,articleId);
-        }
-
-        // Delete user tag
-        [HttpDelete("deleteUserTag/{userId}/{tagId}")]
-        public int DeleteUserTag(int userId, int tagId)
-        {
-            User user = new User();
-            return user.DeleteUserTag(userId, tagId);
-        }
-
-
-        // Delete blocked User
-        [HttpDelete("deleteBlockedUser/{userId}/{blockedUserId}")]
-        public int DeleteBlockedUser(int userId,int blockedUserId)
-        {   User user = new User();
-            return user.DeleteBlockedUser(userId, blockedUserId);
-        }
+            Id = loggedInUser.Id.Value,
+            Email = loggedInUser.Email,
+            FirstName = loggedInUser.FirstName,
+            LastName = loggedInUser.LastName,
+            ImgUrl = loggedInUser.ImgUrl,
+            Tags = userTags
+        };
+        return Ok(response);
     }
 }

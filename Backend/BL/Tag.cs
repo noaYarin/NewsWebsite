@@ -1,18 +1,17 @@
-﻿namespace Horizon.BL
+﻿namespace Horizon.BL;
+
+public class Tag
 {
-    public class Tag
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string? ImageUrl { get; set; }
+
+    public Tag() { }
+
+    public Tag(int id, string name, string? imageUrl)
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime CreateDate { get; set; }
-
-        public Tag(int id, string name, DateTime createDate)
-        {
-            Id = id;
-            Name = name;
-            CreateDate = createDate;
-        }
-
-        public Tag() { }
+        Id = id;
+        Name = name;
+        ImageUrl = imageUrl;
     }
 }

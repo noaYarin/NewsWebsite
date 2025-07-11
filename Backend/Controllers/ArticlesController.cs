@@ -9,15 +9,6 @@ namespace Horizon.Controllers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-      
-        //Get all articles
-
-        [HttpGet]
-        public IEnumerable<Article> Get()
-        {
-            Article article = new Article();
-            return article.Read();
-        }
 
         // GET api/<ArticlesController>/5
         [HttpGet("{id}")]

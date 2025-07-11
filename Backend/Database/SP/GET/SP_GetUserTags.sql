@@ -1,0 +1,9 @@
+IF OBJECT_ID('SP_GetUserTags', 'P') IS NOT NULL DROP PROCEDURE SP_GetUserTags;
+GO
+CREATE PROCEDURE SP_GetUserTags @UserId INT
+AS BEGIN
+    SELECT T.Name FROM Tags T
+    INNER JOIN UserTags UT ON T.Id = UT.TagId
+    WHERE UT.UserId = @UserId;
+END
+GO
