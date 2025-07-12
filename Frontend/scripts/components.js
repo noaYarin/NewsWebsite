@@ -1,10 +1,19 @@
 const MOBILE_BREAKPOINT = 1024;
 const SCROLL_THRESHOLD = 1200;
 
+function getNavHref(targetPage) {
+  const currentPath = window.location.pathname;
+
+  if (currentPath.includes(`${targetPage}.html`) || (targetPage === "index" && (currentPath.includes("index.html") || currentPath.endsWith("/")))) {
+    return "#";
+  }
+
+  return `../html/${targetPage}.html`;
+}
+
 $(document).ready(function () {
-  const isIndexPage = window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/");
   const isAuthPage = window.location.pathname.includes("auth.html");
-  const logoHref = isIndexPage ? "#" : "index.html";
+  const logoHref = getNavHref("index");
 
   const currentUser = getCurrentUser();
   const isLoggedIn = currentUser !== null;
@@ -147,27 +156,27 @@ $(document).ready(function () {
       </div>
       <div class="nav-profile-menu-content">
         <ul class="nav-profile-menu-items">
-          <li><a href="${isIndexPage ? "#" : "../html/index.html"}" class="nav-profile-menu-item">
+          <li><a href="${getNavHref("index")}" class="nav-profile-menu-item">
             <img class="nav-profile-menu-icon" src="../sources/icons/home-svgrepo-com.svg"></img>
             <span>Home</span>
           </a></li>
-          <li><a href="#" class="nav-profile-menu-item">
+          <li><a href="#" class="nav-profile-menu-item nav-profile-menu-search">
             <img class="nav-profile-menu-icon" src="../sources/icons/search-svgrepo-com-menu.svg"></img>
             <span>Search</span>
           </a></li>
-          <li><a href="../html/notifications.html" class="nav-profile-menu-item">
+          <li><a href="${getNavHref("notifications")}" class="nav-profile-menu-item">
             <img class="nav-profile-menu-icon" src="../sources/icons/notifications-svgrepo-com.svg"></img>
             <span>Notifications</span>
           </a></li>
-          <li><a href="#" class="nav-profile-menu-item">
+          <li><a href="${getNavHref("bookmarks")}" class="nav-profile-menu-item">
             <img class="nav-profile-menu-icon" src="../sources/icons/bookmarks-svgrepo-com.svg"></img>
             <span>Bookmarks</span>
           </a></li>
-          <li><a href="#" class="nav-profile-menu-item">
-            <span class="nav-profile-menu-icon">❤️</span>
-            <span>Saved Articles</span>
+          <li><a href="${getNavHref("messages")}" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/messages-2-svgrepo-com.svg"></img>
+            <span>Messages</span>
           </a></li>
-          <li><a href="../html/profile.html" class="nav-profile-menu-item">
+          <li><a href="${getNavHref("profile")}" class="nav-profile-menu-item">
             <img class="nav-profile-menu-icon" src="../sources/icons/user-svgrepo-com.svg"></img>
             <span>Profile Settings</span>
           </a></li>
@@ -201,7 +210,6 @@ $(document).ready(function () {
     setupBackToTop();
   }
 
-  // Setup profile menu events
   setupProfileMenu();
 });
 
@@ -216,30 +224,25 @@ function getCurrentUser() {
 }
 
 function setupProfileMenu() {
-  // Profile picture click handlers
   $(document).on("click", ".nav-profile-picture", function (e) {
     e.preventDefault();
     toggleProfileMenu();
   });
 
-  // Profile menu close handler
   $(document).on("click", ".nav-profile-menu-close", function () {
     toggleProfileMenu();
   });
 
-  // Logout handler
   $(document).on("click", ".nav-profile-logout-btn", function () {
     logout();
   });
 
-  // Close profile menu when clicking outside
   $(document).on("click", function (e) {
     if ($("#profileMenu").hasClass("active") && !$(e.target).closest("#profileMenu").length && !$(e.target).closest(".nav-profile-picture").length) {
       toggleProfileMenu();
     }
   });
 
-  // Keyboard handler for profile menu
   $(document).on("keydown", function (e) {
     if (e.key === "Escape" && $("#profileMenu").hasClass("active")) {
       toggleProfileMenu();
@@ -263,7 +266,6 @@ function logout() {
     localStorage.removeItem("currentUser");
     showPopup("Logged out successfully!", true);
 
-    // Reload page to update UI
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -277,7 +279,6 @@ function setupEventHandlers() {
   let debounceTimer;
   let lastQuery = "";
 
-  // keyboard handler (Esc to close)
   $(document).on("keydown", function (e) {
     if (e.key === "Escape") {
       if ($("#searchOverlay").hasClass("active")) toggleSearch();
@@ -293,6 +294,7 @@ function setupEventHandlers() {
     if ($(window).width() > MOBILE_BREAKPOINT && $("#profileMenu").hasClass("active")) {
       toggleProfileMenu();
     }
+
     // Refocus on search input when resizing with overlay open
     if ($("#searchOverlay").hasClass("active")) {
       setTimeout(() => {
@@ -307,6 +309,13 @@ function setupEventHandlers() {
 
   $(document).on("click", ".mobile-menu-btn, .mobile-menu-header .close-btn", toggleMobileMenu);
   $(document).on("click", ".nav-right .search-icon, .close-search, .mobile-close-search", toggleSearch);
+  $(document).on("click", ".nav-profile-menu-search", function (e) {
+    e.preventDefault();
+    if ($("#profileMenu").hasClass("active")) {
+      toggleProfileMenu();
+    }
+    toggleSearch();
+  });
 
   $(document).on("click", ".mobile-menu-header .search-icon", function () {
     if ($("#mobileMenu").hasClass("active")) {
@@ -315,7 +324,6 @@ function setupEventHandlers() {
     toggleSearch();
   });
 
-  // Debounced search on typing
   $(document).on("input", ".search-input, .mobile-search-input", function () {
     clearTimeout(debounceTimer);
     const query = $(this).val().trim();
@@ -325,7 +333,6 @@ function setupEventHandlers() {
     }, 500);
   });
 
-  // Immediate search on "Enter" key press
   $(document).on("keydown", ".search-input, .mobile-search-input", function (e) {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -358,7 +365,7 @@ function setupEventHandlers() {
 
 function setupAuthNavLinks() {
   $(document).on("click", ".login-btn, .mobile-login-btn", () => {
-    window.location.href = "auth.html";
+    window.location.href = getNavHref("auth");
   });
 
   $(document).on("click", ".subscribe-btn, .mobile-subscribe-btn", () => {

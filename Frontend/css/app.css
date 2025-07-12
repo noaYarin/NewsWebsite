@@ -266,6 +266,16 @@ input:focus {
   pointer-events: auto;
 }
 
+@media (max-width: 768px) {
+  .popup {
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+}
+
 /* --------------------
    Utility Classes
    -------------------- */
