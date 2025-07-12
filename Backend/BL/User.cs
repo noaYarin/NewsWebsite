@@ -14,24 +14,24 @@ public class User
     public bool IsLocked { get; set; }
     public string HashedPassword { get; set; }
 
-    public bool Register(List<string> tagNames)
+    public string Register(List<string> tagNames)
     {
         UserService userService = new UserService();
         TagService tagService = new TagService();
 
         if (!tagService.TagsExist(tagNames))
         {
-            return false;
+            return "INVALID_TAGS";
         }
 
         if (userService.GetUserByEmail(this.Email, out _) != null)
         {
-            return false;
+            return "USER_EXISTS";
         }
 
         this.HashedPassword = BCrypt.Net.BCrypt.HashPassword(this.HashedPassword);
         int newId = userService.InsertUserAndTags(this, tagNames);
-        return newId > 0;
+        return newId > 0 ? "SUCCESS" : "GENERIC_FAILURE";
     }
 
     public static User? Login(string email, string password, out List<string> tags)

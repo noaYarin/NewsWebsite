@@ -1,6 +1,7 @@
 ﻿using Horizon.BL;
 using Horizon.DAL;
 using Horizon.DTOs;
+using Horizon.Validators;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 
@@ -23,33 +24,11 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register([FromBody] RegisterRequestDto request)
     {
-        var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-        var nameRegex = new Regex(@"^[a-zA-Z\s'-]{2,30}$");
-        var hasMixedCase = new Regex(@"(?=.*[a-z])(?=.*[A-Z])");
-        var hasLetterAndNumber = new Regex(@"(?=.*[a-zA-Z])(?=.*\d)");
-        var hasLetterAndSpecial = new Regex(@"(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?])");
-
-        if (string.IsNullOrEmpty(request.Email) || !emailRegex.IsMatch(request.Email))
-            return BadRequest("A valid email is required.");
-
-        if (string.IsNullOrEmpty(request.Password) || request.Password.Length < 8)
-            return BadRequest("Password must be at least 8 characters.");
-
-        if (!hasMixedCase.IsMatch(request.Password))
-            return BadRequest("Password must include both uppercase and lowercase letters.");
-
-        if (!hasLetterAndNumber.IsMatch(request.Password) && !hasLetterAndSpecial.IsMatch(request.Password))
-            return BadRequest("Password must contain letters with a number or special character.");
-
-        if (string.IsNullOrEmpty(request.FirstName) || !nameRegex.IsMatch(request.FirstName) ||
-            string.IsNullOrEmpty(request.LastName) || !nameRegex.IsMatch(request.LastName))
-            return BadRequest("First and last name are required and must be valid.");
-
-        if (string.IsNullOrEmpty(request.BirthDate) || !DateTime.TryParse(request.BirthDate, out _))
-            return BadRequest("A valid birthdate is required in YYYY-MM-DD format.");
-
-        if (request.Tags == null || request.Tags.Count < 3)
-            return BadRequest("At least 3 interests are required.");
+        List<string> validationErrors = RequestValidator.ValidateRegistrationRequest(request);
+        if (validationErrors.Any())
+        {
+            return BadRequest(new { errors = validationErrors });
+        }
 
         var user = new User
         {
@@ -61,13 +40,16 @@ public class UsersController : ControllerBase
         };
 
         List<string> tagNames = request.Tags.Select(t => t.Name).ToList();
+        string result = user.Register(tagNames);
 
-        bool success = user.Register(tagNames);
+        if (result == "USER_EXISTS")
+            return Conflict("This email address is already in use.");
 
-        if (!success)
-        {
-            return BadRequest("Registration failed. The user may already exist or one or more tags are invalid.");
-        }
+        if (result == "INVALID_TAGS")
+            return BadRequest("One or more selected interests are invalid.");
+
+        if (result != "SUCCESS")
+            return BadRequest("Registration failed due to an unknown error.");
 
         return Ok(new { message = "User registered successfully." });
     }
@@ -119,35 +101,11 @@ public class UsersController : ControllerBase
     [HttpPut("profile/{id}")]
     public IActionResult UpdateProfile(int id, [FromBody] UpdateProfileRequestDto request)
     {
-        var nameRegex = new Regex(@"^[a-zA-Z\s'-]{2,30}$");
-        var urlRegex = new Regex(@"^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$");
-
-        if (string.IsNullOrEmpty(request.FirstName) || !nameRegex.IsMatch(request.FirstName) ||
-            string.IsNullOrEmpty(request.LastName) || !nameRegex.IsMatch(request.LastName))
-            return BadRequest("First and last name are required and must be valid.");
-
-        if (string.IsNullOrEmpty(request.BirthDate) || !DateTime.TryParse(request.BirthDate, out _))
-            return BadRequest("A valid birthdate is required.");
-
-        if (!string.IsNullOrEmpty(request.ImageUrl) && !urlRegex.IsMatch(request.ImageUrl))
-            return BadRequest("The image URL is not a valid URL.");
-
-        if (!string.IsNullOrEmpty(request.NewPassword))
+        List<string> validationErrors = RequestValidator.ValidateProfileUpdateRequest(request);
+        if (validationErrors.Any())
         {
-            var hasMixedCase = new Regex(@"(?=.*[a-z])(?=.*[A-Z])");
-            var hasLetterAndNumber = new Regex(@"(?=.*[a-zA-Z])(?=.*\d)");
-            var hasLetterAndSpecial = new Regex(@"(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?])");
-
-            if (request.NewPassword.Length < 8)
-                return BadRequest("New password must be at least 8 characters.");
-            if (!hasMixedCase.IsMatch(request.NewPassword))
-                return BadRequest("New password must include both uppercase and lowercase letters.");
-            if (!hasLetterAndNumber.IsMatch(request.NewPassword) && !hasLetterAndSpecial.IsMatch(request.NewPassword))
-                return BadRequest("New password must contain letters with a number or special character.");
+            return BadRequest(new { errors = validationErrors });
         }
-
-        if (request.Interests == null || request.Interests.Count < 3)
-            return BadRequest("At least 3 interests are required.");
 
         try
         {
