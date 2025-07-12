@@ -2,7 +2,7 @@ const dotnetPort = 7171;
 const nodePort = 3000;
 
 const dotnetBaseUrl = `https://localhost:${dotnetPort}/api`;
-const nodeBaseUrl = `https://localhost:${nodePort}/api`;
+const nodeBaseUrl = `http://localhost:${nodePort}/api`;
 
 const usersEndpoint = `${dotnetBaseUrl}/Users`;
 const newsEndpoint = `${nodeBaseUrl}/News`;
