@@ -27,8 +27,8 @@ public class UserResponseDto
     public string Email { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string? ImgUrl { get; set; }
-    public List<string> Tags { get; set; }
+    public string? ImageUrl { get; set; }
+    public List<string> Interests { get; set; }
 }
 
 public class BlockedUserDto

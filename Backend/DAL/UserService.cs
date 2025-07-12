@@ -73,7 +73,7 @@ public class UserService : DBService
                         LastName = reader["LastName"].ToString(),
                         HashedPassword = reader["HashedPassword"].ToString(),
                         BirthDate = reader["BirthDate"].ToString(),
-                        ImgUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
+                        ImageUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
                         IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
                         IsLocked = Convert.ToBoolean(reader["IsLocked"])
                     };
@@ -111,7 +111,7 @@ public class UserService : DBService
                         LastName = reader["LastName"].ToString(),
                         HashedPassword = reader["HashedPassword"].ToString(),
                         BirthDate = reader["BirthDate"].ToString(),
-                        ImgUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
+                        ImageUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
                         IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
                         IsLocked = Convert.ToBoolean(reader["IsLocked"])
                     };

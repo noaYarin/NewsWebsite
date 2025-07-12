@@ -6,6 +6,9 @@ $(document).ready(function () {
   const isAuthPage = window.location.pathname.includes("auth.html");
   const logoHref = isIndexPage ? "#" : "index.html";
 
+  const currentUser = getCurrentUser();
+  const isLoggedIn = currentUser !== null;
+
   const htmlSnippets = {
     navbar: `
       <div class="nav-left">
@@ -28,9 +31,20 @@ $(document).ready(function () {
           <li><a href="#">Technology</a></li>
           <li><a href="#">More</a></li>
         </ul>
-      </div>      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
+      </div>
+      <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
         <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" />
-        <button class="login-btn">Log In</button>
+        ${
+          isLoggedIn
+            ? `
+          <div class="nav-profile-container">
+            <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
+          </div>
+        `
+            : `
+          <button class="login-btn">Log In</button>
+        `
+        }
         <button class="subscribe-btn"><span>Subscribe</span></button>
       </div>
       <div class="search-overlay" id="searchOverlay">
@@ -50,8 +64,19 @@ $(document).ready(function () {
           <button class="close-search">
             <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
           </button>
-        </div>        <div class="nav-right">
-          <button class="login-btn">Log In</button>
+        </div>
+        <div class="nav-right">
+          ${
+            isLoggedIn
+              ? `
+            <div class="nav-profile-container">
+              <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
+            </div>
+          `
+              : `
+            <button class="login-btn">Log In</button>
+          `
+          }
           <button class="subscribe-btn"><span>Subscribe</span></button>
         </div>
         <div class="mobile-search-header">
@@ -83,8 +108,15 @@ $(document).ready(function () {
         <li><a href="#">Sports</a></li>
         <li><a href="#">Technology</a></li>
         <li><a href="#">More</a></li>
-      </ul>      <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
-        <button class="mobile-login-btn">LOG IN</button>
+      </ul>
+      <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
+        ${
+          isLoggedIn
+            ? ``
+            : `
+          <button class="mobile-login-btn">LOG IN</button>
+        `
+        }
         <button class="mobile-subscribe-btn">SUBSCRIBE</button>
       </div>
     `,
@@ -99,8 +131,56 @@ $(document).ready(function () {
           <span>Copyright © 2015-2025 Horizon Partners, LLC. All rights reserved</span>
         </div>
       </div>
+    `,
+    profileMenu: `
+      <div class="nav-profile-menu-header">
+        <div class="nav-profile-info">
+          <img src="${isLoggedIn ? currentUser.imageUrl : ""}" alt="Profile" class="nav-profile-menu-picture" />
+          <div class="nav-profile-details">
+            <h3>${isLoggedIn ? currentUser.firstName + " " + currentUser.lastName : ""}</h3>
+            <p>${isLoggedIn ? currentUser.email : ""}</p>
+          </div>
+        </div>
+        <button class="nav-profile-menu-close">
+          <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
+        </button>
+      </div>
+      <div class="nav-profile-menu-content">
+        <ul class="nav-profile-menu-items">
+          <li><a href="${isIndexPage ? "#" : "../html/index.html"}" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/home-svgrepo-com.svg"></img>
+            <span>Home</span>
+          </a></li>
+          <li><a href="#" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/search-svgrepo-com-menu.svg"></img>
+            <span>Search</span>
+          </a></li>
+          <li><a href="../html/notifications.html" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/notifications-svgrepo-com.svg"></img>
+            <span>Notifications</span>
+          </a></li>
+          <li><a href="#" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/bookmarks-svgrepo-com.svg"></img>
+            <span>Bookmarks</span>
+          </a></li>
+          <li><a href="#" class="nav-profile-menu-item">
+            <span class="nav-profile-menu-icon">❤️</span>
+            <span>Saved Articles</span>
+          </a></li>
+          <li><a href="../html/profile.html" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/user-svgrepo-com.svg"></img>
+            <span>Profile Settings</span>
+          </a></li>
+        </ul>
+      </div>
+      <div class="nav-profile-menu-footer">
+        <button class="nav-profile-logout-btn">
+          <span>Log Out</span>
+        </button>
+      </div>
     `
   };
+  // TODO: Remember to make notifications show an icon when there are new notifications and change the icon based on that to - notifications-alert-svgrepo-com.svg
 
   for (const id in htmlSnippets) {
     const $element = $(`#${id}`);
@@ -120,7 +200,78 @@ $(document).ready(function () {
   if ($(window).width() > MOBILE_BREAKPOINT) {
     setupBackToTop();
   }
+
+  // Setup profile menu events
+  setupProfileMenu();
 });
+
+function getCurrentUser() {
+  try {
+    const userData = localStorage.getItem("currentUser");
+    return userData ? JSON.parse(userData) : null;
+  } catch (error) {
+    console.error("Error parsing user data from localStorage:", error);
+    return null;
+  }
+}
+
+function setupProfileMenu() {
+  // Profile picture click handlers
+  $(document).on("click", ".nav-profile-picture", function (e) {
+    e.preventDefault();
+    toggleProfileMenu();
+  });
+
+  // Profile menu close handler
+  $(document).on("click", ".nav-profile-menu-close", function () {
+    toggleProfileMenu();
+  });
+
+  // Logout handler
+  $(document).on("click", ".nav-profile-logout-btn", function () {
+    logout();
+  });
+
+  // Close profile menu when clicking outside
+  $(document).on("click", function (e) {
+    if ($("#profileMenu").hasClass("active") && !$(e.target).closest("#profileMenu").length && !$(e.target).closest(".nav-profile-picture").length) {
+      toggleProfileMenu();
+    }
+  });
+
+  // Keyboard handler for profile menu
+  $(document).on("keydown", function (e) {
+    if (e.key === "Escape" && $("#profileMenu").hasClass("active")) {
+      toggleProfileMenu();
+    }
+  });
+}
+
+function toggleProfileMenu() {
+  const $profileMenu = $("#profileMenu");
+
+  if (!$profileMenu.length) {
+    console.warn("Profile menu (#profileMenu) not found. Cannot toggle.");
+    return;
+  }
+
+  $profileMenu.toggleClass("active");
+}
+
+function logout() {
+  try {
+    localStorage.removeItem("currentUser");
+    showPopup("Logged out successfully!", true);
+
+    // Reload page to update UI
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  } catch (error) {
+    console.error("Error during logout:", error);
+    showPopup("Error during logout. Please try again.", false);
+  }
+}
 
 function setupEventHandlers() {
   let debounceTimer;
@@ -131,12 +282,16 @@ function setupEventHandlers() {
     if (e.key === "Escape") {
       if ($("#searchOverlay").hasClass("active")) toggleSearch();
       if ($("#mobileMenu").hasClass("active")) toggleMobileMenu();
+      if ($("#profileMenu").hasClass("active")) toggleProfileMenu();
     }
   });
 
   $(window).on("resize", function () {
     if ($(window).width() > MOBILE_BREAKPOINT && $("#mobileMenu").hasClass("active")) {
       toggleMobileMenu();
+    }
+    if ($(window).width() > MOBILE_BREAKPOINT && $("#profileMenu").hasClass("active")) {
+      toggleProfileMenu();
     }
     // Refocus on search input when resizing with overlay open
     if ($("#searchOverlay").hasClass("active")) {
@@ -317,10 +472,7 @@ function showPopup(message, colorFlag) {
     $popup.remove();
   }
 
-  $popup = $("<div></div>").attr("id", "popup").addClass("popup").addClass(colorFlag).text(message).css({
-    "z-index": "10001"
-  });
-
+  $popup = $("<div></div>").attr("id", "popup").addClass("popup").addClass(colorFlag).text(message);
   $("body").append($popup);
 
   $popup[0].offsetHeight;

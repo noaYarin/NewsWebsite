@@ -56,6 +56,13 @@
 }
 
 /* --------------------
+    Profile Form
+   -------------------- */
+input[type="date"] {
+  color: var(--c-dark);
+}
+
+/* --------------------
    Component: Confirm Password
    -------------------- */
 .confirm-password-container {

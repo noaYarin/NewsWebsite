@@ -70,8 +70,8 @@ public class UsersController : ControllerBase
             Email = loggedInUser.Email,
             FirstName = loggedInUser.FirstName,
             LastName = loggedInUser.LastName,
-            ImgUrl = loggedInUser.ImgUrl,
-            Tags = userTags
+            ImageUrl = loggedInUser.ImageUrl,
+            Interests = userTags
         };
         return Ok(response);
     }
@@ -91,7 +91,7 @@ public class UsersController : ControllerBase
             FirstName = user.FirstName,
             LastName = user.LastName,
             BirthDate = user.BirthDate,
-            ImageUrl = user.ImgUrl,
+            ImageUrl = user.ImageUrl,
             Interests = interests,
             BlockedUsers = new List<BlockedUserDto>()
         };
