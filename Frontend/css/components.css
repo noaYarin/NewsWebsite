@@ -295,6 +295,7 @@
   color: var(--c-dark);
   font-size: 18px;
   font-weight: 500;
+  min-height: 80px;
 }
 
 .mobile-nav-items a::after {
@@ -317,6 +318,7 @@
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
+  min-height: 50px;
 }
 
 .mobile-subscribe-btn {
@@ -567,6 +569,17 @@
   margin: 0;
 }
 
+.nav-profile-menu-items a {
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  text-decoration: none;
+  color: var(--c-dark);
+  font-size: 18px;
+  font-weight: 500;
+  min-height: 80px;
+}
+
 .nav-profile-menu-items li {
   border-bottom: 1px solid var(--c-border-light);
   transition: background-color var(--transition-fast);
@@ -620,6 +633,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  min-height: 50px;
 }
 
 .nav-profile-logout-btn:hover {
