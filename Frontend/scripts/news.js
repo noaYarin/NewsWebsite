@@ -1,4 +1,4 @@
-const DEFAULT_IMAGE = "../sources/images/placeholder.jpg";
+const DEFAULT_IMAGE = "../sources/images/placeholder.png";
 
 const userInterests = ["technology", "health", "sports"];
 /* const userInterests = JSON.parse(localStorage.getItem("userInterests") || "[]"); */

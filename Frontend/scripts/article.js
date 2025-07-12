@@ -58,7 +58,7 @@ $(document).ready(function () {
     $(".article-tags").hide();
 
     $(".article-image")
-      .attr("src", article.image || "../sources/images/placeholder.jpg")
+      .attr("src", article.image || "../sources/images/placeholder.png")
       .attr("alt", article.title || "Article image");
     $(".article-content").html(formatContent(article.description));
     $(".read-full-article-btn").attr("href", article.url);

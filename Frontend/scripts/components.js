@@ -216,7 +216,11 @@ $(document).ready(function () {
 function getCurrentUser() {
   try {
     const userData = localStorage.getItem("currentUser");
-    return userData ? JSON.parse(userData) : null;
+    const user = userData ? JSON.parse(userData) : null;
+    if (user && !user.imageUrl) {
+      user.imageUrl = "../sources/images/no-image.png";
+    }
+    return user;
   } catch (error) {
     console.error("Error parsing user data from localStorage:", error);
     return null;

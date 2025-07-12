@@ -25,7 +25,7 @@ function populateForm(userProfile) {
   $("#lastName").val(userProfile.lastName);
   $("#birthdate").val(userProfile.birthDate);
   $("#imageUrl").val(userProfile.imageUrl);
-  $("#avatarPreview").attr("src", userProfile.imageUrl || "../sources/images/placeholder.jpg");
+  $("#avatarPreview").attr("src", userProfile.imageUrl || "../sources/images/no-image.png");
 
   selectedInterests = [...userProfile.interests];
   $(".interest-item").removeClass("selected");
@@ -49,7 +49,7 @@ function populateBlockedUsersList(users) {
   users.forEach((user) => {
     const userHtml = `
       <div class="blocked-user-item" data-user-id="${user.id}">
-        <img src="${user.avatar || "../sources/images/placeholder.jpg"}" alt="${user.name}" class="blocked-user-avatar" />
+        <img src="${user.avatar || "../sources/images/no-image.png"}" alt="${user.name}" class="blocked-user-avatar" />
         <span class="blocked-user-name">${user.name}</span>
         <button type="button" class="unblock-btn">Unblock</button>
       </div>
@@ -92,7 +92,7 @@ function handleImagePreview() {
   if (newUrl && validateImageUrl(newUrl).valid) {
     $("#avatarPreview").attr("src", newUrl);
   } else if (!newUrl) {
-    $("#avatarPreview").attr("src", "../sources/images/placeholder.jpg");
+    $("#avatarPreview").attr("src", "../sources/images/no-image.png");
   }
 }
 
@@ -241,6 +241,6 @@ $(document).ready(function () {
     .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()));
 
   $("#avatarPreview").on("error", function () {
-    $(this).off("error").attr("src", "../sources/images/placeholder.jpg");
+    $(this).off("error").attr("src", "../sources/images/no-image.png");
   });
 });
