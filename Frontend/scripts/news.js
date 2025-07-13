@@ -48,7 +48,7 @@ function loadAllNewsSections() {
     fetchAndDisplayNews({
       query: "world",
       containerSelector: "#container",
-      title: "Latest News"
+      title: "LATEST NEWS"
     })
   );
 
