@@ -1,37 +1,79 @@
 const DEFAULT_IMAGE = "../sources/images/placeholder.png";
+const userInterests = JSON.parse(localStorage.getItem("currentUser") || "{}").interests || ["business", "science", "entertainment"];
 
-const userInterests = ["technology", "health", "sports"];
-/* const userInterests = JSON.parse(localStorage.getItem("userInterests") || "[]"); */
-
-/* might change later */
 const interestSections = {
-  "#secondary-container": userInterests[0] || "business",
-  ".our-picks-cards": userInterests[1] || "science",
-  "#third-container": userInterests[2] || "entertainment",
+  "#secondary-container": userInterests[0],
+  ".our-picks-cards": userInterests[1],
+  "#third-container": userInterests[2],
   "#fourth-container": "general"
 };
 
 $(document).ready(function () {
-  updateMonthTitle();
-  loadAllNewsSections();
-
-  // Handle click on website link to save article data in sessionStorage
   $(document).on("click", ".website-link", function (e) {
     const articleElement = $(this).closest("[data-article-index]");
-    if (articleElement.length) {
-      const articleData = {
-        title: articleElement.data("article-title"),
-        description: articleElement.data("article-description"),
-        url: articleElement.data("article-url"),
-        image: articleElement.data("article-image"),
-        source: articleElement.data("article-source"),
-        author: articleElement.data("article-author"),
-        published: articleElement.data("article-published")
-      };
+    if (articleElement.length && articleElement.data("article-object")) {
+      const articleData = articleElement.data("article-object");
       sessionStorage.setItem("currentArticle", JSON.stringify(articleData));
     }
   });
+
+  updateMonthTitle();
+  loadAllNewsSections();
 });
+
+async function loadAllNewsSections() {
+  await fetchAndDisplayNews({ query: "world", containerSelector: "#container", title: "LATEST NEWS" });
+
+  for (const [selector, category] of Object.entries(interestSections)) {
+    await fetchAndDisplayNews({ category, containerSelector: selector, title: `${category.toUpperCase()} NEWS` });
+  }
+}
+
+async function fetchAndDisplayNews({ category, query, containerSelector }) {
+  const container = $(containerSelector);
+  if (!container.length) return;
+
+  try {
+    let response;
+    if (query) {
+      response = await searchNews(query);
+    } else if (category) {
+      response = await getTopHeadlines(category);
+    }
+
+    const articlesFromApi = response.data
+      .filter((a) => a.url && a.title && a.urlToImage)
+      .map((a) => ({
+        Title: a.title,
+        Url: a.url,
+        Description: a.description,
+        ImageUrl: a.urlToImage,
+        Author: a.author,
+        SourceName: a.source.name,
+        PublishedAt: a.publishedAt,
+        Category: a.category
+      }));
+
+    const syncedArticles = await syncArticles(articlesFromApi);
+
+    const articleElements = container.find("[data-article-index]");
+    articleElements.each(function (index) {
+      if (index < syncedArticles.length) {
+        updateArticleElement($(this), syncedArticles[index]);
+      }
+    });
+  } catch (err) {
+    console.error(`Error fetching or syncing news for ${containerSelector}:`, err);
+  }
+}
+
+function updateArticleElement(element, article) {
+  element.data("article-object", article);
+
+  element.find("[data-image-target]").attr("src", article.imageUrl || DEFAULT_IMAGE);
+  element.find("[data-source-target]").text(article.sourceName || "N/A");
+  element.find("[data-title-target]").text(article.title || "No title available.");
+}
 
 function updateMonthTitle() {
   const now = new Date();
@@ -39,88 +81,4 @@ function updateMonthTitle() {
   const currentMonth = monthNames[now.getMonth()];
   const currentYear = now.getFullYear();
   $("#month-title").text(`${currentMonth} ${currentYear} NEWS`);
-}
-
-function loadAllNewsSections() {
-  const newsPromises = [];
-
-  newsPromises.push(
-    fetchAndDisplayNews({
-      query: "world",
-      containerSelector: "#container",
-      title: "LATEST NEWS"
-    })
-  );
-
-  newsPromises.push(
-    fetchAndDisplayNews({
-      query: "travel",
-      containerSelector: ".discover-articles-section"
-    })
-  );
-
-  for (const [selector, category] of Object.entries(interestSections)) {
-    newsPromises.push(
-      fetchAndDisplayNews({
-        category: category,
-        containerSelector: selector,
-        title: `${category.toUpperCase()} NEWS`
-      })
-    );
-  }
-  Promise.all(newsPromises);
-}
-
-async function fetchAndDisplayNews({ category, query, containerSelector, title, page = 1 }) {
-  const container = $(containerSelector);
-  if (!container.length) return;
-
-  if (title) {
-    const titleElement = container.find(".titles h1").first();
-    if (titleElement.length) {
-      titleElement.text(title);
-    }
-  }
-
-  const successCallback = (response) => {
-    const articles = response.data.filter((article) => article.urlToImage && article.title && article.description);
-    const articleElements = container.find("[data-article-index]");
-
-    articleElements.each(function (index) {
-      if (index < articles.length) {
-        updateArticleElement($(this), articles[index]);
-      }
-    });
-  };
-
-  const errorCallback = (err) => {
-    console.error(`Error fetching news for ${containerSelector}:`, err);
-  };
-
-  try {
-    if (query) {
-      await searchNews(query, page, successCallback, errorCallback);
-    } else if (category) {
-      await getTopHeadlines(category, page, successCallback, errorCallback);
-    }
-  } catch (error) {
-    console.error(`Error in fetchAndDisplayNews for ${containerSelector}:`, error);
-  }
-}
-
-function updateArticleElement(element, article) {
-  element
-    .attr("data-article-url", article.url || "#")
-    .attr("data-article-title", article.title || "")
-    .attr("data-article-description", article.description || "")
-    .attr("data-article-image", article.urlToImage || DEFAULT_IMAGE)
-    .attr("data-article-source", article.source?.name || "N/A")
-    .attr("data-article-author", article.author || "Unknown Author")
-    .attr("data-article-published", article.publishedAt || "");
-
-  element.find("[data-image-target]").attr("src", article.urlToImage || DEFAULT_IMAGE);
-  element.find("[data-source-target]").text(article.source?.name || "N/A");
-  element.find("[data-title-target]").text(article.title || "No title available.");
-  element.find("[data-description-target]").text(article.description || "");
-  element.find("[data-author-target]").text(article.author || "Unknown Author");
 }
