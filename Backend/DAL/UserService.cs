@@ -7,7 +7,7 @@ namespace Horizon.DAL;
 
 public class UserService : DBService
 {
-    private User MapReaderToUser(SqlDataReader reader)
+    static private User MapReaderToUser(SqlDataReader reader)
     {
         return new User
         {

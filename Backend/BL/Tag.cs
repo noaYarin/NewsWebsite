@@ -1,4 +1,6 @@
-﻿namespace Horizon.BL;
+﻿using Horizon.DAL;
+
+namespace Horizon.BL;
 
 public class Tag
 {
@@ -13,5 +15,11 @@ public class Tag
         Id = id;
         Name = name;
         ImageUrl = imageUrl;
+    }
+
+    public static bool AddTag(Tag tag)
+    {
+        var tagService = new TagService();
+        return tagService.AddTag(tag);
     }
 }

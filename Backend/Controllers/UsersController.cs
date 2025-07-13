@@ -1,9 +1,7 @@
 ﻿using Horizon.BL;
-using Horizon.DAL;
 using Horizon.DTOs;
 using Horizon.Validators;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
 
 namespace Horizon.Controllers;
 
@@ -11,17 +9,10 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly UserService _userService;
-
-    public UsersController() 
-    {
-        _userService = new UserService();
-    }
-
     [HttpGet("exists/{email}")]
     public IActionResult UserExists(string email)
     {
-        bool exists = _userService.GetUserByEmail(email, out _) != null;
+        bool exists = Horizon.BL.User.UserExists(email);
         return Ok(exists);
     }
 
@@ -40,7 +31,7 @@ public class UsersController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             BirthDate = request.BirthDate,
-            HashedPassword = request.Password
+            Password = request.Password
         };
 
         List<string> tagNames = request.Tags.Select(t => t.Name).ToList();
@@ -83,22 +74,9 @@ public class UsersController : ControllerBase
     [HttpGet("profile/{id}")]
     public IActionResult GetProfile(int id)
     {
-        var userService = new UserService();
-        var user = userService.GetUserById(id);
-        if (user == null) return NotFound();
+        var profileDto = Horizon.BL.User.GetUserProfile(id);
+        if (profileDto == null) return NotFound();
 
-        var interests = userService.GetUserTags(id);
-
-        var profileDto = new UserProfileResponseDto
-        {
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            BirthDate = user.BirthDate,
-            ImageUrl = user.ImageUrl,
-            Interests = interests,
-            BlockedUsers = new List<BlockedUserDto>()
-        };
         return Ok(profileDto);
     }
 
@@ -113,19 +91,7 @@ public class UsersController : ControllerBase
 
         try
         {
-            var userService = new UserService();
-            User updatedUser = userService.UpdateProfile(id, request);
-            var interests = userService.GetUserTags(id);
-            var response = new UserResponseDto
-            {
-                Id = updatedUser.Id.Value,
-                Email = updatedUser.Email,
-                FirstName = updatedUser.FirstName,
-                LastName = updatedUser.LastName,
-                ImageUrl = updatedUser.ImageUrl,
-                Interests = interests
-            };
-
+            UserResponseDto? response = Horizon.BL.User.UpdateUserProfile(id, request);
             return Ok(response);
         }
         catch (Exception)
@@ -139,8 +105,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            var userService = new UserService();
-            userService.UnblockUser(userId, blockedUserId);
+            Horizon.BL.User.UnblockUser(userId, blockedUserId);
             return Ok(new { message = "User unblocked successfully." });
         }
         catch (Exception)
