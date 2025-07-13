@@ -192,7 +192,7 @@
   margin-right: 16px;
 }
 
-.search-input {
+#navbar .search-overlay .search-container .search-input {
   flex: 1;
   border: none;
   outline: none;
@@ -201,7 +201,7 @@
   padding: 8px 0;
 }
 
-.search-input::placeholder {
+#navbar .search-overlay .search-container .search-input::placeholder {
   color: var(--c-text-muted);
 }
 
@@ -350,7 +350,7 @@
   flex-shrink: 0;
 }
 
-.mobile-search-input {
+.mobile-search-header .mobile-search-input {
   flex: 1;
   border: none;
   outline: none;
@@ -359,7 +359,7 @@
   color: var(--c-dark);
 }
 
-.mobile-search-input::placeholder {
+.mobile-search-header .mobile-search-input::placeholder {
   color: var(--c-text-muted);
 }
 
