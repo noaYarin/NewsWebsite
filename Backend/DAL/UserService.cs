@@ -7,6 +7,22 @@ namespace Horizon.DAL;
 
 public class UserService : DBService
 {
+    private User MapReaderToUser(SqlDataReader reader)
+    {
+        return new User
+        {
+            Id = Convert.ToInt32(reader["Id"]),
+            Email = reader["Email"].ToString(),
+            FirstName = reader["FirstName"].ToString(),
+            LastName = reader["LastName"].ToString(),
+            HashedPassword = reader["HashedPassword"].ToString(),
+            BirthDate = reader["BirthDate"].ToString(),
+            ImageUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
+            IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
+            IsLocked = Convert.ToBoolean(reader["IsLocked"])
+        };
+    }
+
     public int InsertUserAndTags(User user, List<string> tagNames)
     {
         SqlConnection con = null;
@@ -65,18 +81,7 @@ public class UserService : DBService
             {
                 if (reader.Read())
                 {
-                    return new User
-                    {
-                        Id = Convert.ToInt32(reader["Id"]),
-                        Email = reader["Email"].ToString(),
-                        FirstName = reader["FirstName"].ToString(),
-                        LastName = reader["LastName"].ToString(),
-                        HashedPassword = reader["HashedPassword"].ToString(),
-                        BirthDate = reader["BirthDate"].ToString(),
-                        ImageUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
-                        IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
-                        IsLocked = Convert.ToBoolean(reader["IsLocked"])
-                    };
+                    return MapReaderToUser(reader);
                 }
             }
             return null;
@@ -103,18 +108,7 @@ public class UserService : DBService
             {
                 if (reader.Read())
                 {
-                    user = new User
-                    {
-                        Id = Convert.ToInt32(reader["Id"]),
-                        Email = reader["Email"].ToString(),
-                        FirstName = reader["FirstName"].ToString(),
-                        LastName = reader["LastName"].ToString(),
-                        HashedPassword = reader["HashedPassword"].ToString(),
-                        BirthDate = reader["BirthDate"].ToString(),
-                        ImageUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
-                        IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
-                        IsLocked = Convert.ToBoolean(reader["IsLocked"])
-                    };
+                    user = MapReaderToUser(reader);
                 }
             }
 
@@ -162,7 +156,7 @@ public class UserService : DBService
         }
     }
 
-    public void UpdateProfile(int userId, UpdateProfileRequestDto profileData)
+    public User UpdateProfile(int userId, UpdateProfileRequestDto profileData)
     {
         SqlConnection con = null;
         SqlTransaction transaction = null;
@@ -212,6 +206,7 @@ public class UserService : DBService
             }
 
             transaction.Commit();
+            return GetUserById(userId);
         }
         catch (Exception)
         {

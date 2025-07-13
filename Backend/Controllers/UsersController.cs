@@ -11,13 +11,17 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    public UsersController() { }
+    private readonly UserService _userService;
+
+    public UsersController() 
+    {
+        _userService = new UserService();
+    }
 
     [HttpGet("exists/{email}")]
     public IActionResult UserExists(string email)
     {
-        var userService = new UserService();
-        bool exists = userService.GetUserByEmail(email, out _) != null;
+        bool exists = _userService.GetUserByEmail(email, out _) != null;
         return Ok(exists);
     }
 
@@ -110,8 +114,19 @@ public class UsersController : ControllerBase
         try
         {
             var userService = new UserService();
-            userService.UpdateProfile(id, request);
-            return Ok(new { message = "Profile updated successfully." });
+            User updatedUser = userService.UpdateProfile(id, request);
+            var interests = userService.GetUserTags(id);
+            var response = new UserResponseDto
+            {
+                Id = updatedUser.Id.Value,
+                Email = updatedUser.Email,
+                FirstName = updatedUser.FirstName,
+                LastName = updatedUser.LastName,
+                ImageUrl = updatedUser.ImageUrl,
+                Interests = interests
+            };
+
+            return Ok(response);
         }
         catch (Exception)
         {

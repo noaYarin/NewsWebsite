@@ -161,17 +161,13 @@ function handleProfileUpdate(e) {
   updateProfile(
     currentUser.id,
     updatedData,
-    (response) => {
-      alert("Profile updated successfully!");
+    (updatedUserFromServer) => {
+      showPopup("Profile updated successfully!", true);
 
-      const storedUser = JSON.parse(localStorage.getItem("currentUser"));
-      storedUser.firstName = updatedData.firstName;
-      storedUser.lastName = updatedData.lastName;
-      storedUser.imageUrl = updatedData.imageUrl;
-      storedUser.interests = updatedData.interests;
-      localStorage.setItem("currentUser", JSON.stringify(storedUser));
+      localStorage.setItem("currentUser", JSON.stringify(updatedUserFromServer));
 
-      currentUser = storedUser;
+      currentUser = updatedUserFromServer;
+      $(".nav-profile-picture").attr("src", currentUser.imageUrl || "../sources/images/no-image.png");
 
       button.text("Save Changes").prop("disabled", false);
     },
