@@ -19,8 +19,8 @@ public class Article
 
     public Article() { }
 
-    public Article(int id, string title, string url, string? imageUrl, string? description, string? author,
-                   string? sourceName, DateTime? publishedAt, string? category)
+    public Article(int id, string title, string url, string? imageUrl, string? description, 
+                   string? author, string? sourceName, DateTime? publishedAt, string? category)
     {
         Id = id;
         Title = title;
@@ -33,15 +33,15 @@ public class Article
         Category = category;
     }
 
-    public static List<Article> Sync(List<ArticleSyncDto> articlesFromApi)
+    public static List<Article> Sync(List<ArticleSyncDto> articlesFromAPI)
     {
         var articleService = new ArticleService();
-        var urls = articlesFromApi.Select(a => a.Url).ToList();
+        var urls = articlesFromAPI.Select(a => a.Url).ToList();
 
         var existingArticles = articleService.GetArticlesByUrls(urls);
         var existingUrls = existingArticles.Select(a => a.Url).ToHashSet();
 
-        var newArticleDtos = articlesFromApi.Where(a => !existingUrls.Contains(a.Url)).ToList();
+        var newArticleDtos = articlesFromAPI.Where(a => !existingUrls.Contains(a.Url)).ToList();
 
         if (newArticleDtos.Any())
         {
