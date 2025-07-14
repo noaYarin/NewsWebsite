@@ -82,7 +82,7 @@ function handleUnblockUser(e) {
       item.fadeOut(300, () => item.remove());
     },
     (err) => {
-      alert("Failed to unblock user.");
+      showPopup("Failed to unblock user. Please try again.", false);
     }
   );
 }
@@ -172,7 +172,7 @@ function handleProfileUpdate(e) {
       button.text("Save Changes").prop("disabled", false);
     },
     (err) => {
-      alert("Failed to update profile. Please check your inputs.");
+      showPopup("Failed to update profile. Please check your inputs.", false);
       button.text("Save Changes").prop("disabled", false);
     }
   );
@@ -205,7 +205,7 @@ function loadUserProfile() {
       populateForm(profileData);
     },
     (err) => {
-      alert("Could not load your profile data. Please log in again.");
+      showPopup("Could not load your profile data. Please log in again.", false);
       localStorage.removeItem("currentUser");
       window.location.href = "auth.html";
     }

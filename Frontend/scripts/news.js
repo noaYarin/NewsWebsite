@@ -43,7 +43,6 @@ function fetchAndDisplayNews({ category, query, containerSelector }) {
   };
 
   const fetchFromApiAndSync = (cat) => {
-    console.log(`CACHE MISS: No recent articles for '${cat}'. Fetching from external API.`);
     getTopHeadlines(
       cat,
       1,
@@ -53,7 +52,10 @@ function fetchAndDisplayNews({ category, query, containerSelector }) {
           renderArticles(syncedArticles);
         });
       },
-      (err) => console.error(`Error fetching news for ${containerSelector}:`, err)
+      (err) => {
+        let errorMessage = "Error fetching news for " + containerSelector + ":" + err;
+        showPopup(errorMessage, false);
+      }
     );
   };
 
@@ -67,21 +69,23 @@ function fetchAndDisplayNews({ category, query, containerSelector }) {
           renderArticles(syncedArticles);
         });
       },
-      (err) => console.error(`Error fetching news for ${containerSelector}:`, err)
+      (err) => {
+        let errorMessage = "Error fetching news for " + containerSelector + ":" + err;
+        showPopup(errorMessage, false);
+      }
     );
   } else if (category) {
     getRecentArticles(
       category,
       (cachedArticles) => {
         if (cachedArticles && cachedArticles.length > 0) {
-          console.log(`CACHE HIT: Using ${cachedArticles.length} articles from database for '${category}'.`);
           renderArticles(cachedArticles);
         } else {
           fetchFromApiAndSync(category);
         }
       },
       (err) => {
-        console.error("Could not fetch from cache, defaulting to external API", err);
+        // Fallback to API if no cached articles
         fetchFromApiAndSync(category);
       }
     );

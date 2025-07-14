@@ -197,8 +197,6 @@ $(document).ready(function () {
     const $element = $(`#${id}`);
     if ($element.length) {
       $element.html(htmlSnippets[id]);
-    } else {
-      console.warn(`Element with ID '${id}' not found. Skipping HTML injection.`);
     }
   }
 
@@ -230,7 +228,6 @@ function getCurrentUser() {
     }
     return user;
   } catch (error) {
-    console.error("Error parsing user data from localStorage:", error);
     return null;
   }
 }
@@ -266,7 +263,6 @@ function toggleProfileMenu() {
   const $profileMenu = $("#profileMenu");
 
   if (!$profileMenu.length) {
-    console.warn("Profile menu (#profileMenu) not found. Cannot toggle.");
     return;
   }
 
@@ -282,7 +278,6 @@ function logout() {
       window.location.reload();
     }, 1000);
   } catch (error) {
-    console.error("Error during logout:", error);
     showPopup("Error during logout. Please try again.", false);
   }
 }
@@ -367,11 +362,11 @@ function setupEventHandlers() {
   }
 
   function performSearch(query) {
-    console.log("Performing search for:", query);
+    showPopup(`Searching for: "${query}"`, true);
     $("main").hide();
 
     // TODO: Implement actual search functionality here
-    alert(`Search functionality not yet implemented. Query: "${query}"`);
+    showPopup(`Search functionality not yet implemented. Query: "${query}"`, "muted");
   }
 }
 
@@ -382,7 +377,7 @@ function setupAuthNavLinks() {
 
   $(document).on("click", ".subscribe-btn, .mobile-subscribe-btn", () => {
     // TODO: Implement subscription functionality
-    alert("Subscribe functionality coming soon!");
+    showPopup("Subscribe functionality coming soon!", "muted");
   });
 }
 
@@ -391,12 +386,7 @@ function setupBackToTop() {
   const $footer = $("#footer");
 
   if (!$backToTop.length) {
-    console.warn("Back to top button (#backToTop) not found. Skipping setup.");
     return;
-  }
-
-  if (!$footer.length) {
-    console.warn("Footer (#footer) not found. Back to top positioning may not work correctly.");
   }
 
   $(window).on("scroll", function () {
@@ -440,7 +430,6 @@ function toggleMobileMenu() {
   const $searchIcon = $("#navbar .search-icon");
 
   if (!$mobileMenu.length) {
-    console.warn("Mobile menu (#mobileMenu) not found. Cannot toggle.");
     return;
   }
 
@@ -455,7 +444,6 @@ function toggleSearch() {
   const $overlay = $("#searchOverlay");
 
   if (!$overlay.length) {
-    console.warn("Search overlay (#searchOverlay) not found. Cannot toggle.");
     return;
   }
 
@@ -468,8 +456,6 @@ function toggleSearch() {
       const $input = $(inputToFocus);
       if ($input.length) {
         $input.focus();
-      } else {
-        console.warn(`Search input (${inputToFocus}) not found. Cannot focus.`);
       }
     }, 100);
   } else {
@@ -480,9 +466,9 @@ function toggleSearch() {
 }
 
 function showPopup(message, colorFlag) {
-  if (colorFlag) {
-    colorFlag = "success";
-  } else {
+  if (typeof colorFlag === "boolean") {
+    colorFlag = colorFlag ? "success" : "failure";
+  } else if (typeof colorFlag !== "string") {
     colorFlag = "failure";
   }
 

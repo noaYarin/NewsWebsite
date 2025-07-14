@@ -79,7 +79,7 @@ function handleChangeEmail() {
 function handleForgotPassword(e) {
   e.preventDefault();
   // TODO: Implement actual password reset logic
-  alert(`Password reset link will be sent to: ${userEmail}`);
+  showPopup(`Password reset link will be sent to: ${userEmail}`, "muted");
 }
 
 function handlePasswordToggle() {

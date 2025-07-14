@@ -8,8 +8,6 @@ const baseApiUrl = "https://newsapi.org/v2";
 const manager = new NlpManager({ languages: ["en"] });
 
 async function trainNlp() {
-  console.log("Starting NLP model training...");
-
   //const interests = ["Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology", "Travel", "Culture"];
 
   // Basically "limits" the categories to these interests
@@ -24,7 +22,6 @@ async function trainNlp() {
   manager.addDocument("en", "art museum history tradition food", "Culture");
 
   await manager.train();
-  console.log("NLP model trained successfully!");
 }
 
 trainNlp();

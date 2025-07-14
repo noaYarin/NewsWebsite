@@ -145,9 +145,9 @@ function setupEventHandlers() {
       }
     });
 
-  $("#bookmark-btn").on("click", () => alert("Bookmark functionality coming soon!"));
-  $("#share-btn").on("click", () => alert("Share functionality coming soon!"));
-  $("#ai-summarize-btn").on("click", () => alert("AI summary functionality coming soon!"));
+  $("#bookmark-btn").on("click", () => showPopup("Bookmark functionality coming soon!", "muted"));
+  $("#share-btn").on("click", () => showPopup("Share functionality coming soon!", "muted"));
+  $("#ai-summarize-btn").on("click", () => showPopup("AI summary functionality coming soon!", "muted"));
 }
 
 function formatContent(content) {
