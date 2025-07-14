@@ -209,11 +209,12 @@ body {
 
 .comment-author {
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .comment-text {
   word-break: break-word;
+  margin-bottom: 8px;
 }
 
 .comment-actions {
@@ -233,17 +234,50 @@ body {
   border: none;
   cursor: pointer;
   padding: 2px;
-  opacity: 0.6;
-  transition: opacity var(--transition-fast);
-}
-
-.action-icon-btn:hover {
   opacity: 1;
+  transition: opacity var(--transition-fast);
 }
 
 .action-icon-btn img {
   width: 20px;
   height: 20px;
+}
+
+.comment-footer {
+  display: flex;
+  align-items: center;
+}
+
+.comment-likes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.like-count {
+  font-size: 14px;
+  color: var(--c-text-muted);
+  font-weight: 500;
+}
+
+.like-comment-btn.liked img {
+  filter: invert(33%) sepia(98%) saturate(3011%) hue-rotate(338deg) brightness(99%) contrast(99%);
+}
+
+.like-comment-btn .icon-heart-outline {
+  display: inline-block;
+}
+
+.like-comment-btn .icon-heart-filled {
+  display: none;
+}
+
+.like-comment-btn.liked .icon-heart-outline {
+  display: none;
+}
+
+.like-comment-btn.liked .icon-heart-filled {
+  display: inline-block;
 }
 
 /* Comment Edit Form */

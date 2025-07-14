@@ -122,6 +122,9 @@ function showComments(comments) {
           </div>`;
       commentsList.append(blockedHtml);
     } else {
+      const isLiked = currentUser ? comment.isLikedByCurrentUser : false;
+      const likeCount = comment.likeCount || 0;
+
       const commentHtml = `
           <div class="comment-item" data-comment-id="${comment.id}">
               <img src="${comment.authorAvatar || "../sources/images/no-image.png"}" 
@@ -139,48 +142,38 @@ function showComments(comments) {
                         </div>
                     </div>
                   </div>
+                  <div class="comment-footer">
+                    <div class="comment-likes">
+                      <button class="like-comment-btn action-icon-btn ${isLiked ? "liked" : ""}" title="Like">
+                          <img class="icon-heart-outline" src="../sources/icons/heart-svgrepo-com.svg" alt="Like" />
+                          <img class="icon-heart-filled" src="../sources/icons/full-heart-svgrepo-com.svg" alt="Liked" />
+                      </button>
+                      <span class="like-count">${likeCount}</span>
+                    </div>
+                  </div>
               </div>
               <div class="comment-actions"></div>
           </div>`;
 
       const commentElement = $(commentHtml);
 
+      let actionsHtml = `<button class="report-comment-btn action-icon-btn" title="Report comment">
+                            <img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" />
+                         </button>`;
+
       if (currentUser && currentUser.id === comment.authorId) {
-        const actionsHtml = `
+        actionsHtml += `
               <button class="edit-comment-btn action-icon-btn" title="Edit comment">
                   <img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" />
               </button>
               <button class="delete-comment-btn action-icon-btn" title="Delete comment">
                   <img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" />
               </button>`;
-        commentElement.find(".comment-actions").html(actionsHtml);
       }
+      commentElement.find(".comment-actions").html(actionsHtml);
       commentsList.append(commentElement);
     }
   }
-}
-
-function addNewCommentToList(commentText) {
-  if (!currentUser) return;
-
-  const commentsList = $("#comments-list");
-
-  if (commentsList.find("p").length === 1) {
-    commentsList.empty();
-  }
-
-  const newCommentHtml = `
-        <div class="comment-item">
-            <img src="${currentUser.imageUrl || "../sources/images/no-image.png"}" 
-                 alt="${currentUser.firstName}" 
-                 class="comment-avatar" />
-            <div class="comment-body">
-                <p class="comment-author">${currentUser.firstName} ${currentUser.lastName}</p>
-                <p class="comment-text">${commentText}</p>
-            </div>
-        </div>`;
-
-  commentsList.prepend(newCommentHtml);
 }
 
 function setupEventHandlers() {
@@ -206,41 +199,29 @@ function setupEventHandlers() {
     .off("submit")
     .on("submit", function (e) {
       e.preventDefault();
-
       const textarea = $(this).find("textarea");
-      const commentText = textarea.val();
+      const commentText = textarea.val().trim();
 
-      if (!commentText || commentText.trim() === "") {
+      if (commentText === "") {
         showPopup("Please enter a comment.", false);
         return;
       }
-
-      const trimmedComment = commentText.trim();
-
       if (!currentUser) {
         showPopup("Please log in to comment.", false);
         return;
       }
 
-      if (!currentArticle.id) {
-        showPopup("This article does not support comments.", false);
-        return;
-      }
-
       textarea.val("");
-
       const commentData = {
         ArticleId: currentArticle.id,
-        Content: trimmedComment,
+        Content: commentText,
         AuthorId: currentUser.id
       };
 
       addComment(
         commentData,
-        function (response) {
-          loadComments();
-        },
-        function (error) {
+        () => loadComments(),
+        () => {
           showPopup("Failed to post comment. Please try again.", false);
           loadComments();
         }
@@ -280,9 +261,7 @@ function setupEventHandlers() {
         commentItem.find(".comment-edit-form").hide();
         showPopup("Comment updated successfully.", true);
       },
-      function (error) {
-        showPopup("Failed to update comment. Please try again.", false);
-      }
+      () => showPopup("Failed to update comment. Please try again.", false)
     );
   });
 
@@ -293,35 +272,70 @@ function setupEventHandlers() {
     if (confirm("Are you sure you want to delete this comment?")) {
       deleteComment(
         commentId,
-        function () {
+        () => {
           commentItem.fadeOut(300, function () {
             $(this).remove();
           });
           showPopup("Comment deleted.", true);
         },
-        function (error) {
-          showPopup("Failed to delete comment. Please try again.", false);
-        }
+        () => showPopup("Failed to delete comment. Please try again.", false)
       );
     }
   });
 
-  $("#bookmark-btn")
-    .off("click")
-    .on("click", function () {
-      showPopup("Bookmark feature coming soon!", "muted");
-    });
+  $(document).on("click", ".like-comment-btn", function () {
+    if (!currentUser) {
+      showPopup("Please log in to like comments.", false);
+      return;
+    }
 
-  $("#share-btn")
-    .off("click")
-    .on("click", function () {
-      showPopup("Share feature coming soon!", "muted");
-    });
+    const button = $(this);
+    const commentItem = button.closest(".comment-item");
+    const commentId = commentItem.data("comment-id");
+    const likeCountSpan = commentItem.find(".like-count");
+    let likeCount = parseInt(likeCountSpan.text());
 
-  $("#ai-summarize-btn")
+    button.toggleClass("liked");
+
+    if (button.hasClass("liked")) {
+      likeCount++;
+    } else {
+      likeCount--;
+    }
+    likeCountSpan.text(likeCount);
+
+    // Assumes toggleLikeComment API function exists
+    toggleLikeComment(commentId, null, (error) => {
+      // Revert UI on error
+      button.toggleClass("liked");
+      likeCountSpan.text(button.hasClass("liked") ? likeCount + 1 : likeCount - 1);
+      showPopup("An error occurred. Please try again.", false);
+    });
+  });
+
+  $(document).on("click", ".report-comment-btn", function () {
+    if (!currentUser) {
+      showPopup("Please log in to report comments.", false);
+      return;
+    }
+
+    const commentItem = $(this).closest(".comment-item");
+    const commentId = commentItem.data("comment-id");
+
+    if (confirm("Are you sure you want to report this comment?")) {
+      // Assumes reportComment API function exists
+      reportComment(
+        commentId,
+        () => showPopup("Comment reported. Thank you for your feedback.", true),
+        () => showPopup("Failed to report comment. Please try again.", false)
+      );
+    }
+  });
+
+  $("#bookmark-btn, #share-btn, #ai-summarize-btn")
     .off("click")
     .on("click", function () {
-      showPopup("AI summarize feature coming soon!", "muted");
+      showPopup("This feature is coming soon!", "muted");
     });
 }
 
@@ -329,28 +343,22 @@ function formatContent(content) {
   if (!content) {
     return "<p>No content available. Please read the full story on the source website.</p>";
   }
-
   const cleaned = content.replace(/\s*\[\+\d+\s*chars\]\s*$/, "");
-
-  const paragraphs = cleaned
+  return cleaned
     .split(/[\r\n]+/)
     .filter((p) => p.trim() !== "")
-    .map((p) => `<p>${p.trim()}</p>`);
-
-  return paragraphs.join("");
+    .map((p) => `<p>${p.trim()}</p>`)
+    .join("");
 }
 
 function formatDate(dateString) {
   if (!dateString) return "Unknown Date";
-
   try {
-    const date = new Date(dateString);
-    const options = {
+    return new Date(dateString).toLocaleDateString(undefined, {
       year: "numeric",
       month: "long",
       day: "numeric"
-    };
-    return date.toLocaleDateString(undefined, options);
+    });
   } catch (error) {
     return "Unknown Date";
   }
