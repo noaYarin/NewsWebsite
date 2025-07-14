@@ -9,7 +9,7 @@ const newsEndpoint = `${nodeBaseUrl}/News`;
 const articlesEndpoint = `${dotnetBaseUrl}/Articles`;
 const commentsEndpoint = `${dotnetBaseUrl}/Comments`;
 
-const NEWS_PAGE_SIZE = 100;
+const NEWS_PAGE_SIZE = 20;
 
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({

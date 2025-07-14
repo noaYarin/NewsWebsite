@@ -1,44 +1,32 @@
 let currentUser = null;
 let currentArticle = null;
 
-// Load page when DOM is ready
 $(document).ready(function () {
-  console.log("Article page loading...");
-
-  // Get current user
   currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-  // Get article data
   const articleData = sessionStorage.getItem("currentArticle");
   if (articleData) {
     currentArticle = JSON.parse(articleData);
-    console.log("Article loaded:", currentArticle.title);
     showArticle();
   } else {
-    console.log("No article data found");
     showError();
   }
 
   setupEventHandlers();
 });
 
-// Show the article content
 function showArticle() {
   if (!currentArticle) {
     showError();
     return;
   }
 
-  // Update page title
   document.title = `${currentArticle.title || "Article"} | HORIZON`;
-
-  // Fill in article content
   $(".article-source").text(currentArticle.sourceName || "Unknown Source");
   $(".article-title").text(currentArticle.title || "No Title");
   $(".article-author").text(currentArticle.author ? `By ${currentArticle.author}` : "No Author");
   $(".article-date").text(formatDate(currentArticle.publishedAt));
 
-  // Set article image
   if (currentArticle.imageUrl) {
     $(".article-image").attr("src", currentArticle.imageUrl);
     $(".article-image").attr("onerror", "this.style.display='none';");
@@ -46,103 +34,80 @@ function showArticle() {
     $(".article-image").hide();
   }
 
-  // Set article content
   const content = formatContent(currentArticle.description);
   $(".article-content").html(content);
 
-  // Set read full article link
   if (currentArticle.url) {
     $(".read-full-article-btn").attr("href", currentArticle.url);
   } else {
     $(".read-full-article-btn").hide();
   }
 
-  // Show the article
   $("#article-main-content").show();
   $("#article-error-message").hide();
 
-  // Setup comments section
   setupComments();
 }
 
-// Show error message
 function showError() {
   $("#article-main-content").hide();
   $("#article-error-message").show();
 }
 
-// Setup comments based on user login status
 function setupComments() {
   if (currentUser) {
-    console.log("User is logged in, showing comment form");
-
-    // Show action buttons
     $(".article-actions").show();
 
-    // Show comment form
     $("#comment-form").show();
     $("#comment-form-avatar").attr("src", currentUser.imageUrl || "../sources/images/no-image.png");
 
-    // Try to load comments if we have article ID
     if (currentArticle.id) {
       loadComments();
     } else {
-      // No article ID means it's a fresh article from API, no comments yet
-      $("#comments-list").html("<p>Comments are not available for this article yet.</p>");
+      $("#comments-list").html('<p class="comment-prompt">Comments are not available for this article.</p>');
     }
   } else {
-    console.log("User not logged in, hiding comment form");
-
-    // Hide action buttons and comment form
     $(".article-actions").hide();
     $("#comment-form").hide();
 
-    // Show login prompt
-    $("#comments-list").html('<p class="login-prompt">Please log in to view and post comments.</p>');
+    $("#comments-list").html('<p class="comment-prompt">Please log in to view and post comments.</p>');
   }
 }
 
-// Load comments from database
 function loadComments() {
   if (!currentArticle.id) {
-    $("#comments-list").html("<p>No comments available for this article.</p>");
+    $("#comments-list").html('<p class="comment-prompt">No comments available for this article.</p>');
     return;
   }
 
-  $("#comments-list").html("<p>Loading comments...</p>");
+  $("#comments-list").html('<p class="comment-prompt">Loading comments...</p>');
 
   getComments(
     currentArticle.id,
     function (comments) {
-      console.log("Comments loaded:", comments.length);
       showComments(comments);
     },
     function (error) {
-      console.error("Failed to load comments:", error);
-      $("#comments-list").html("<p>Could not load comments.</p>");
+      $("#comments-list").html('<p class="comment-prompt">Could not load comments.</p>');
     }
   );
 }
 
-// Display comments in the list
 function showComments(comments) {
   const commentsList = $("#comments-list");
   commentsList.empty();
 
   if (!comments || comments.length === 0) {
-    commentsList.html("<p>No comments yet. Be the first to comment!</p>");
+    commentsList.html('<p class="comment-prompt">No comments yet.</p>');
     return;
   }
 
-  // Get blocked users list
   const blockedUsers = currentUser.blockedUsers || [];
 
-  // Show each comment
   for (let comment of comments) {
     const isBlocked = blockedUsers.some((blocked) => blocked.id === comment.authorId);
 
     if (isBlocked) {
-      // Show blocked comment placeholder
       const blockedHtml = `
                 <div class="comment-item">
                     <div class="blocked-comment-message">
@@ -157,7 +122,6 @@ function showComments(comments) {
                 </div>`;
       commentsList.append(blockedHtml);
     } else {
-      // Show normal comment
       const commentHtml = `
                 <div class="comment-item">
                     <img src="${comment.authorAvatar || "../sources/images/no-image.png"}" 
@@ -173,18 +137,15 @@ function showComments(comments) {
   }
 }
 
-// Add a new comment to the top of the list
 function addNewCommentToList(commentText) {
   if (!currentUser) return;
 
   const commentsList = $("#comments-list");
 
-  // Remove "no comments" message if it exists
   if (commentsList.find("p").length === 1) {
     commentsList.empty();
   }
 
-  // Create new comment HTML
   const newCommentHtml = `
         <div class="comment-item">
             <img src="${currentUser.imageUrl || "../sources/images/no-image.png"}" 
@@ -196,18 +157,10 @@ function addNewCommentToList(commentText) {
             </div>
         </div>`;
 
-  // Add to top of list
   commentsList.prepend(newCommentHtml);
 }
 
-// Setup all event handlers
-// article.js
-
 function setupEventHandlers() {
-  // By chaining .off() before .on(), we prevent duplicate event handlers
-  // from being attached, which solves the "popup twice" issue.
-
-  // Handle showing blocked comments
   $(document)
     .off("click", ".show-comment-btn")
     .on("click", ".show-comment-btn", function () {
@@ -226,7 +179,6 @@ function setupEventHandlers() {
       button.closest(".comment-item").html(commentHtml);
     });
 
-  // Handle comment form submission
   $("#comment-form")
     .off("submit")
     .on("submit", function (e) {
@@ -252,8 +204,6 @@ function setupEventHandlers() {
         return;
       }
 
-      console.log("Posting comment:", trimmedComment);
-
       addNewCommentToList(trimmedComment);
 
       textarea.val("");
@@ -266,18 +216,14 @@ function setupEventHandlers() {
 
       addComment(
         commentData,
-        function (response) {
-          console.log("Comment posted successfully");
-        },
+        function (response) {},
         function (error) {
-          console.error("Failed to post comment:", error);
           showPopup("Failed to post comment. Please try again.", false);
           loadComments();
         }
       );
     });
 
-  // Handle action buttons
   $("#bookmark-btn")
     .off("click")
     .on("click", function () {
@@ -297,16 +243,13 @@ function setupEventHandlers() {
     });
 }
 
-// Format article content for display
 function formatContent(content) {
   if (!content) {
     return "<p>No content available. Please read the full story on the source website.</p>";
   }
 
-  // Remove "[+X chars]" from end if present
   const cleaned = content.replace(/\s*\[\+\d+\s*chars\]\s*$/, "");
 
-  // Split into paragraphs and format
   const paragraphs = cleaned
     .split(/[\r\n]+/)
     .filter((p) => p.trim() !== "")
@@ -315,7 +258,6 @@ function formatContent(content) {
   return paragraphs.join("");
 }
 
-// Format date for display
 function formatDate(dateString) {
   if (!dateString) return "Unknown Date";
 

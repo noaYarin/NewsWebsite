@@ -17,6 +17,10 @@ body {
   color: var(--c-dark);
 }
 
+.comment-prompt {
+  text-align: center;
+}
+
 /* --------------------
    Article Header
    -------------------- */
@@ -189,7 +193,7 @@ body {
 #comments-list {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
 .comment-item {
