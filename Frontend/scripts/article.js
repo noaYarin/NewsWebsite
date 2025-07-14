@@ -12,7 +12,7 @@ $(document).ready(function () {
     showError();
   }
 
-  setupEventHandlers();
+  setupArticleEventHandlers();
 });
 
 function showArticle() {
@@ -176,7 +176,7 @@ function showComments(comments) {
   }
 }
 
-function setupEventHandlers() {
+function setupArticleEventHandlers() {
   $(document)
     .off("click", ".show-comment-btn")
     .on("click", ".show-comment-btn", function () {
