@@ -501,21 +501,22 @@ function showDialog(message) {
     const $yesButton = $("<button>Yes</button>").addClass("dialog-yes");
     const $noButton = $("<button>No</button>").addClass("dialog-no");
 
-    const closeDialog = () => {
+    const closeDialog = (value) => {
+      $(document).off("click.dialog");
+
       $dialog.removeClass("show");
       setTimeout(() => {
         $dialog.remove();
       }, 400);
+      resolve(value);
     };
 
     $yesButton.on("click", () => {
-      closeDialog();
-      resolve(true);
+      closeDialog(true);
     });
 
     $noButton.on("click", () => {
-      closeDialog();
-      resolve(false);
+      closeDialog(false);
     });
 
     $actions.append($yesButton, $noButton);
@@ -524,6 +525,14 @@ function showDialog(message) {
 
     setTimeout(() => {
       $dialog.addClass("show");
+
+      setTimeout(() => {
+        $(document).on("click.dialog", (event) => {
+          if (!$(event.target).closest("#dialog-popup").length) {
+            closeDialog(false);
+          }
+        });
+      }, 0);
     }, 10);
   });
 }

@@ -240,6 +240,11 @@ body {
   opacity: 1;
   transition: opacity var(--transition-fast);
   position: relative;
+  opacity: 0.5;
+}
+
+.action-icon-btn:hover {
+  opacity: 1;
 }
 
 .action-icon-btn img {
