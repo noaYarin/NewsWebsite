@@ -102,37 +102,60 @@ function showComments(comments) {
     return;
   }
 
-  const blockedUsers = currentUser.blockedUsers || [];
+  const blockedUsers = currentUser ? currentUser.blockedUsers || [] : [];
 
   for (let comment of comments) {
     const isBlocked = blockedUsers.some((blocked) => blocked.id === comment.authorId);
 
     if (isBlocked) {
       const blockedHtml = `
-                <div class="comment-item">
-                    <div class="blocked-comment-message">
-                        <span>Comment from a blocked user.</span>
-                        <button class="show-comment-btn" 
-                                data-author-name="${comment.authorName}"
-                                data-author-avatar="${comment.authorAvatar || "../sources/images/no-image.png"}"
-                                data-text="${comment.content}">
-                            Show Comment
-                        </button>
-                    </div>
-                </div>`;
+          <div class="comment-item">
+              <div class="blocked-comment-message">
+                  <span>Comment from a blocked user.</span>
+                  <button class="show-comment-btn" 
+                          data-author-name="${comment.authorName}"
+                          data-author-avatar="${comment.authorAvatar || "../sources/images/no-image.png"}"
+                          data-text="${comment.content}">
+                      Show Comment
+                  </button>
+              </div>
+          </div>`;
       commentsList.append(blockedHtml);
     } else {
       const commentHtml = `
-                <div class="comment-item">
-                    <img src="${comment.authorAvatar || "../sources/images/no-image.png"}" 
-                         alt="${comment.authorName}" 
-                         class="comment-avatar" />
-                    <div class="comment-body">
-                        <p class="comment-author">${comment.authorName}</p>
-                        <p class="comment-text">${comment.content}</p>
+          <div class="comment-item" data-comment-id="${comment.id}">
+              <img src="${comment.authorAvatar || "../sources/images/no-image.png"}" 
+                   alt="${comment.authorName}" 
+                   class="comment-avatar" />
+              <div class="comment-body">
+                  <p class="comment-author">${comment.authorName}</p>
+                  <div class="comment-content-wrapper">
+                    <p class="comment-text">${comment.content}</p>
+                    <div class="comment-edit-form">
+                        <textarea class="comment-edit-textarea">${comment.content}</textarea>
+                        <div class="comment-edit-actions">
+                            <button class="save-edit-btn">Save</button>
+                            <button class="cancel-edit-btn">Cancel</button>
+                        </div>
                     </div>
-                </div>`;
-      commentsList.append(commentHtml);
+                  </div>
+              </div>
+              <div class="comment-actions"></div>
+          </div>`;
+
+      const commentElement = $(commentHtml);
+
+      if (currentUser && currentUser.id === comment.authorId) {
+        const actionsHtml = `
+              <button class="edit-comment-btn action-icon-btn" title="Edit comment">
+                  <img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" />
+              </button>
+              <button class="delete-comment-btn action-icon-btn" title="Delete comment">
+                  <img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" />
+              </button>`;
+        commentElement.find(".comment-actions").html(actionsHtml);
+      }
+      commentsList.append(commentElement);
     }
   }
 }
@@ -204,8 +227,6 @@ function setupEventHandlers() {
         return;
       }
 
-      addNewCommentToList(trimmedComment);
-
       textarea.val("");
 
       const commentData = {
@@ -216,13 +237,74 @@ function setupEventHandlers() {
 
       addComment(
         commentData,
-        function (response) {},
+        function (response) {
+          loadComments();
+        },
         function (error) {
           showPopup("Failed to post comment. Please try again.", false);
           loadComments();
         }
       );
     });
+
+  $(document).on("click", ".edit-comment-btn", function () {
+    const commentItem = $(this).closest(".comment-item");
+    commentItem.find(".comment-text").hide();
+    commentItem.find(".comment-edit-form").show();
+  });
+
+  $(document).on("click", ".cancel-edit-btn", function () {
+    const commentItem = $(this).closest(".comment-item");
+    commentItem.find(".comment-edit-form").hide();
+    commentItem.find(".comment-text").show();
+    const originalText = commentItem.find(".comment-text").text();
+    commentItem.find(".comment-edit-textarea").val(originalText);
+  });
+
+  $(document).on("click", ".save-edit-btn", function () {
+    const commentItem = $(this).closest(".comment-item");
+    const commentId = commentItem.data("comment-id");
+    const textarea = commentItem.find(".comment-edit-textarea");
+    const newContent = textarea.val().trim();
+
+    if (newContent === "") {
+      showPopup("Comment cannot be empty.", false);
+      return;
+    }
+
+    updateComment(
+      commentId,
+      { content: newContent },
+      function (updatedComment) {
+        commentItem.find(".comment-text").text(newContent).show();
+        commentItem.find(".comment-edit-form").hide();
+        showPopup("Comment updated successfully.", true);
+      },
+      function (error) {
+        showPopup("Failed to update comment. Please try again.", false);
+      }
+    );
+  });
+
+  $(document).on("click", ".delete-comment-btn", function () {
+    const commentItem = $(this).closest(".comment-item");
+    const commentId = commentItem.data("comment-id");
+
+    if (confirm("Are you sure you want to delete this comment?")) {
+      deleteComment(
+        commentId,
+        function () {
+          commentItem.fadeOut(300, function () {
+            $(this).remove();
+          });
+          showPopup("Comment deleted.", true);
+        },
+        function (error) {
+          showPopup("Failed to delete comment. Please try again.", false);
+        }
+      );
+    }
+  });
 
   $("#bookmark-btn")
     .off("click")

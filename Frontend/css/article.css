@@ -173,7 +173,7 @@ body {
   border: 1px solid var(--c-border-light);
   border-radius: 8px;
   font-size: 16px;
-  resize: none;
+  resize: vertical;
   margin-bottom: 12px;
 }
 
@@ -200,6 +200,7 @@ body {
   display: flex;
   gap: 16px;
   align-items: flex-start;
+  position: relative;
 }
 
 .comment-body {
@@ -208,11 +209,63 @@ body {
 
 .comment-author {
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .comment-text {
   word-break: break-word;
+}
+
+.comment-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: none;
+  gap: 5px;
+}
+
+.comment-item:hover .comment-actions {
+  display: flex;
+}
+
+.action-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.action-icon-btn:hover {
+  opacity: 1;
+}
+
+.action-icon-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Comment Edit Form */
+.comment-edit-form {
+  display: none;
+}
+
+.comment-edit-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--c-border-light);
+  border-radius: 4px;
+  margin-bottom: 5px;
+  font-size: 16px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.comment-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 /* Blocked Comments */
@@ -266,6 +319,21 @@ body {
   margin-bottom: 24px;
 }
 
+/* Comment Buttons */
+.save-edit-btn,
+.cancel-edit-btn {
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.save-edit-btn {
+  background-color: var(--c-primary);
+}
+
 /* --------------------
    Responsive Adjustments
    -------------------- */
@@ -291,6 +359,17 @@ body {
   .action-btn {
     padding: 6px 10px;
     font-size: 14px;
+  }
+
+  .comment-item {
+    position: static;
+  }
+
+  .comment-actions {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
   }
 
   .blocked-comment-message {
