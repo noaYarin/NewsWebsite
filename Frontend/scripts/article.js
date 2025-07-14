@@ -283,6 +283,7 @@ function setupEventHandlers() {
     }
   });
 
+  // START: Replaced like button handler with new animation logic
   $(document).on("click", ".like-comment-btn", function () {
     if (!currentUser) {
       showPopup("Please log in to like comments.", false);
@@ -293,25 +294,48 @@ function setupEventHandlers() {
     const commentItem = button.closest(".comment-item");
     const commentId = commentItem.data("comment-id");
     const likeCountSpan = commentItem.find(".like-count");
-    let likeCount = parseInt(likeCountSpan.text());
 
-    button.toggleClass("liked");
+    const wasLiked = button.hasClass("liked");
+    const initialLikeCount = parseInt(likeCountSpan.text());
 
-    if (button.hasClass("liked")) {
-      likeCount++;
-    } else {
-      likeCount--;
+    // Optimistically update the UI
+    const newLikeCount = wasLiked ? initialLikeCount - 1 : initialLikeCount + 1;
+    likeCountSpan.text(newLikeCount);
+    button.toggleClass("liked", !wasLiked);
+
+    // If the comment was just liked, trigger the floating hearts animation
+    if (!wasLiked) {
+      // Create and animate several heart particles
+      for (let i = 0; i < 7; i++) {
+        const particle = $('<span class="like-particle">♥</span>');
+        button.append(particle);
+
+        // Randomize particle movement
+        const xOffset = (Math.random() - 0.5) * 40;
+        const yOffset = (Math.random() - 0.5) * 20;
+        const delay = Math.random() * 0.3;
+
+        particle.css({
+          transform: `translate(${xOffset}px, ${yOffset}px)`,
+          "animation-delay": `${delay}s`
+        });
+
+        // Remove the particle from the DOM after the animation completes
+        setTimeout(() => {
+          particle.remove();
+        }, 1000); // 1000ms matches the animation duration
+      }
     }
-    likeCountSpan.text(likeCount);
 
-    // Assumes toggleLikeComment API function exists
+    // Call the API to sync the change
     toggleLikeComment(commentId, null, (error) => {
-      // Revert UI on error
-      button.toggleClass("liked");
-      likeCountSpan.text(button.hasClass("liked") ? likeCount + 1 : likeCount - 1);
+      // If the API call fails, revert the UI to its original state
       showPopup("An error occurred. Please try again.", false);
+      likeCountSpan.text(initialLikeCount);
+      button.toggleClass("liked", wasLiked);
     });
   });
+  // END: Replaced like button handler
 
   $(document).on("click", ".report-comment-btn", function () {
     if (!currentUser) {
