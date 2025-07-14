@@ -62,7 +62,6 @@ function populateComments(comments, blockedUsers) {
   commentsList.empty();
 
   if (!comments || comments.length === 0) {
-    commentsList.html("<p>Be the first to comment!</p>");
     return;
   }
 
