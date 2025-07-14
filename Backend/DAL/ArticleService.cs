@@ -90,4 +90,25 @@ public class ArticleService : DBService
         }
         finally { con?.Close(); }
     }
+
+    public List<Article> FetchRecentByCategory(string categoryName)
+    {
+        var articles = new List<Article>();
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object> { { "@CategoryName", categoryName } };
+            SqlCommand cmd = CreateCommand("SP_GetRecentArticlesByCategory", con, parameters);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    articles.Add(MapReaderToArticle(reader));
+                }
+            }
+            return articles;
+        }
+        finally { con?.Close(); }
+    }
 }

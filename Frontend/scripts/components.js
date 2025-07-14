@@ -1,6 +1,8 @@
 const MOBILE_BREAKPOINT = 1024;
 const SCROLL_THRESHOLD = 1200;
 
+const PLACEHOLDER_IMAGE_URL = "../sources/images/placeholder.png";
+
 function getNavHref(targetPage) {
   const currentPath = window.location.pathname;
 
@@ -199,6 +201,12 @@ $(document).ready(function () {
       console.warn(`Element with ID '${id}' not found. Skipping HTML injection.`);
     }
   }
+
+  $(document).on("error", "img", function () {
+    if ($(this).attr("src") !== PLACEHOLDER_IMAGE_URL) {
+      $(this).attr("src", PLACEHOLDER_IMAGE_URL);
+    }
+  });
 
   setupEventHandlers();
 

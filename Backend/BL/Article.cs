@@ -51,4 +51,10 @@ public class Article
 
         return existingArticles;
     }
+
+    public static List<Article> GetRecentByCategory(string categoryName)
+    {
+        var articleService = new ArticleService();
+        return articleService.FetchRecentByCategory(categoryName);
+    }
 }

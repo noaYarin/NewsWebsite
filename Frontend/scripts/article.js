@@ -22,12 +22,11 @@ function initializePage() {
 function populateArticleContent(article) {
   document.title = `${article.title || "Article"} | HORIZON`;
   $("#article-main-content").data("article-db-id", article.id);
-
   $(".article-source").text(article.sourceName || "Unknown Source");
   $(".article-title").text(article.title || "No Title Provided");
   $(".article-author").text(`By ${article.author || "No Author Provided"}`);
   $(".article-date").text(formatDate(article.publishedAt));
-  $(".article-image").attr("src", article.imageUrl || "../sources/images/placeholder.png");
+  $(".article-image").attr("src", article.imageUrl).attr("onerror", "this.style.display='none'; this.onerror=null;");
   $(".article-content").html(formatContent(article.description));
   $(".read-full-article-btn").attr("href", article.url);
 }

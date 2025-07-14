@@ -26,4 +26,18 @@ public class ArticlesController : ControllerBase
             return StatusCode(500, "An error occurred while synchronizing articles.");
         }
     }
+
+    [HttpGet("category/{categoryName}")]
+    public IActionResult GetArticlesByCategory(string categoryName)
+    {
+        try
+        {
+            var articles = Article.GetRecentByCategory(categoryName);
+            return Ok(articles);
+        }
+        catch (System.Exception ex)
+        {
+            return StatusCode(500, "Could not retrieve articles.");
+        }
+    }
 }

@@ -21,56 +21,95 @@ $(document).ready(function () {
   loadAllNewsSections();
 });
 
-async function loadAllNewsSections() {
-  await fetchAndDisplayNews({ query: "world", containerSelector: "#container", title: "LATEST NEWS" });
+function loadAllNewsSections() {
+  fetchAndDisplayNews({ query: "world", containerSelector: "#container" });
 
   for (const [selector, category] of Object.entries(interestSections)) {
-    await fetchAndDisplayNews({ category, containerSelector: selector, title: `${category.toUpperCase()} NEWS` });
+    fetchAndDisplayNews({ category, containerSelector: selector });
   }
 }
 
-async function fetchAndDisplayNews({ category, query, containerSelector }) {
+function fetchAndDisplayNews({ category, query, containerSelector }) {
   const container = $(containerSelector);
   if (!container.length) return;
 
-  try {
-    let response;
-    if (query) {
-      response = await searchNews(query);
-    } else if (category) {
-      response = await getTopHeadlines(category);
-    }
-
-    const articlesFromApi = response.data
-      .filter((a) => a.url && a.title && a.urlToImage)
-      .map((a) => ({
-        Title: a.title,
-        Url: a.url,
-        Description: a.description,
-        ImageUrl: a.urlToImage,
-        Author: a.author,
-        SourceName: a.source.name,
-        PublishedAt: a.publishedAt,
-        Category: a.category
-      }));
-
-    const syncedArticles = await syncArticles(articlesFromApi);
-
+  const renderArticles = (articles) => {
     const articleElements = container.find("[data-article-index]");
     articleElements.each(function (index) {
-      if (index < syncedArticles.length) {
-        updateArticleElement($(this), syncedArticles[index]);
+      if (index < articles.length) {
+        updateArticleElement($(this), articles[index]);
       }
     });
-  } catch (err) {
-    console.error(`Error fetching or syncing news for ${containerSelector}:`, err);
+  };
+
+  const fetchFromApiAndSync = (cat) => {
+    console.log(`CACHE MISS: No recent articles for '${cat}'. Fetching from external API.`);
+    getTopHeadlines(
+      cat,
+      1,
+      (response) => {
+        const articlesFromApi = mapArticles(response.data, cat);
+        syncArticles(articlesFromApi, (syncedArticles) => {
+          renderArticles(syncedArticles);
+        });
+      },
+      (err) => console.error(`Error fetching news for ${containerSelector}:`, err)
+    );
+  };
+
+  if (query) {
+    searchNews(
+      query,
+      1,
+      (response) => {
+        const articlesFromApi = mapArticles(response.data);
+        syncArticles(articlesFromApi, (syncedArticles) => {
+          renderArticles(syncedArticles);
+        });
+      },
+      (err) => console.error(`Error fetching news for ${containerSelector}:`, err)
+    );
+  } else if (category) {
+    getRecentArticles(
+      category,
+      (cachedArticles) => {
+        if (cachedArticles && cachedArticles.length > 0) {
+          console.log(`CACHE HIT: Using ${cachedArticles.length} articles from database for '${category}'.`);
+          renderArticles(cachedArticles);
+        } else {
+          fetchFromApiAndSync(category);
+        }
+      },
+      (err) => {
+        console.error("Could not fetch from cache, defaulting to external API", err);
+        fetchFromApiAndSync(category);
+      }
+    );
   }
+}
+
+function mapArticles(articles, category) {
+  return articles
+    .filter((a) => a.url && a.title && a.urlToImage)
+    .map((a) => ({
+      Title: a.title,
+      Url: a.url,
+      Description: a.description,
+      ImageUrl: a.urlToImage,
+      Author: a.author,
+      SourceName: a.source.name,
+      PublishedAt: a.publishedAt,
+      Category: a.category || category
+    }));
 }
 
 function updateArticleElement(element, article) {
   element.data("article-object", article);
 
-  element.find("[data-image-target]").attr("src", article.imageUrl || DEFAULT_IMAGE);
+  const imgTag = element.find("[data-image-target]");
+  imgTag.attr("src", article.imageUrl);
+  imgTag.attr("onerror", "this.style.display='none'; this.onerror=null;");
+
   element.find("[data-source-target]").text(article.sourceName || "N/A");
   element.find("[data-title-target]").text(article.title || "No title available.");
 }
