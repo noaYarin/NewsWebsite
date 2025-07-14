@@ -57,6 +57,11 @@ function mapArticles(apiArticles, category) {
 function updateArticleElement(element, article) {
   element.data("article-object", article);
 
+  let linkElement = element.is("a") ? element : element.find("a");
+  if (linkElement.length) {
+    linkElement.attr("href", `../html/article.html?id=${article.id}`);
+  }
+
   const img = element.find("[data-image-target]");
   if (img.length) {
     img.attr("src", article.imageUrl || DEFAULT_IMAGE);
@@ -252,13 +257,5 @@ function loadAllNews() {
 }
 
 $(document).ready(function () {
-  $(document).on("click", ".website-link", function (e) {
-    const articleElement = $(this).closest("[data-article-index]");
-    if (articleElement.length && articleElement.data("article-object")) {
-      const articleData = articleElement.data("article-object");
-      sessionStorage.setItem("currentArticle", JSON.stringify(articleData));
-    }
-  });
-
   loadAllNews();
 });

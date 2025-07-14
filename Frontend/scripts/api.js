@@ -34,6 +34,10 @@ function searchNews(query, page = 1, successCallback, errorCallback) {
 }
 
 /* --- .NET Calls --- */
+function getArticleById(id, successCallback, errorCallback) {
+  ajaxCall("GET", `${articlesEndpoint}/${id}`, null, successCallback, errorCallback);
+}
+
 function getRecentArticles(category, successCallback, errorCallback) {
   ajaxCall("GET", `${articlesEndpoint}/category/${category}`, null, successCallback, errorCallback);
 }

@@ -33,6 +33,12 @@ public class Article
         Category = category;
     }
 
+    public static Article GetById(int id)
+    {
+        var articleService = new ArticleService();
+        return articleService.GetArticleById(id);
+    }
+
     public static List<Article> Sync(List<ArticleSyncDto> articlesFromAPI)
     {
         var articleService = new ArticleService();

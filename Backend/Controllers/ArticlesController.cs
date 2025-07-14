@@ -8,6 +8,25 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
+    [HttpGet("{id}")]
+    public IActionResult GetArticle(int id)
+    {
+        try
+        {
+            var article = Article.GetById(id);
+
+            if (article == null)
+            {
+                return NotFound(new { message = "Article not found." });
+            }
+            return Ok(article);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while retrieving the article.");
+        }
+    }
+
     [HttpPost("sync")]
     public IActionResult SyncArticles([FromBody] List<ArticleSyncDto> articlesFromApi)
     {

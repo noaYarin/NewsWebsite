@@ -3,11 +3,20 @@ let currentArticle = null;
 
 $(document).ready(function () {
   currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const urlParams = new URLSearchParams(window.location.search);
+  const articleId = urlParams.get("id");
 
-  const articleData = sessionStorage.getItem("currentArticle");
-  if (articleData) {
-    currentArticle = JSON.parse(articleData);
-    showArticle();
+  if (articleId) {
+    getArticleById(
+      articleId,
+      function (articleData) {
+        currentArticle = articleData;
+        showArticle();
+      },
+      function (error) {
+        showError();
+      }
+    );
   } else {
     showError();
   }

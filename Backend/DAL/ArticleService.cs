@@ -111,4 +111,25 @@ public class ArticleService : DBService
         }
         finally { con?.Close(); }
     }
+
+    public Article GetArticleById(int id)
+    {
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object> { { "@Id", id } };
+            SqlCommand cmd = CreateCommand("SP_GetArticleById", con, parameters);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return MapReaderToArticle(reader);
+                }
+            }
+            return null;
+        }
+        finally { con?.Close(); }
+    }
 }
