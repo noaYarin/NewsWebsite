@@ -269,21 +269,22 @@ function setupEventHandlers() {
     const commentItem = $(this).closest(".comment-item");
     const commentId = commentItem.data("comment-id");
 
-    if (confirm("Are you sure you want to delete this comment?")) {
-      deleteComment(
-        commentId,
-        () => {
-          commentItem.fadeOut(300, function () {
-            $(this).remove();
-          });
-          showPopup("Comment deleted.", true);
-        },
-        () => showPopup("Failed to delete comment. Please try again.", false)
-      );
-    }
+    showDialog("Are you sure you want to delete this comment?").then((userClickedYes) => {
+      if (userClickedYes) {
+        deleteComment(
+          commentId,
+          () => {
+            commentItem.fadeOut(300, function () {
+              $(this).remove();
+            });
+            showPopup("Comment deleted.", true);
+          },
+          () => showPopup("Failed to delete comment. Please try again.", false)
+        );
+      }
+    });
   });
 
-  // START: Replaced like button handler with new animation logic
   $(document).on("click", ".like-comment-btn", function () {
     if (!currentUser) {
       showPopup("Please log in to like comments.", false);
@@ -298,44 +299,33 @@ function setupEventHandlers() {
     const wasLiked = button.hasClass("liked");
     const initialLikeCount = parseInt(likeCountSpan.text());
 
-    // Optimistically update the UI
     const newLikeCount = wasLiked ? initialLikeCount - 1 : initialLikeCount + 1;
     likeCountSpan.text(newLikeCount);
     button.toggleClass("liked", !wasLiked);
 
-    // If the comment was just liked, trigger the floating hearts animation
     if (!wasLiked) {
-      // Create and animate several heart particles
       for (let i = 0; i < 7; i++) {
         const particle = $('<span class="like-particle">♥</span>');
         button.append(particle);
-
-        // Randomize particle movement
         const xOffset = (Math.random() - 0.5) * 40;
         const yOffset = (Math.random() - 0.5) * 20;
         const delay = Math.random() * 0.3;
-
         particle.css({
           transform: `translate(${xOffset}px, ${yOffset}px)`,
           "animation-delay": `${delay}s`
         });
-
-        // Remove the particle from the DOM after the animation completes
         setTimeout(() => {
           particle.remove();
-        }, 1000); // 1000ms matches the animation duration
+        }, 1000);
       }
     }
 
-    // Call the API to sync the change
     toggleLikeComment(commentId, null, (error) => {
-      // If the API call fails, revert the UI to its original state
       showPopup("An error occurred. Please try again.", false);
       likeCountSpan.text(initialLikeCount);
       button.toggleClass("liked", wasLiked);
     });
   });
-  // END: Replaced like button handler
 
   $(document).on("click", ".report-comment-btn", function () {
     if (!currentUser) {
@@ -346,14 +336,15 @@ function setupEventHandlers() {
     const commentItem = $(this).closest(".comment-item");
     const commentId = commentItem.data("comment-id");
 
-    if (confirm("Are you sure you want to report this comment?")) {
-      // Assumes reportComment API function exists
-      reportComment(
-        commentId,
-        () => showPopup("Comment reported. Thank you for your feedback.", true),
-        () => showPopup("Failed to report comment. Please try again.", false)
-      );
-    }
+    showDialog("Are you sure you want to report this comment?").then((userClickedYes) => {
+      if (userClickedYes) {
+        reportComment(
+          commentId,
+          () => showPopup("Comment reported. Thank you for your feedback.", true),
+          () => showPopup("Failed to report comment. Please try again.", false)
+        );
+      }
+    });
   });
 
   $("#bookmark-btn, #share-btn, #ai-summarize-btn")

@@ -490,3 +490,40 @@ function showPopup(message, colorFlag) {
     }, 500);
   }, 2000);
 }
+
+function showDialog(message) {
+  return new Promise((resolve) => {
+    $("#dialog-popup").remove();
+
+    const $dialog = $("<div></div>").attr("id", "dialog-popup").addClass("dialog-popup");
+    const $message = $("<p></p>").addClass("dialog-message").text(message);
+    const $actions = $("<div></div>").addClass("dialog-actions");
+    const $yesButton = $("<button>Yes</button>").addClass("dialog-yes");
+    const $noButton = $("<button>No</button>").addClass("dialog-no");
+
+    const closeDialog = () => {
+      $dialog.removeClass("show");
+      setTimeout(() => {
+        $dialog.remove();
+      }, 400);
+    };
+
+    $yesButton.on("click", () => {
+      closeDialog();
+      resolve(true);
+    });
+
+    $noButton.on("click", () => {
+      closeDialog();
+      resolve(false);
+    });
+
+    $actions.append($yesButton, $noButton);
+    $dialog.append($message, $actions);
+    $("body").append($dialog);
+
+    setTimeout(() => {
+      $dialog.addClass("show");
+    }, 10);
+  });
+}
