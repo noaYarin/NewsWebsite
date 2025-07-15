@@ -1,6 +1,6 @@
-﻿using Horizon.BL;
+﻿using System.Data.SqlClient;
+using Horizon.BL;
 using Horizon.DTOs;
-using System.Data.SqlClient;
 
 namespace Horizon.DAL;
 

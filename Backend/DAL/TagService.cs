@@ -1,6 +1,6 @@
-﻿using Horizon.BL;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
+using Horizon.BL;
 
 namespace Horizon.DAL;
 
@@ -14,7 +14,7 @@ public class TagService : DBService
             con = Connect();
             var parameters = new Dictionary<string, object>
             {
-                { "@Name", tag.Name }, 
+                { "@Name", tag.Name },
                 { "@ImageUrl", tag.ImageUrl }
             };
             SqlCommand cmd = CreateCommand("SP_InsertTag", con, parameters);

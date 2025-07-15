@@ -1,7 +1,7 @@
-﻿using Horizon.BL;
-using Horizon.DTOs;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
+using Horizon.BL;
+using Horizon.DTOs;
 
 namespace Horizon.DAL;
 
@@ -50,7 +50,8 @@ public class UserService : DBService
             foreach (var name in tagNames)
             {
                 var tagParams = new Dictionary<string, object> {
-                    { "@UserId", newUserId }, { "@TagName", name }
+                    { "@UserId", newUserId },
+                    { "@TagName", name }
                 };
                 SqlCommand cmdTag = CreateCommand("SP_AddUserTag", con, tagParams);
                 cmdTag.Transaction = transaction;
@@ -118,7 +119,10 @@ public class UserService : DBService
                 SqlCommand tagCmd = CreateCommand("SP_GetUserTags", con, tagParams);
                 using (SqlDataReader tagReader = tagCmd.ExecuteReader())
                 {
-                    while (tagReader.Read()) { userTags.Add(tagReader["Name"].ToString()); }
+                    while (tagReader.Read())
+                    {
+                        userTags.Add(tagReader["Name"].ToString());
+                    }
                 }
             }
             return user;

@@ -1,7 +1,7 @@
-﻿using Horizon.DAL;
-using Horizon.DTOs;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BCrypt.Net;
+using Horizon.DAL;
+using Horizon.DTOs;
 
 namespace Horizon.BL;
 
@@ -15,13 +15,12 @@ public class User
     public string? ImageUrl { get; set; }
     public bool IsAdmin { get; set; }
     public bool IsLocked { get; set; }
-    public string Password { get; set; }
     public string HashedPassword { get; set; }
 
     public User() { }
 
     public User(int? id, string email, string firstName, string lastName, string birthDate,
-                string? imageUrl, bool isAdmin, bool isLocked, string hashedPassword, string password)
+                string? imageUrl, bool isAdmin, bool isLocked, string hashedPassword)
     {
         Id = id;
         Email = email;
@@ -32,10 +31,9 @@ public class User
         IsAdmin = isAdmin;
         IsLocked = isLocked;
         HashedPassword = hashedPassword;
-        Password = password;
     }
 
-    public string Register(List<string> tagNames)
+    public string Register(string plainTextPassword, List<string> tagNames)
     {
         UserService userService = new();
         TagService tagService = new();
@@ -50,7 +48,7 @@ public class User
             return "INVALID_TAGS";
         }
 
-        this.HashedPassword = BCrypt.Net.BCrypt.HashPassword(this.Password);
+        this.HashedPassword = BCrypt.Net.BCrypt.HashPassword(plainTextPassword);
         int newId = userService.InsertUserAndTags(this, tagNames);
         return newId > 0 ? "SUCCESS" : "GENERIC_FAILURE";
     }

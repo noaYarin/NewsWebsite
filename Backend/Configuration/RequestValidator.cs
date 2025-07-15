@@ -1,6 +1,6 @@
-﻿using Horizon.Configuration;
+﻿using System.Globalization;
+using Horizon.Configuration;
 using Horizon.DTOs;
-using System.Globalization;
 
 namespace Horizon.Validators;
 

@@ -1,4 +1,5 @@
 ﻿namespace Horizon.BL;
+
 using Horizon.DAL;
 using Horizon.DTOs;
 

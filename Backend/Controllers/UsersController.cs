@@ -31,22 +31,18 @@ public class UsersController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             BirthDate = request.BirthDate,
-            Password = request.Password
         };
 
         List<string> tagNames = request.Tags.Select(t => t.Name).ToList();
-        string result = user.Register(tagNames);
+        string result = user.Register(request.Password, tagNames);
 
-        if (result == "USER_EXISTS")
-            return Conflict("This email address is already in use.");
-
-        if (result == "INVALID_TAGS")
-            return BadRequest("One or more selected interests are invalid.");
-
-        if (result != "SUCCESS")
-            return BadRequest("Registration failed due to an unknown error.");
-
-        return Ok(new { message = "User registered successfully." });
+        return result switch
+        {
+            "SUCCESS" => Ok(new { message = "User registered successfully." }),
+            "USER_EXISTS" => Conflict("This email address is already in use."),
+            "INVALID_TAGS" => BadRequest("One or more selected interests are invalid."),
+            _ => StatusCode(500, "Registration failed due to an unknown error.")
+        };
     }
 
     [HttpPost("login")]

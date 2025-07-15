@@ -1,7 +1,7 @@
-﻿using Horizon.DAL;
-using Horizon.DTOs;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Horizon.DAL;
+using Horizon.DTOs;
 
 namespace Horizon.BL;
 
@@ -19,7 +19,7 @@ public class Article
 
     public Article() { }
 
-    public Article(int id, string title, string url, string? imageUrl, string? description, 
+    public Article(int id, string title, string url, string? imageUrl, string? description,
                    string? author, string? sourceName, DateTime? publishedAt, string? category)
     {
         Id = id;
