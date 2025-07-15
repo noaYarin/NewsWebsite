@@ -262,10 +262,15 @@ function setupArticleEventHandlers() {
       return;
     }
 
+    const commentData = {
+      AuthorId: currentUser.id,
+      Content: newContent
+    };
+
     updateComment(
       commentId,
-      { content: newContent },
-      function (updatedComment) {
+      commentData,
+      function (response) {
         commentItem.find(".comment-text").text(newContent).show();
         commentItem.find(".comment-edit-form").hide();
         showPopup("Comment updated successfully.", true);
@@ -282,9 +287,13 @@ function setupArticleEventHandlers() {
       if (userClickedYes) {
         deleteComment(
           commentId,
+          currentUser.id,
           () => {
             commentItem.fadeOut(300, function () {
               $(this).remove();
+              if ($("#comments-list").children(".comment-item").length === 0) {
+                $("#comments-list").html('<p class="comment-prompt">No comments yet.</p>');
+              }
             });
             showPopup("Comment deleted.", true);
           },

@@ -55,4 +55,43 @@ public class CommentService : DBService
         }
         finally { con?.Close(); }
     }
+
+    public bool UpdateComment(int commentId, int requestingUserId, string content)
+    {
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object>
+        {
+            { "@CommentId", commentId },
+            { "@RequestingUserId", requestingUserId },
+            { "@Content", content }
+        };
+
+            SqlCommand cmd = CreateCommand("SP_UpdateComment", con, parameters);
+            int rowsAffected = (int)cmd.ExecuteScalar();
+            return rowsAffected > 0;
+        }
+        finally { con?.Close(); }
+    }
+
+    public bool DeleteComment(int commentId, int requestingUserId)
+    {
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object>
+        {
+            { "@CommentId", commentId },
+            { "@RequestingUserId", requestingUserId }
+        };
+
+            SqlCommand cmd = CreateCommand("SP_DeleteComment", con, parameters);
+            int rowsAffected = (int)cmd.ExecuteScalar();
+            return rowsAffected > 0;
+        }
+        finally { con?.Close(); }
+    }
 }

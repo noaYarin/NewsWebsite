@@ -108,7 +108,7 @@ function loadSection(config, callback) {
   const { type, value, container, title, maxArticles } = config;
 
   const handleArticles = (articles) => {
-    const filtered = filterArticles(articles, maxArticles);
+    const filtered = filterArticles(articles, maxArticles * 2);
     fillContainer(container, filtered, title);
     if (callback) callback();
   };

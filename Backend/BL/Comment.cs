@@ -32,4 +32,16 @@ public class Comment
         var commentService = new CommentService();
         return commentService.GetCommentsByArticleId(articleId);
     }
+
+    public static bool Update(int commentId, int requestingUserId, string content)
+    {
+        var commentService = new CommentService();
+        return commentService.UpdateComment(commentId, requestingUserId, content);
+    }
+
+    public static bool Delete(int commentId, int requestingUserId)
+    {
+        var commentService = new CommentService();
+        return commentService.DeleteComment(commentId, requestingUserId);
+    }
 }

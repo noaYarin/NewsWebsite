@@ -9,7 +9,7 @@ const newsEndpoint = `${nodeBaseUrl}/News`;
 const articlesEndpoint = `${dotnetBaseUrl}/Articles`;
 const commentsEndpoint = `${dotnetBaseUrl}/Comments`;
 
-const NEWS_PAGE_SIZE = 20;
+const NEWS_PAGE_SIZE = 10;
 
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({
@@ -52,6 +52,14 @@ function getComments(articleId, successCallback, errorCallback) {
 
 function addComment(commentData, successCallback, errorCallback) {
   ajaxCall("POST", commentsEndpoint, JSON.stringify(commentData), successCallback, errorCallback);
+}
+
+function updateComment(commentId, commentData, successCallback, errorCallback) {
+  ajaxCall("PUT", `${commentsEndpoint}/${commentId}`, JSON.stringify(commentData), successCallback, errorCallback);
+}
+
+function deleteComment(commentId, requestingUserId, successCallback, errorCallback) {
+  ajaxCall("DELETE", `${commentsEndpoint}/${commentId}/${requestingUserId}`, null, successCallback, errorCallback);
 }
 
 // --- User Management Functions ---
