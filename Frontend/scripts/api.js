@@ -86,3 +86,8 @@ function updateProfile(userId, data, successCallback, errorCallback) {
 function unblockUser(userId, blockedUserId, successCallback, errorCallback) {
   ajaxCall("DELETE", `${usersEndpoint}/${userId}/blocked/${blockedUserId}`, null, successCallback, errorCallback);
 }
+
+function toggleUserStatus(userId, attributeName, successCallback, errorCallback) {
+  const data = { attribute: attributeName };
+  ajaxCall("PUT", `${usersEndpoint}/${userId}/toggle-status`, JSON.stringify(data), successCallback, errorCallback);
+}

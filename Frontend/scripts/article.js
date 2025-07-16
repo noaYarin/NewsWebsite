@@ -13,7 +13,7 @@ $(document).ready(function () {
         currentArticle = articleData;
         showArticle();
       },
-      function (error) {
+      function () {
         showError();
       }
     );
@@ -96,7 +96,7 @@ function loadComments() {
     function (comments) {
       showComments(comments);
     },
-    function (error) {
+    function () {
       $("#comments-list").html('<p class="comment-prompt">Could not load comments.</p>');
     }
   );
@@ -114,14 +114,14 @@ function showComments(comments) {
   const blockedUsers = currentUser ? currentUser.blockedUsers || [] : [];
 
   for (let comment of comments) {
-    const isBlocked = blockedUsers.some((blocked) => blocked.id === comment.authorId);
+    const isBlocked = blockedUsers.some((blocked) => blocked.id == comment.authorId);
 
     if (isBlocked) {
       const blockedHtml = `
           <div class="comment-item">
               <div class="blocked-comment-message">
                   <span>Comment from a blocked user.</span>
-                  <button class="show-comment-btn" 
+                  <button class="show-comment-btn"
                           data-author-name="${comment.authorName}"
                           data-author-avatar="${comment.authorAvatar || "../sources/images/no-image.png"}"
                           data-text="${comment.content}">
@@ -135,9 +135,9 @@ function showComments(comments) {
       const likeCount = comment.likeCount || 0;
 
       const commentHtml = `
-          <div class="comment-item" data-comment-id="${comment.id}">
-              <img src="${comment.authorAvatar || "../sources/images/no-image.png"}" 
-                   alt="${comment.authorName}" 
+          <div class="comment-item" data-comment-id="${comment.id}" data-author-id="${comment.authorId}">
+              <img src="${comment.authorAvatar || "../sources/images/no-image.png"}"
+                   alt="${comment.authorName}"
                    class="comment-avatar" />
               <div class="comment-body">
                   <p class="comment-author">${comment.authorName}</p>
@@ -166,19 +166,27 @@ function showComments(comments) {
 
       const commentElement = $(commentHtml);
 
-      let actionsHtml = `<button class="report-comment-btn action-icon-btn" title="Report comment">
-                            <img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" />
-                         </button>`;
+      const isAuthor = currentUser && currentUser.id == comment.authorId;
+      const isAdmin = currentUser && currentUser.isAdmin;
 
-      if (currentUser && currentUser.id === comment.authorId) {
+      let actionsHtml = `<button class="report-comment-btn action-icon-btn" title="Report comment">
+                          <img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" />
+                       </button>`;
+
+      if (isAuthor) {
         actionsHtml += `
-              <button class="edit-comment-btn action-icon-btn" title="Edit comment">
-                  <img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" />
-              </button>
-              <button class="delete-comment-btn action-icon-btn" title="Delete comment">
-                  <img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" />
-              </button>`;
+        <button class="edit-comment-btn action-icon-btn" title="Edit comment">
+            <img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" />
+        </button>`;
       }
+
+      if (isAuthor || isAdmin) {
+        actionsHtml += `
+        <button class="delete-comment-btn action-icon-btn" title="Delete comment">
+            <img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" />
+        </button>`;
+      }
+
       commentElement.find(".comment-actions").html(actionsHtml);
       commentsList.append(commentElement);
     }
@@ -282,24 +290,42 @@ function setupArticleEventHandlers() {
   $(document).on("click", ".delete-comment-btn", function () {
     const commentItem = $(this).closest(".comment-item");
     const commentId = commentItem.data("comment-id");
+    const authorId = parseInt(commentItem.data("author-id"), 10);
 
     showDialog("Are you sure you want to delete this comment?").then((userClickedYes) => {
-      if (userClickedYes) {
-        deleteComment(
-          commentId,
-          currentUser.id,
-          () => {
-            commentItem.fadeOut(300, function () {
-              $(this).remove();
-              if ($("#comments-list").children(".comment-item").length === 0) {
-                $("#comments-list").html('<p class="comment-prompt">No comments yet.</p>');
-              }
-            });
-            showPopup("Comment deleted.", true);
-          },
-          () => showPopup("Failed to delete comment. Please try again.", false)
-        );
-      }
+      if (!userClickedYes) return;
+
+      deleteComment(
+        commentId,
+        currentUser.id,
+        () => {
+          commentItem.fadeOut(300, function () {
+            $(this).remove();
+            if ($("#comments-list").children(".comment-item").length === 0) {
+              $("#comments-list").html('<p class="comment-prompt">No comments yet.</p>');
+            }
+          });
+          showPopup("Comment deleted.", true);
+
+          const isAdminDeletingOthersComment = currentUser.isAdmin && currentUser.id !== authorId;
+
+          if (isAdminDeletingOthersComment) {
+            setTimeout(() => {
+              showDialog("Do you also want to ban this user?").then((wantsToBan) => {
+                if (wantsToBan) {
+                  toggleUserStatus(
+                    authorId,
+                    "IsLocked",
+                    () => showPopup("User has been banned successfully.", true),
+                    () => showPopup("Failed to ban user.", false)
+                  );
+                }
+              });
+            }, 500);
+          }
+        },
+        () => showPopup("Failed to delete comment. Please try again.", false)
+      );
     });
   });
 

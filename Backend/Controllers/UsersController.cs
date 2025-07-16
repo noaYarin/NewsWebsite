@@ -62,7 +62,9 @@ public class UsersController : ControllerBase
             FirstName = loggedInUser.FirstName,
             LastName = loggedInUser.LastName,
             ImageUrl = loggedInUser.ImageUrl,
-            Interests = userTags
+            Interests = userTags,
+            IsAdmin = loggedInUser.IsAdmin,
+            IsLocked = loggedInUser.IsLocked
         };
         return Ok(response);
     }
