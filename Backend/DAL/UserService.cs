@@ -261,4 +261,20 @@ public class UserService : DBService
         }
         finally { con?.Close(); }
     }
+
+    public void ToggleUserStatus(int userId, string attribute)
+    {
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object> {
+                { "@UserId", userId },
+                { "@Attribute", attribute }
+            };
+            SqlCommand cmd = CreateCommand("SP_ToggleUserStatus", con, parameters);
+            cmd.ExecuteNonQuery();
+        }
+        finally { con?.Close(); }
+    }
 }

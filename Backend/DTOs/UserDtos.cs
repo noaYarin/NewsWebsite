@@ -29,6 +29,8 @@ public class UserResponseDto
     public string LastName { get; set; }
     public string? ImageUrl { get; set; }
     public List<string> Interests { get; set; }
+    public bool IsAdmin { get; set; }
+    public bool IsLocked { get; set; }
 }
 
 public class BlockedUserDto
@@ -47,6 +49,8 @@ public class UserProfileResponseDto
     public string? ImageUrl { get; set; }
     public List<string> Interests { get; set; }
     public List<BlockedUserDto> BlockedUsers { get; set; }
+    public bool IsAdmin { get; set; }
+    public bool IsLocked { get; set; }
 }
 
 public class UpdateProfileRequestDto
@@ -57,4 +61,9 @@ public class UpdateProfileRequestDto
     public string? ImageUrl { get; set; }
     public string? NewPassword { get; set; }
     public List<string> Interests { get; set; }
+}
+
+public class ToggleStatusRequestDto
+{
+    public string Attribute { get; set; }
 }

@@ -90,7 +90,9 @@ public class User
             BirthDate = user.BirthDate,
             ImageUrl = user.ImageUrl,
             Interests = interests,
-            BlockedUsers = blockedUsers
+            BlockedUsers = blockedUsers,
+            IsAdmin = user.IsAdmin,
+            IsLocked = user.IsLocked
         };
     }
 
@@ -108,8 +110,23 @@ public class User
             FirstName = updatedUser.FirstName,
             LastName = updatedUser.LastName,
             ImageUrl = updatedUser.ImageUrl,
-            Interests = interests
+            Interests = interests,
+            IsAdmin = updatedUser.IsAdmin,
+            IsLocked = updatedUser.IsLocked
         };
+    }
+
+    public static bool ToggleUserStatus(int userId, string attribute)
+    {
+        var userService = new UserService();
+        var user = userService.GetUserById(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        userService.ToggleUserStatus(userId, attribute);
+        return true;
     }
 
     public static void UnblockUser(int userId, int blockedUserId)

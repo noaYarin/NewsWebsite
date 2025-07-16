@@ -109,4 +109,23 @@ public class UsersController : ControllerBase
             return StatusCode(500, "An error occurred.");
         }
     }
+
+    [HttpPut("{id}/toggle-status")]
+    public IActionResult ToggleUserStatus(int id, [FromBody] ToggleStatusRequestDto request)
+    {
+        if (request.Attribute != "IsAdmin" && request.Attribute != "IsLocked")
+        {
+            return BadRequest(new { message = "Invalid attribute specified. Use 'IsAdmin' or 'IsLocked'." });
+        }
+
+        var success = Horizon.BL.User.ToggleUserStatus(id, request.Attribute);
+
+        if (!success)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var updatedProfile = Horizon.BL.User.GetUserProfile(id);
+        return Ok(updatedProfile);
+    }
 }
