@@ -9,6 +9,26 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
+    [HttpGet]
+    public IActionResult GetUsers([FromQuery] string? searchTerm)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var searchedUsers = Horizon.BL.User.SearchByEmail(searchTerm);
+                return Ok(searchedUsers);
+            }
+
+            var allUsers = Horizon.BL.User.GetAll();
+            return Ok(allUsers);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while retrieving users.");
+        }
+    }
+
     [HttpGet("exists/{email}")]
     public IActionResult UserExists(string email)
     {
@@ -98,17 +118,18 @@ public class UsersController : ControllerBase
         }
     }
 
-    [HttpDelete("{userId}/blocked/{blockedUserId}")]
-    public IActionResult UnblockUser(int userId, int blockedUserId)
+    [HttpPost("{userId}/toggle-block/{userToBlockId}")]
+    public IActionResult ToggleBlock(int userId, int userToBlockId)
     {
         try
         {
-            Horizon.BL.User.UnblockUser(userId, blockedUserId);
-            return Ok(new { message = "User unblocked successfully." });
+            bool isNowBlocked = Horizon.BL.User.ToggleBlock(userId, userToBlockId);
+            string message = isNowBlocked ? "User blocked successfully." : "User unblocked successfully.";
+            return Ok(new { message = message, isBlocked = isNowBlocked });
         }
         catch (Exception)
         {
-            return StatusCode(500, "An error occurred.");
+            return StatusCode(500, "An error occurred while changing the block status.");
         }
     }
 

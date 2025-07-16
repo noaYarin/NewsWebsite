@@ -23,6 +23,59 @@ public class UserService : DBService
         };
     }
 
+    static private UserSummaryDto MapReaderToUserSummary(SqlDataReader reader)
+    {
+        return new UserSummaryDto
+        {
+            Id = Convert.ToInt32(reader["Id"]),
+            Email = reader["Email"].ToString(),
+            FullName = $"{reader["FirstName"]} {reader["LastName"]}",
+            IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
+            IsLocked = Convert.ToBoolean(reader["IsLocked"])
+        };
+    }
+
+    public List<UserSummaryDto> GetAllUsers()
+    {
+        var users = new List<UserSummaryDto>();
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            SqlCommand cmd = CreateCommand("SP_GetAllUsers", con, new Dictionary<string, object>());
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    users.Add(MapReaderToUserSummary(reader));
+                }
+            }
+            return users;
+        }
+        finally { con?.Close(); }
+    }
+
+    public List<UserSummaryDto> SearchUsersByEmail(string emailTerm)
+    {
+        var users = new List<UserSummaryDto>();
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object> { { "@EmailTerm", emailTerm } };
+            SqlCommand cmd = CreateCommand("SP_SearchUsersByEmail", con, parameters);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    users.Add(MapReaderToUserSummary(reader));
+                }
+            }
+            return users;
+        }
+        finally { con?.Close(); }
+    }
+
     public int InsertUserAndTags(User user, List<string> tagNames)
     {
         SqlConnection con = null;
@@ -246,18 +299,28 @@ public class UserService : DBService
         finally { con?.Close(); }
     }
 
-    public void UnblockUser(int userId, int blockedUserId)
+    public bool ToggleBlockStatus(int userId, int blockedUserId)
     {
         SqlConnection con = null;
         try
         {
             con = Connect();
-            var parameters = new Dictionary<string, object> {
+            var parameters = new Dictionary<string, object>
+        {
             { "@UserId", userId },
             { "@BlockedUserId", blockedUserId }
         };
-            SqlCommand cmd = CreateCommand("SP_UnblockUser", con, parameters);
+
+            SqlCommand cmd = CreateCommand("SP_ToggleUserBlock", con, parameters);
+            SqlParameter isBlockedParam = new SqlParameter("@IsBlocked", SqlDbType.Bit)
+            {
+                Direction = ParameterDirection.Output
+            };
+            cmd.Parameters.Add(isBlockedParam);
+
             cmd.ExecuteNonQuery();
+
+            return Convert.ToBoolean(isBlockedParam.Value);
         }
         finally { con?.Close(); }
     }

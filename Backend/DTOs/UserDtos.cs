@@ -67,3 +67,12 @@ public class ToggleStatusRequestDto
 {
     public string Attribute { get; set; }
 }
+
+public class UserSummaryDto
+{
+    public int Id { get; set; }
+    public string Email { get; set; }
+    public string FullName { get; set; }
+    public bool IsAdmin { get; set; }
+    public bool IsLocked { get; set; }
+}

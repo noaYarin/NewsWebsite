@@ -33,6 +33,18 @@ public class User
         HashedPassword = hashedPassword;
     }
 
+    public static List<UserSummaryDto> GetAll()
+    {
+        var userService = new UserService();
+        return userService.GetAllUsers();
+    }
+
+    public static List<UserSummaryDto> SearchByEmail(string emailTerm)
+    {
+        var userService = new UserService();
+        return userService.SearchUsersByEmail(emailTerm);
+    }
+
     public string Register(string plainTextPassword, List<string> tagNames)
     {
         UserService userService = new();
@@ -129,9 +141,11 @@ public class User
         return true;
     }
 
-    public static void UnblockUser(int userId, int blockedUserId)
+    public static bool ToggleBlock(int userId, int userToBlockId)
     {
         var userService = new UserService();
-        userService.UnblockUser(userId, blockedUserId);
+        if (userId == userToBlockId) return false;
+
+        return userService.ToggleBlockStatus(userId, userToBlockId);
     }
 }

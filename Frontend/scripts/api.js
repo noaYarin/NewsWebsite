@@ -83,8 +83,8 @@ function updateProfile(userId, data, successCallback, errorCallback) {
   ajaxCall("PUT", `${usersEndpoint}/profile/${userId}`, JSON.stringify(data), successCallback, errorCallback);
 }
 
-function unblockUser(userId, blockedUserId, successCallback, errorCallback) {
-  ajaxCall("DELETE", `${usersEndpoint}/${userId}/blocked/${blockedUserId}`, null, successCallback, errorCallback);
+function toggleBlockUser(userId, userToBlockId, successCallback, errorCallback) {
+  ajaxCall("POST", `${usersEndpoint}/${userId}/toggle-block/${userToBlockId}`, null, successCallback, errorCallback);
 }
 
 function toggleUserStatus(userId, attributeName, successCallback, errorCallback) {

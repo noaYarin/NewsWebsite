@@ -75,13 +75,21 @@ function handleUnblockUser(e) {
   const item = $(e.currentTarget).closest(".blocked-user-item");
   const blockedUserId = item.data("user-id");
 
-  unblockUser(
+  toggleBlockUser(
     currentUser.id,
     blockedUserId,
     (response) => {
-      item.fadeOut(300, () => item.remove());
+      showPopup(response.message, true);
+
+      item.fadeOut(300, function () {
+        $(this).remove();
+
+        if ($("#blockedUsersList .blocked-user-item").length === 0) {
+          $("#blockedUsersList").html('<p class="empty-list-message">You have no blocked users.</p>');
+        }
+      });
     },
-    (err) => {
+    () => {
       showPopup("Failed to unblock user. Please try again.", false);
     }
   );
