@@ -93,6 +93,7 @@ function loadComments() {
 
   getComments(
     currentArticle.id,
+    currentUser ? currentUser.id : null,
     function (comments) {
       showComments(comments);
     },
@@ -133,7 +134,6 @@ function showComments(comments) {
     } else {
       const isLiked = comment.isLikedByCurrentUser;
       const likeCount = comment.likeCount;
-
       const commentHtml = `
           <div class="comment-item" data-comment-id="${comment.id}" data-author-id="${comment.authorId}">
               <img src="${comment.authorAvatar || "../sources/images/no-image.png"}"

@@ -46,8 +46,9 @@ function syncArticles(articleList, successCallback, errorCallback) {
   ajaxCall("POST", `${articlesEndpoint}/sync`, JSON.stringify(articleList), successCallback, errorCallback);
 }
 
-function getComments(articleId, successCallback, errorCallback) {
-  ajaxCall("GET", `${commentsEndpoint}/${articleId}`, null, successCallback, errorCallback);
+function getComments(articleId, userId, successCallback, errorCallback) {
+  const url = userId ? `${commentsEndpoint}/${articleId}?userId=${userId}` : `${commentsEndpoint}/${articleId}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
 function addComment(commentData, successCallback, errorCallback) {
