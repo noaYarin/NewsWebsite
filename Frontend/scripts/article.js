@@ -169,9 +169,13 @@ function showComments(comments) {
       const isAuthor = currentUser && currentUser.id == comment.authorId;
       const isAdmin = currentUser && currentUser.isAdmin;
 
-      let actionsHtml = `<button class="report-comment-btn action-icon-btn" title="Report comment">
-                          <img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" />
-                       </button>`;
+      let actionsHtml = "";
+
+      if (!isAuthor) {
+        actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment">
+                            <img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" />
+                         </button>`;
+      }
 
       if (isAuthor) {
         actionsHtml += `
