@@ -126,7 +126,6 @@ async function fetchFromSource(source) {
     if (type === "api") {
       return await fetchFromAPI(null, value);
     } else if (type === "category") {
-      // Try cache first, then API
       const cached = await fetchFromCache(value);
       if (cached && cached.length > 0) {
         return cached;
@@ -134,7 +133,6 @@ async function fetchFromSource(source) {
       return await fetchFromAPI(value, null);
     }
   } catch (error) {
-    console.warn(`Failed to fetch from ${source}:`, error);
     return [];
   }
 }
@@ -203,9 +201,6 @@ function fillSection(section) {
   const availableArticles = getArticlesForSection(section);
 
   if (availableArticles.length < section.count) {
-    console.warn(`Section ${section.id} needs ${section.count} articles but only found ${availableArticles.length}`);
-
-    // If we don't have enough, get ANY unused articles to fill the gap - this is a fallback
     const additionalNeeded = section.count - availableArticles.length;
     const fillerArticles = allArticles.filter((article) => !usedArticleIds.has(article.id)).slice(0, additionalNeeded);
 
@@ -248,7 +243,6 @@ function getArticlesForSection(section) {
 function fillContainer(containerSelector, articles, title) {
   const container = $(containerSelector);
   if (!container.length) {
-    console.warn(`Container not found: ${containerSelector}`);
     return;
   }
 
@@ -265,15 +259,11 @@ function fillContainer(containerSelector, articles, title) {
       updateArticleElement($element, articles[index]);
       $element.css("visibility", "visible");
     } else {
-      // If we don't have enough articles, try to use any available article
       const fallbackArticle = createFallbackArticle(index);
       updateArticleElement($element, fallbackArticle);
       $element.css("visibility", "visible");
-      console.warn(`Using fallback article for slot ${index} in ${containerSelector}`);
     }
   });
-
-  console.log(`Filled ${containerSelector} with ${Math.min(articles.length, articleSlots.length)} articles`);
 }
 
 function createFallbackArticle(index) {
@@ -318,8 +308,6 @@ function updateArticleElement(element, article) {
 }
 
 async function loadFromCacheOnly() {
-  console.log("Loading from cache only as fallback");
-
   const interests = getUserInterests();
   const cachePromises = interests.concat(["general"]).map((category) => fetchFromCache(category));
 
@@ -333,7 +321,6 @@ async function loadFromCacheOnly() {
   });
 
   if (allArticles.length === 0) {
-    console.warn("No articles available, creating fallback content");
     createFallbackContent();
   } else {
     fillAllSections();
