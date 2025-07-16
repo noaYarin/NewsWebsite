@@ -491,7 +491,7 @@ function showPopup(message, colorFlag) {
   }, 2000);
 }
 
-function showDialog(message) {
+function showDialog(message, isReportDialog = false) {
   return new Promise((resolve) => {
     $("#dialog-popup").remove();
 
@@ -512,7 +512,11 @@ function showDialog(message) {
     };
 
     $yesButton.on("click", () => {
-      closeDialog(true);
+      if (isReportDialog) {
+        transformToReportForm($dialog, $message, $actions, closeDialog);
+      } else {
+        closeDialog(true);
+      }
     });
 
     $noButton.on("click", () => {
@@ -535,4 +539,44 @@ function showDialog(message) {
       }, 0);
     }, 10);
   });
+}
+
+function transformToReportForm($dialog, $message, $actions, closeDialog) {
+  $message.text("Please provide a reason for reporting this comment");
+
+  $dialog.addClass("report-dialog");
+  const $inputContainer = $("<div></div>").addClass("dialog-input-container");
+  const $textarea = $("<textarea></textarea>").addClass("dialog-textarea").attr("placeholder", "Enter your report here...").attr("max-length", "200");
+  const $sendButton = $("<button><img src='../sources/icons/send-alt-1-svgrepo-com.svg' alt='Send' /></button>").addClass("dialog-send");
+
+  const $newActions = $("<div></div>").addClass("dialog-actions");
+
+  $sendButton.on("click", () => {
+    const reportText = $textarea.val().trim();
+    if (reportText === "") {
+      $textarea.focus();
+      $textarea.addClass("error");
+      setTimeout(() => $textarea.removeClass("error"), 2000);
+      return;
+    }
+    closeDialog({ reported: true, reason: reportText });
+  });
+
+  $inputContainer.append($textarea, $sendButton);
+  $newActions.append();
+
+  $dialog.addClass("transforming");
+
+  setTimeout(() => {
+    $actions.fadeOut(200, () => {
+      $actions.remove();
+      $dialog.append($inputContainer, $newActions);
+
+      setTimeout(() => {
+        $dialog.addClass("expanded");
+        $inputContainer.addClass("show");
+        $textarea.focus();
+      }, 50);
+    });
+  }, 100);
 }

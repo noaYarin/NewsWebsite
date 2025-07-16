@@ -384,10 +384,11 @@ function setupArticleEventHandlers() {
     const commentItem = $(this).closest(".comment-item");
     const commentId = commentItem.data("comment-id");
 
-    showDialog("Are you sure you want to report this comment?").then((userClickedYes) => {
-      if (userClickedYes) {
+    showDialog("Are you sure you want to report this comment?", true).then((result) => {
+      if (result && result.reported) {
         reportComment(
           commentId,
+          result.reason,
           () => showPopup("Comment reported. Thank you for your feedback.", true),
           () => showPopup("Failed to report comment. Please try again.", false)
         );

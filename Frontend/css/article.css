@@ -386,6 +386,105 @@ body {
   background-color: var(--c-primary);
 }
 
+.dialog-popup {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dialog-popup.transforming {
+  transition: all 0.3s ease-in-out;
+}
+
+.dialog-popup.expanded {
+  transition: all 0.3s ease-in-out;
+}
+
+.report-dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 48px;
+  gap: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+.report-dialog .dialog-message {
+  margin: 0px;
+}
+
+.report-dialog textarea {
+  max-height: 52px;
+  padding: 12px;
+  border: 1px solid var(--c-border-light);
+  border-radius: 50px;
+  font-size: 16px;
+  resize: none;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.report-dialog textarea.error {
+  border-color: var(--c-red);
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+  animation: shake 0.35s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.dialog-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease-in-out;
+}
+
+.dialog-input-container.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dialog-send {
+  padding: 8px;
+  background-color: var(--c-light);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.dialog-send:hover {
+  background-color: rgba(255, 204, 0, 0.75);
+}
+
+.dialog-send:active {
+  transform: scale(0.95);
+}
+
+.dialog-send img {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.2s ease-in-out;
+}
+
 /* --------------------
    Responsive Adjustments
    -------------------- */
