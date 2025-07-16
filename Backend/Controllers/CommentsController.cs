@@ -34,11 +34,11 @@ public class CommentsController : ControllerBase
     }
 
     [HttpGet("{articleId}")]
-    public IActionResult GetComments(int articleId)
+    public IActionResult GetComments(int articleId, [FromQuery] int? userId)
     {
         try
         {
-            var comments = Comment.GetByArticleId(articleId);
+            var comments = Comment.GetByArticleId(articleId, userId);
             return Ok(comments);
         }
         catch (System.Exception ex)
@@ -82,6 +82,20 @@ public class CommentsController : ControllerBase
         catch (System.Exception)
         {
             return StatusCode(500, "An error occurred while deleting the comment.");
+        }
+    }
+
+    [HttpPost("{id}/like/{userId}")]
+    public IActionResult ToggleCommentLike(int id, int userId)
+    {
+        try
+        {
+            bool isLiked = Comment.ToggleLike(id, userId);
+            return Ok(new { isLiked });
+        }
+        catch (System.Exception)
+        {
+            return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 }

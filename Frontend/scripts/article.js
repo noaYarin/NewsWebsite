@@ -131,8 +131,8 @@ function showComments(comments) {
           </div>`;
       commentsList.append(blockedHtml);
     } else {
-      const isLiked = currentUser ? comment.isLikedByCurrentUser : false;
-      const likeCount = comment.likeCount || 0;
+      const isLiked = comment.isLikedByCurrentUser;
+      const likeCount = comment.likeCount;
 
       const commentHtml = `
           <div class="comment-item" data-comment-id="${comment.id}" data-author-id="${comment.authorId}">
@@ -165,30 +165,18 @@ function showComments(comments) {
           </div>`;
 
       const commentElement = $(commentHtml);
-
       const isAuthor = currentUser && currentUser.id == comment.authorId;
       const isAdmin = currentUser && currentUser.isAdmin;
-
       let actionsHtml = "";
 
       if (!isAuthor) {
-        actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment">
-                            <img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" />
-                         </button>`;
+        actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment"><img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" /></button>`;
       }
-
       if (isAuthor) {
-        actionsHtml += `
-        <button class="edit-comment-btn action-icon-btn" title="Edit comment">
-            <img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" />
-        </button>`;
+        actionsHtml += `<button class="edit-comment-btn action-icon-btn" title="Edit comment"><img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" /></button>`;
       }
-
       if (isAuthor || isAdmin) {
-        actionsHtml += `
-        <button class="delete-comment-btn action-icon-btn" title="Delete comment">
-            <img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" />
-        </button>`;
+        actionsHtml += `<button class="delete-comment-btn action-icon-btn" title="Delete comment"><img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" /></button>`;
       }
 
       commentElement.find(".comment-actions").html(actionsHtml);
@@ -346,7 +334,6 @@ function setupArticleEventHandlers() {
 
     const wasLiked = button.hasClass("liked");
     const initialLikeCount = parseInt(likeCountSpan.text());
-
     const newLikeCount = wasLiked ? initialLikeCount - 1 : initialLikeCount + 1;
     likeCountSpan.text(newLikeCount);
     button.toggleClass("liked", !wasLiked);
@@ -368,11 +355,16 @@ function setupArticleEventHandlers() {
       }
     }
 
-    toggleLikeComment(commentId, null, (error) => {
-      showPopup("An error occurred. Please try again.", false);
-      likeCountSpan.text(initialLikeCount);
-      button.toggleClass("liked", wasLiked);
-    });
+    toggleLikeComment(
+      commentId,
+      currentUser.id,
+      () => {},
+      () => {
+        showPopup("An error occurred. Please try again.", false);
+        likeCountSpan.text(initialLikeCount);
+        button.toggleClass("liked", wasLiked);
+      }
+    );
   });
 
   $(document).on("click", ".report-comment-btn", function () {

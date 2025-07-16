@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 using Horizon.BL;
 using Horizon.DTOs;
 
@@ -27,15 +28,20 @@ public class CommentService : DBService
         finally { con?.Close(); }
     }
 
-    public List<CommentResponseDto> GetCommentsByArticleId(int articleId)
+    public List<CommentResponseDto> GetCommentsByArticleId(int articleId, int? requestingUserId)
     {
         var comments = new List<CommentResponseDto>();
         SqlConnection con = null;
         try
         {
             con = Connect();
-            var parameters = new Dictionary<string, object> { { "@ArticleId", articleId } };
+            var parameters = new Dictionary<string, object>
+            {
+                { "@ArticleId", articleId },
+                { "@RequestingUserId", requestingUserId }
+            };
             SqlCommand cmd = CreateCommand("SP_GetCommentsByArticleId", con, parameters);
+
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -47,7 +53,9 @@ public class CommentService : DBService
                         CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
                         AuthorId = Convert.ToInt32(reader["AuthorId"]),
                         AuthorName = $"{reader["FirstName"]} {reader["LastName"]}",
-                        AuthorAvatar = reader["AuthorAvatar"] == DBNull.Value ? null : reader["AuthorAvatar"].ToString()
+                        AuthorAvatar = reader["AuthorAvatar"] == DBNull.Value ? null : reader["AuthorAvatar"].ToString(),
+                        LikeCount = Convert.ToInt32(reader["LikeCount"]),
+                        IsLikedByCurrentUser = Convert.ToBoolean(reader["IsLikedByCurrentUser"])
                     });
                 }
             }
@@ -93,5 +101,35 @@ public class CommentService : DBService
             return rowsAffected > 0;
         }
         finally { con?.Close(); }
+    }
+
+    public bool ToggleCommentLike(int commentId, int userId)
+    {
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object>
+            {
+                { "@CommentId", commentId },
+                { "@UserId", userId }
+            };
+
+            SqlCommand cmd = CreateCommand("SP_ToggleCommentLike", con, parameters);
+
+            SqlParameter isNowLikedParam = new SqlParameter("@IsNowLiked", SqlDbType.Bit)
+            {
+                Direction = ParameterDirection.Output
+            };
+            cmd.Parameters.Add(isNowLikedParam);
+
+            cmd.ExecuteNonQuery();
+
+            return Convert.ToBoolean(isNowLikedParam.Value);
+        }
+        finally
+        {
+            con?.Close();
+        }
     }
 }

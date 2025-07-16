@@ -27,10 +27,10 @@ public class Comment
         return newCommentId > 0;
     }
 
-    public static List<CommentResponseDto> GetByArticleId(int articleId)
+    public static List<CommentResponseDto> GetByArticleId(int articleId, int? requestingUserId)
     {
         var commentService = new CommentService();
-        return commentService.GetCommentsByArticleId(articleId);
+        return commentService.GetCommentsByArticleId(articleId, requestingUserId);
     }
 
     public static bool Update(int commentId, int requestingUserId, string content)
@@ -43,5 +43,11 @@ public class Comment
     {
         var commentService = new CommentService();
         return commentService.DeleteComment(commentId, requestingUserId);
+    }
+
+    public static bool ToggleLike(int commentId, int userId)
+    {
+        var commentService = new CommentService();
+        return commentService.ToggleCommentLike(commentId, userId);
     }
 }

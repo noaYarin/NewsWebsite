@@ -62,6 +62,10 @@ function deleteComment(commentId, requestingUserId, successCallback, errorCallba
   ajaxCall("DELETE", `${commentsEndpoint}/${commentId}/${requestingUserId}`, null, successCallback, errorCallback);
 }
 
+function toggleLikeComment(commentId, userId, successCallback, errorCallback) {
+  ajaxCall("POST", `${commentsEndpoint}/${commentId}/like/${userId}`, null, successCallback, errorCallback);
+}
+
 // --- User Management Functions ---
 function checkUserExists(email, successCallback, errorCallback) {
   ajaxCall("GET", `${usersEndpoint}/exists/${encodeURIComponent(email)}`, null, successCallback, errorCallback);

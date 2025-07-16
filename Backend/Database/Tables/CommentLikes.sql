@@ -1,0 +1,8 @@
+CREATE TABLE CommentLikes (
+    CommentId INT NOT NULL,
+    UserId INT NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+    PRIMARY KEY (CommentId, UserId),
+    FOREIGN KEY (CommentId) REFERENCES Comments(Id) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+);
