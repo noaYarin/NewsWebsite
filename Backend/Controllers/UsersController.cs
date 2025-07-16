@@ -75,6 +75,11 @@ public class UsersController : ControllerBase
             return Unauthorized("Invalid email or password.");
         }
 
+        if (loggedInUser.IsLocked)
+        {
+            return StatusCode(403, "Your account is locked. Please contact support.");
+        }
+
         var response = new UserResponseDto
         {
             Id = loggedInUser.Id.Value,

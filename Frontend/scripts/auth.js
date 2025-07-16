@@ -166,7 +166,12 @@ function handleSignin(e) {
       }
     },
     (err) => {
-      showPopup("Invalid email or password. Please try again.", false);
+      if (err.status === 403 && err.responseText) {
+        showPopup(err.responseText, false);
+      } else {
+        showPopup("Invalid email or password. Please try again.", false);
+      }
+
       button.text("Sign In").prop("disabled", false);
     }
   );
