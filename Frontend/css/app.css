@@ -70,6 +70,9 @@
   /* Transitions */
   --transition-fast: 0.3s ease;
   --transition-medium: 0.4s ease;
+
+  /* Breakpoints */
+  --keyboard-inset: 0px;
 }
 
 /* --------------------
@@ -91,6 +94,15 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+body.keyboard-active .popup.show {
+  transform: translate(-50%, calc(-1 * var(--keyboard-inset)));
+}
+
+body.keyboard-active .dialog-popup.show {
+  top: calc((100vh - var(--keyboard-inset)) / 2);
+  max-height: calc(100vh - var(--keyboard-inset) - 40px);
 }
 
 main {

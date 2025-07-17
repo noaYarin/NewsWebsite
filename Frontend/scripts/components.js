@@ -217,7 +217,28 @@ $(document).ready(function () {
   }
 
   setupProfileMenu();
+  setupKeyboardWatcher();
 });
+
+function setupKeyboardWatcher() {
+  if (!window.visualViewport) {
+    return;
+  }
+
+  const initialHeight = window.visualViewport.height;
+
+  window.visualViewport.addEventListener("resize", () => {
+    const currentHeight = window.visualViewport.height;
+    if (currentHeight < initialHeight * 0.9) {
+      const keyboardHeight = window.innerHeight - currentHeight;
+      document.documentElement.style.setProperty("--keyboard-inset", `${keyboardHeight}px`);
+      document.body.classList.add("keyboard-active");
+    } else {
+      document.documentElement.style.setProperty("--keyboard-inset", "0px");
+      document.body.classList.remove("keyboard-active");
+    }
+  });
+}
 
 function getCurrentUser() {
   try {
@@ -302,7 +323,6 @@ function setupEventHandlers() {
       toggleProfileMenu();
     }
 
-    // Refocus on search input when resizing with overlay open
     if ($("#searchOverlay").hasClass("active")) {
       setTimeout(() => {
         const inputToFocus = $(window).width() <= MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
@@ -405,13 +425,11 @@ function setupBackToTop() {
       const footerOverlap = buttonBottom + 20 - footerTop;
 
       if (footerOverlap > 0) {
-        // Move button up by the overlap amount
         $backToTop.css({
           bottom: 30 + footerOverlap + "px",
           transition: "bottom 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease"
         });
       } else {
-        // Reset to original position
         $backToTop.css({
           bottom: "30px",
           transition: "all 0.3s ease"
@@ -450,7 +468,6 @@ function toggleSearch() {
   $overlay.toggleClass("active");
 
   if ($overlay.hasClass("active")) {
-    // Focus on search input
     setTimeout(() => {
       const inputToFocus = $(window).width() <= MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
       const $input = $(inputToFocus);
