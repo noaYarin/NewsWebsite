@@ -1,11 +1,26 @@
-﻿namespace Horizon.BL
+﻿using Horizon.DAL;
+
+namespace Horizon.BL
 {
     public class Report
     {
         public int Id { get; set; }
-        public Enum Flag { get; set; } //to change
-        public User Reporter { get; set; }
-        public Article? ToArticle { get; set; }
-        public Comment? ToComment { get; set; }
+        public int ReporterUserId { get; set; }
+        public int ReportedCommentId { get; set; }
+        public ReportReason Reason { get; set; }
+        public string Details { get; set; }
+        public ReportStatus Status { get; set; }
+
+        public bool Create()
+        {
+            var reportService = new ReportService();
+            int newId = reportService.InsertReport(this);
+            if (newId > 0)
+            {
+                this.Id = newId;
+                return true;
+            }
+            return false;
+        }
     }
 }

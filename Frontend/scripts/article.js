@@ -428,22 +428,21 @@ function setupArticleEventHandlers() {
 
     showDialog("Are you sure you want to report this comment?", true).then((result) => {
       if (result && result.reported) {
-        const fullReason = `${result.reasonCategory}: ${result.reason}`;
+        const reportData = {
+          reporterUserId: currentUser.id,
+          commentId: commentId,
+          reason: result.reasonCategory,
+          details: result.reason
+        };
+
         reportComment(
-          commentId,
-          fullReason,
+          reportData,
           () => showPopup("Comment reported. Thank you for your feedback.", true),
           () => showPopup("Failed to report comment. Please try again.", false)
         );
       }
     });
   });
-
-  $("#bookmark-btn, #share-btn, #ai-summarize-btn")
-    .off("click")
-    .on("click", function () {
-      showPopup("This feature is coming soon!", "muted");
-    });
 }
 
 function formatContent(content) {

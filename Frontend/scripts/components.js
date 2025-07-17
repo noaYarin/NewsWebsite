@@ -562,10 +562,16 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
   $dialog.addClass("report-dialog");
   $message.text("Please select a reason for your report");
 
-  const reasons = ["Spam or Misleading", "Hate Speech or Harassment", "Violent Speech", "Other"];
+  const reasons = [
+    { value: "Spam", text: "Spam or Misleading" },
+    { value: "HateSpeech", text: "Hate Speech" },
+    { value: "Harassment", text: "Harassment" },
+    { value: "ViolentSpeech", text: "Violent Speech" },
+    { value: "Misinformation", text: "Misinformation" },
+    { value: "Other", text: "Other" }
+  ];
   const $reportControls = $("<div></div>").addClass("report-dialog-controls");
 
-  // Create custom dropdown structure
   const $customDropdown = $("<div></div>").addClass("custom-dropdown");
   const $dropdownButton = $("<button></button>").addClass("dropdown-button");
   const $selectedText = $("<span></span>").addClass("selected-text").text("Select a reason...");
@@ -575,13 +581,11 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
 
   const $dropdownOptions = $("<div></div>").addClass("dropdown-options");
 
-  // Add options to dropdown
   reasons.forEach((reason) => {
-    const $option = $("<div></div>").addClass("dropdown-option").attr("data-value", reason).text(reason);
+    const $option = $("<div></div>").addClass("dropdown-option").attr("data-value", reason.value).text(reason.text);
     $dropdownOptions.append($option);
   });
 
-  // Assemble dropdown
   $dropdownButton.append($selectedText, $dropdownArrow);
   $customDropdown.append($dropdownButton, $dropdownOptions);
 
@@ -589,7 +593,6 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
 
   let selectedValue = null;
 
-  // Dropdown functionality
   $dropdownButton.on("click", function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -597,30 +600,22 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
     $dropdownOptions.toggleClass("show");
   });
 
-  // Option selection
   $dropdownOptions.on("click", ".dropdown-option", function (e) {
     e.stopPropagation();
 
-    // Remove selected class from all options
     $dropdownOptions.find(".dropdown-option").removeClass("selected");
-
-    // Add selected class to clicked option
     $(this).addClass("selected");
 
-    // Update button text and value
     selectedValue = $(this).attr("data-value");
-    $selectedText.text(selectedValue);
+    $selectedText.text($(this).text());
     $dropdownButton.addClass("selected");
 
-    // Enable continue button
     $continueButton.prop("disabled", false).addClass("enabled");
 
-    // Close dropdown
     $dropdownButton.removeClass("active");
     $dropdownOptions.removeClass("show");
   });
 
-  // Close dropdown when clicking outside
   $(document).on("click.dropdown", function (e) {
     if (!$customDropdown.is(e.target) && $customDropdown.has(e.target).length === 0) {
       $dropdownButton.removeClass("active");
@@ -628,16 +623,13 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
     }
   });
 
-  // Continue button functionality
   $continueButton.on("click", function () {
     if (selectedValue) {
-      // Clean up event listener
       $(document).off("click.dropdown");
       transformToReportForm($dialog, $message, $reportControls, closeDialog, selectedValue);
     }
   });
 
-  // Keyboard navigation
   $dropdownButton.on("keydown", function (e) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();

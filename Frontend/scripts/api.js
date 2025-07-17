@@ -8,6 +8,7 @@ const usersEndpoint = `${dotnetBaseUrl}/Users`;
 const newsEndpoint = `${nodeBaseUrl}/News`;
 const articlesEndpoint = `${dotnetBaseUrl}/Articles`;
 const commentsEndpoint = `${dotnetBaseUrl}/Comments`;
+const reportsEndpoint = `${dotnetBaseUrl}/Reports`;
 
 const NEWS_PAGE_SIZE = 10;
 
@@ -65,6 +66,10 @@ function deleteComment(commentId, requestingUserId, successCallback, errorCallba
 
 function toggleLikeComment(commentId, userId, successCallback, errorCallback) {
   ajaxCall("POST", `${commentsEndpoint}/${commentId}/like/${userId}`, null, successCallback, errorCallback);
+}
+
+function reportComment(reportData, successCallback, errorCallback) {
+  ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
 }
 
 // --- User Management Functions ---
