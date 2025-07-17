@@ -40,7 +40,7 @@ $(document).ready(function () {
           <li><a href="../html/category.html?name=science">Science</a></li>
           <li><a href="../html/category.html?name=sports">Sports</a></li>
           <li><a href="../html/category.html?name=technology">Technology</a></li>
-          <li><a href="#">More</a></li>
+          <li><a href="../html/category.html?name=general">More</a></li>
         </ul>
       </div>
       <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
@@ -112,13 +112,13 @@ $(document).ready(function () {
         <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""}/>
       </div>
       <ul class="mobile-nav-items">
-        <li><a href="#">Business</a></li>
-        <li><a href="#">Entertainment</a></li>
-        <li><a href="#">Health</a></li>
-        <li><a href="#">Science</a></li>
-        <li><a href="#">Sports</a></li>
-        <li><a href="#">Technology</a></li>
-        <li><a href="#">More</a></li>
+        <li><a href="../html/category.html?name=business">Business</a></li>
+        <li><a href="../html/category.html?name=entertainment">Entertainment</a></li>
+        <li><a href="../html/category.html?name=health">Health</a></li>
+        <li><a href="../html/category.html?name=science">Science</a></li>
+        <li><a href="../html/category.html?name=sports">Sports</a></li>
+        <li><a href="../html/category.html?name=technology">Technology</a></li>
+        <li><a href="../html/category.html?name=general">More</a></li>
       </ul>
       <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
         ${
