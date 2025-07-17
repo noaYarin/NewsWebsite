@@ -12,6 +12,11 @@ $(document).ready(function () {
     const formattedTitle = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
     document.title = `HORIZON / ${formattedTitle}`;
     $(".category-title").text(formattedTitle);
+
+    // ADDED: Set the background image of the banner
+    const bannerImageUrl = `../sources/images/categories/${formattedTitle}.jpg`;
+    $(".category-banner").css("background-image", `url('${bannerImageUrl}')`);
+
     loadCategoryArticles();
   } else {
     showCategoryError("No category specified.");
@@ -26,6 +31,7 @@ $(document).ready(function () {
   });
 });
 
+// ... The rest of the file (loadCategoryArticles, displayArticles, etc.) remains the same
 function loadCategoryArticles() {
   if (isLoading || allArticlesLoaded) return;
   isLoading = true;
