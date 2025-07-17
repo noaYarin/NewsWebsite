@@ -115,73 +115,71 @@ function showComments(comments) {
   const blockedUsers = currentUser ? currentUser.blockedUsers || [] : [];
 
   for (let comment of comments) {
-    const isBlocked = blockedUsers.some((blocked) => blocked.id == comment.authorId);
+    const isAuthorBlocked = blockedUsers.some((user) => user.id == comment.authorId);
+    const isLiked = comment.isLikedByCurrentUser;
+    const likeCount = comment.likeCount;
+    const isAuthor = currentUser && currentUser.id == comment.authorId;
+    const isAdmin = currentUser && currentUser.isAdmin;
 
-    if (isBlocked) {
+    let actionsHtml = "";
+    if (!isAuthor) {
+      actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment"><img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" /></button>`;
+      if (isAuthorBlocked) {
+        actionsHtml += `<button class="unblock-user-btn action-icon-btn" title="Unblock User"><img src="../sources/icons/unblock-svgrepo-com.svg" alt="Unblock" /></button>`;
+      } else {
+        actionsHtml += `<button class="block-user-btn action-icon-btn" title="Block User"><img src="../sources/icons/block-2-svgrepo-com.svg" alt="Block" /></button>`;
+      }
+    }
+    if (isAuthor) {
+      actionsHtml += `<button class="edit-comment-btn action-icon-btn" title="Edit comment"><img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" /></button>`;
+    }
+    if (isAuthor || isAdmin) {
+      actionsHtml += `<button class="delete-comment-btn action-icon-btn" title="Delete comment"><img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" /></button>`;
+    }
+
+    const fullCommentHtml = `
+        <div class="comment-item" data-comment-id="${comment.id}" data-author-id="${comment.authorId}">
+            <img src="${comment.authorAvatar || "../sources/images/no-image.png"}"
+                 alt="${comment.authorName}"
+                 class="comment-avatar" />
+            <div class="comment-body">
+                <p class="comment-author">${comment.authorName}</p>
+                <div class="comment-content-wrapper">
+                  <p class="comment-text">${comment.content}</p>
+                  <div class="comment-edit-form">
+                      <textarea class="comment-edit-textarea">${comment.content}</textarea>
+                      <div class="comment-edit-actions">
+                          <button class="save-edit-btn">Save</button>
+                          <button class="cancel-edit-btn">Cancel</button>
+                      </div>
+                  </div>
+                </div>
+                <div class="comment-footer">
+                  <div class="comment-likes">
+                    <button class="like-comment-btn action-icon-btn ${isLiked ? "liked" : ""}" title="Like">
+                        <img class="icon-heart-outline" src="../sources/icons/heart-svgrepo-com.svg" alt="Like" />
+                        <img class="icon-heart-filled" src="../sources/icons/full-heart-svgrepo-com.svg" alt="Liked" />
+                    </button>
+                    <span class="like-count">${likeCount}</span>
+                  </div>
+                </div>
+            </div>
+            <div class="comment-actions">${actionsHtml}</div>
+        </div>`;
+
+    if (isAuthorBlocked) {
       const blockedHtml = `
           <div class="comment-item">
               <div class="blocked-comment-message">
                   <span>Comment from a blocked user.</span>
-                  <button class="show-comment-btn"
-                          data-author-name="${comment.authorName}"
-                          data-author-avatar="${comment.authorAvatar || "../sources/images/no-image.png"}"
-                          data-text="${comment.content}">
+                  <button class="show-comment-btn" data-full-comment="${encodeURIComponent(fullCommentHtml)}">
                       Show Comment
                   </button>
               </div>
           </div>`;
       commentsList.append(blockedHtml);
     } else {
-      const isLiked = comment.isLikedByCurrentUser;
-      const likeCount = comment.likeCount;
-      const commentHtml = `
-          <div class="comment-item" data-comment-id="${comment.id}" data-author-id="${comment.authorId}">
-              <img src="${comment.authorAvatar || "../sources/images/no-image.png"}"
-                   alt="${comment.authorName}"
-                   class="comment-avatar" />
-              <div class="comment-body">
-                  <p class="comment-author">${comment.authorName}</p>
-                  <div class="comment-content-wrapper">
-                    <p class="comment-text">${comment.content}</p>
-                    <div class="comment-edit-form">
-                        <textarea class="comment-edit-textarea">${comment.content}</textarea>
-                        <div class="comment-edit-actions">
-                            <button class="save-edit-btn">Save</button>
-                            <button class="cancel-edit-btn">Cancel</button>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="comment-footer">
-                    <div class="comment-likes">
-                      <button class="like-comment-btn action-icon-btn ${isLiked ? "liked" : ""}" title="Like">
-                          <img class="icon-heart-outline" src="../sources/icons/heart-svgrepo-com.svg" alt="Like" />
-                          <img class="icon-heart-filled" src="../sources/icons/full-heart-svgrepo-com.svg" alt="Liked" />
-                      </button>
-                      <span class="like-count">${likeCount}</span>
-                    </div>
-                  </div>
-              </div>
-              <div class="comment-actions"></div>
-          </div>`;
-
-      const commentElement = $(commentHtml);
-      const isAuthor = currentUser && currentUser.id == comment.authorId;
-      const isAdmin = currentUser && currentUser.isAdmin;
-      let actionsHtml = "";
-
-      if (!isAuthor) {
-        actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment"><img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" /></button>`;
-        actionsHtml += `<button class="block-user-btn action-icon-btn" title="Block user"><img src="../sources/icons/block-2-svgrepo-com.svg" alt="Block" /></button>`;
-      }
-      if (isAuthor) {
-        actionsHtml += `<button class="edit-comment-btn action-icon-btn" title="Edit comment"><img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" /></button>`;
-      }
-      if (isAuthor || isAdmin) {
-        actionsHtml += `<button class="delete-comment-btn action-icon-btn" title="Delete comment"><img src="../sources/icons/delete-2-svgrepo-com.svg" alt="Delete" /></button>`;
-      }
-
-      commentElement.find(".comment-actions").html(actionsHtml);
-      commentsList.append(commentElement);
+      commentsList.append(fullCommentHtml);
     }
   }
 }
@@ -191,18 +189,8 @@ function setupArticleEventHandlers() {
     .off("click", ".show-comment-btn")
     .on("click", ".show-comment-btn", function () {
       const button = $(this);
-      const authorName = button.data("author-name");
-      const authorAvatar = button.data("author-avatar");
-      const text = button.data("text");
-
-      const commentHtml = `
-            <img src="${authorAvatar}" alt="${authorName}" class="comment-avatar" />
-            <div class="comment-body">
-                <p class="comment-author">${authorName}</p>
-                <p class="comment-text">${text}</p>
-            </div>`;
-
-      button.closest(".comment-item").html(commentHtml);
+      const fullCommentHtml = decodeURIComponent(button.data("full-comment"));
+      button.closest(".comment-item").replaceWith(fullCommentHtml);
     });
 
   $("#comment-form")
@@ -331,7 +319,7 @@ function setupArticleEventHandlers() {
     const commentItem = $(this).closest(".comment-item");
     const authorId = commentItem.data("author-id");
 
-    showDialog("Are you sure you want to block this user? You will no longer see their comments.").then((userClickedYes) => {
+    showDialog("Are you sure you want to block this user?").then((userClickedYes) => {
       if (!userClickedYes) return;
 
       toggleBlockUser(
@@ -348,6 +336,36 @@ function setupArticleEventHandlers() {
         },
         () => {
           showPopup("Failed to block user. Please try again.", false);
+        }
+      );
+    });
+  });
+
+  $(document).on("click", ".unblock-user-btn", function () {
+    if (!currentUser) {
+      showPopup("Please log in.", false);
+      return;
+    }
+
+    const commentItem = $(this).closest(".comment-item");
+    const authorId = commentItem.data("author-id");
+
+    showDialog("Are you sure you want to unblock this user?").then((userClickedYes) => {
+      if (!userClickedYes) return;
+
+      toggleBlockUser(
+        currentUser.id,
+        authorId,
+        () => {
+          if (currentUser.blockedUsers) {
+            currentUser.blockedUsers = currentUser.blockedUsers.filter((user) => user.id != authorId);
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+          }
+          showPopup("User has been unblocked.", true);
+          loadComments();
+        },
+        () => {
+          showPopup("Failed to unblock user. Please try again.", false);
         }
       );
     });
