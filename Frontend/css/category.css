@@ -2,11 +2,6 @@
    CATEGORY PAGE STYLES
    ========================================================================== */
 
-body {
-  background-color: var(--c-light);
-  color: var(--c-dark);
-}
-
 /* --- Banner Styles --- */
 .category-banner {
   position: relative;
@@ -35,12 +30,12 @@ body {
 .category-title {
   position: relative;
   z-index: 1;
-  font-size: 5vw;
-  font-weight: 700;
+  font-size: 48px;
+  font-weight: bold;
   text-transform: uppercase;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   margin: 0;
   padding: 0 20px 20px;
+  letter-spacing: 3.5px;
 }
 
 .category-title::after {

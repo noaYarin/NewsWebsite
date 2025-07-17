@@ -389,7 +389,6 @@ function performSearch(query) {
   const searchContainerHtml = `
     <div id="search-results-container">
       <div class="search-results-content">
-        <h1 class="search-results-title">Searching for: <span class="query-term">"${query}"</span></h1>
         <div id="search-results-list" class="articles-list"></div>
         <div id="search-loading-message" class="loading-message">
           <p>Searching articles...</p>
