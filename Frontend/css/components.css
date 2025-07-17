@@ -465,8 +465,8 @@
 }
 
 .nav-profile-picture {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--c-border-light);
