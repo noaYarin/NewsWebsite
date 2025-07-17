@@ -2,6 +2,7 @@ let currentPage = 1;
 const pageSize = 10;
 let currentCategory = "";
 let isLoading = false;
+let allArticlesLoaded = false;
 
 $(document).ready(function () {
   const urlParams = new URLSearchParams(window.location.search);
@@ -16,28 +17,36 @@ $(document).ready(function () {
     showCategoryError("No category specified.");
   }
 
-  $("#show-more-btn").on("click", loadCategoryArticles);
+  $(window).on("scroll", function () {
+    if ($(window).scrollTop() + $(window).height() > $(document).height() - 300) {
+      if (!isLoading && !allArticlesLoaded) {
+        loadCategoryArticles();
+      }
+    }
+  });
 });
 
 function loadCategoryArticles() {
-  if (isLoading) return;
+  if (isLoading || allArticlesLoaded) return;
   isLoading = true;
 
   const $listContainer = $("#category-articles-list");
-  const $loadingMessage = $("#category-loading-message");
-  const $showMoreBtn = $("#show-more-btn");
+  const $initialLoadingMessage = $("#category-loading-message");
+  const $infiniteScrollLoader = $("#infinite-scroll-loader");
 
   if (currentPage === 1) {
-    $loadingMessage.show();
+    $initialLoadingMessage.show();
+  } else {
+    $infiniteScrollLoader.show();
   }
-  $showMoreBtn.text("Loading...").prop("disabled", true);
 
   getArticlesByCategoryPaged(
     currentCategory,
     currentPage,
     pageSize,
     (articles) => {
-      $loadingMessage.hide();
+      $initialLoadingMessage.hide();
+      $infiniteScrollLoader.hide();
 
       if (articles && articles.length > 0) {
         displayArticles($listContainer, articles);
@@ -45,22 +54,19 @@ function loadCategoryArticles() {
       }
 
       if (!articles || articles.length < pageSize) {
-        $showMoreBtn.hide();
+        allArticlesLoaded = true;
         if ($listContainer.is(":empty")) {
-          showCategoryError(`No articles found for ${currentCategory}.`);
+          showCategoryError(`No articles found for "${currentCategory}".`);
         }
-      } else {
-        $showMoreBtn.show();
       }
-
       isLoading = false;
-      $showMoreBtn.text("Show More").prop("disabled", false);
     },
     (error) => {
-      $loadingMessage.hide();
+      $initialLoadingMessage.hide();
+      $infiniteScrollLoader.hide();
       showCategoryError("Could not load articles. Please try again later.");
       isLoading = false;
-      $showMoreBtn.text("Show More").prop("disabled", false);
+      allArticlesLoaded = true;
     }
   );
 }
@@ -75,7 +81,6 @@ function displayArticles(container, articles) {
         <div class="article-item-content">
           <span class="category-tag">${article.sourceName || "News"}</span>
           <h3 class="article-item-title">${article.title}</h3>
-          <p class="article-item-description">${article.description || ""}</p>
           <span class="article-item-author">${article.author || "Unknown Author"}</span>
         </div>
       </a>
@@ -85,6 +90,7 @@ function displayArticles(container, articles) {
 }
 
 function showCategoryError(message) {
+  allArticlesLoaded = true;
   const $listContainer = $("#category-articles-list");
   $listContainer.html(`<p class="error-message">${message}</p>`);
 }

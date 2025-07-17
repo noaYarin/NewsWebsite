@@ -803,4 +803,9 @@
   .mobile-nav-profile-container:hover {
     background-color: var(--c-border-light);
   }
+
+  .nav-profile-picture {
+    height: 40px;
+    width: 40px;
+  }
 }
