@@ -626,7 +626,8 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
   $continueButton.on("click", function () {
     if (selectedValue) {
       $(document).off("click.dropdown");
-      transformToReportForm($dialog, $message, $reportControls, closeDialog, selectedValue);
+      const selectedText = $selectedText.text();
+      transformToReportForm($dialog, $message, $reportControls, closeDialog, selectedText);
     }
   });
 
@@ -648,7 +649,7 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
 }
 
 function transformToReportForm($dialog, $message, $reportControls, closeDialog, reasonCategory) {
-  $message.text(`Please provide more details for "${reasonCategory}"`);
+  $message.text(`Please provide more details for ${reasonCategory.toLowerCase()}`);
 
   const $inputContainer = $("<div></div>").addClass("dialog-input-container");
   const $textarea = $("<textarea></textarea>").addClass("dialog-textarea").attr("placeholder", "Enter your report here...").attr("max-length", "200");
