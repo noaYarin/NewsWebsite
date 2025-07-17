@@ -483,6 +483,22 @@
 }
 
 /* --------------------
+   Article Bookmark Button
+   -------------------- */
+
+#bookmark-btn .icon-bookmark-filled {
+  display: none;
+}
+
+#bookmark-btn.bookmarked .icon-bookmark-outline {
+  display: none;
+}
+
+#bookmark-btn.bookmarked .icon-bookmark-filled {
+  display: inline-block;
+}
+
+/* --------------------
    Responsive Adjustments
    -------------------- */
 @media (max-width: 768px) {
