@@ -17,6 +17,7 @@
   color: var(--c-dark);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
   overflow: hidden;
+  max-height: 180px;
 }
 
 .article-list-item:hover {

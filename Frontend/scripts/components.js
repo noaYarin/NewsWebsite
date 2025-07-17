@@ -443,7 +443,6 @@ function displaySearchResults(articles) {
         <div class="article-item-content">
           <span class="category-tag">${article.category || "News"}</span>
           <h3 class="article-item-title">${article.title}</h3>
-          <p class="article-item-description">${article.description || ""}</p>
           <span class="article-item-author">${article.author || "Unknown Author"}</span>
         </div>
       </a>
