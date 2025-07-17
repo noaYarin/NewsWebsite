@@ -81,6 +81,12 @@ function handleUnblockUser(e) {
     (response) => {
       showPopup(response.message, true);
 
+      // Update the currentUser object and save it to localStorage
+      if (currentUser && currentUser.blockedUsers) {
+        currentUser.blockedUsers = currentUser.blockedUsers.filter((user) => user.id != blockedUserId);
+      }
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
       item.fadeOut(300, function () {
         $(this).remove();
 
