@@ -39,8 +39,9 @@ function getArticleById(id, successCallback, errorCallback) {
   ajaxCall("GET", `${articlesEndpoint}/${id}`, null, successCallback, errorCallback);
 }
 
-function getRecentArticles(category, successCallback, errorCallback) {
-  ajaxCall("GET", `${articlesEndpoint}/category/${category}`, null, successCallback, errorCallback);
+function getRecentArticles(category, count, successCallback, errorCallback) {
+  const url = `${articlesEndpoint}/category/${category}?count=${count}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
 function syncArticles(articleList, successCallback, errorCallback) {

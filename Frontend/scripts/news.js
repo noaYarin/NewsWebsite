@@ -88,18 +88,40 @@ async function loadAllNews() {
     await collectAllArticles();
     fillAllSections();
   } catch (error) {
+    console.error("Failed to load news, falling back to cache.", error);
     await loadFromCacheOnly();
   }
 }
 
-async function collectAllArticles() {
-  const allSources = new Set();
-
+function calculateCategoryCounts() {
+  const counts = {};
   sectionRequirements.forEach((section) => {
-    section.sources.forEach((source) => allSources.add(source));
+    section.sources.forEach((source) => {
+      const [type, value] = source.split(":");
+      if (type === "category") {
+        counts[value] = (counts[value] || 0) + section.count;
+      }
+    });
+  });
+  return counts;
+}
+
+async function collectAllArticles() {
+  const apiSources = new Set();
+  sectionRequirements.forEach((section) => {
+    section.sources.forEach((source) => {
+      if (source.startsWith("api:")) {
+        apiSources.add(source.split(":")[1]);
+      }
+    });
   });
 
-  const fetchPromises = Array.from(allSources).map((source) => fetchFromSource(source));
+  const categoryCounts = calculateCategoryCounts();
+
+  const apiPromises = Array.from(apiSources).map((query) => fetchFromAPI(null, query));
+  const cachePromises = Object.entries(categoryCounts).map(([category, count]) => fetchFromCache(category, count));
+
+  const fetchPromises = [...apiPromises, ...cachePromises];
   const results = await Promise.allSettled(fetchPromises);
 
   allArticles = [];
@@ -109,32 +131,14 @@ async function collectAllArticles() {
     }
   });
 
+  // Remove duplicate articles based on URL
   const uniqueArticles = new Map();
   allArticles.forEach((article) => {
     if (article.url && !uniqueArticles.has(article.url)) {
       uniqueArticles.set(article.url, article);
     }
   });
-
   allArticles = Array.from(uniqueArticles.values());
-}
-
-async function fetchFromSource(source) {
-  const [type, value] = source.split(":");
-
-  try {
-    if (type === "api") {
-      return await fetchFromAPI(null, value);
-    } else if (type === "category") {
-      const cached = await fetchFromCache(value);
-      if (cached && cached.length > 0) {
-        return cached;
-      }
-      return await fetchFromAPI(value, null);
-    }
-  } catch (error) {
-    return [];
-  }
 }
 
 async function fetchFromAPI(category, query) {
@@ -148,11 +152,10 @@ async function fetchFromAPI(category, query) {
       (response) => {
         if (response && response.data) {
           const articles = mapArticles(response.data, category);
-
           syncArticles(
             articles,
             (syncedArticles) => resolve(syncedArticles),
-            () => resolve(articles)
+            () => resolve(articles) // Fallback to unsynced if sync fails
           );
         } else {
           resolve([]);
@@ -163,10 +166,11 @@ async function fetchFromAPI(category, query) {
   });
 }
 
-async function fetchFromCache(category) {
+async function fetchFromCache(category, count) {
   return new Promise((resolve) => {
     getRecentArticles(
       category,
+      count,
       (articles) => resolve(mapArticles(articles || [], category)),
       () => resolve([])
     );
@@ -177,7 +181,7 @@ function mapArticles(apiArticles, category) {
   return apiArticles
     .filter((a) => a && a.url && a.title && a.title !== "[Removed]" && (a.urlToImage || a.imageUrl) && a.description)
     .map((a) => ({
-      id: a.id || a.Id || `${Date.now()}-${Math.random()}`, // Unique ID generation fallback
+      id: a.id || a.Id || `${Date.now()}-${Math.random()}`,
       title: a.title || a.Title,
       url: a.url || a.Url,
       description: a.description || a.Description || "",
@@ -191,7 +195,6 @@ function mapArticles(apiArticles, category) {
 
 function fillAllSections() {
   usedArticleIds.clear();
-
   sectionRequirements.forEach((section) => {
     fillSection(section);
   });
@@ -203,7 +206,6 @@ function fillSection(section) {
   if (availableArticles.length < section.count) {
     const additionalNeeded = section.count - availableArticles.length;
     const fillerArticles = allArticles.filter((article) => !usedArticleIds.has(article.id)).slice(0, additionalNeeded);
-
     availableArticles.push(...fillerArticles);
   }
 
@@ -216,45 +218,46 @@ function fillSection(section) {
 
 function getArticlesForSection(section) {
   const articles = [];
+  const uniqueUrls = new Set();
 
   for (const source of section.sources) {
     const [type, value] = source.split(":");
-
     let sourceArticles = [];
+
     if (type === "api" && value) {
       sourceArticles = allArticles.filter(
         (article) =>
           !usedArticleIds.has(article.id) && (article.title.toLowerCase().includes(value.toLowerCase()) || article.description.toLowerCase().includes(value.toLowerCase()))
       );
     } else if (type === "category") {
-      sourceArticles = allArticles.filter((article) => !usedArticleIds.has(article.id) && (article.category === value || value === "general"));
+      sourceArticles = allArticles.filter(
+        (article) => !usedArticleIds.has(article.id) && (article.category.toLowerCase() === value.toLowerCase() || value.toLowerCase() === "general")
+      );
     }
 
-    articles.push(...sourceArticles);
+    sourceArticles.forEach((article) => {
+      if (!uniqueUrls.has(article.url)) {
+        articles.push(article);
+        uniqueUrls.add(article.url);
+      }
+    });
 
-    if (articles.length >= section.count) {
-      break;
-    }
+    if (articles.length >= section.count) break;
   }
-
   return articles;
 }
 
 function fillContainer(containerSelector, articles, title) {
   const container = $(containerSelector);
-  if (!container.length) {
-    return;
-  }
+  if (!container.length) return;
 
   if (title) {
     updateSectionTitle(container, title);
   }
 
   const articleSlots = container.find("[data-article-index]");
-
   articleSlots.each((index, element) => {
     const $element = $(element);
-
     if (index < articles.length) {
       updateArticleElement($element, articles[index]);
       $element.css("visibility", "visible");
@@ -289,18 +292,15 @@ function updateSectionTitle(container, title) {
 
 function updateArticleElement(element, article) {
   element.data("article-object", article);
-
   const linkElement = element.is("a") ? element : element.find("a");
   if (linkElement.length) {
     linkElement.attr("href", `../html/article.html?id=${article.id}`);
   }
-
   const img = element.find("[data-image-target]");
   if (img.length) {
     img.attr("src", article.imageUrl || DEFAULT_IMAGE);
     img.attr("onerror", `this.src='${DEFAULT_IMAGE}';`);
   }
-
   element.find("[data-source-target]").text(article.sourceName);
   element.find("[data-title-target]").text(article.title);
   element.find("[data-author-target]").text(article.author);
@@ -308,12 +308,11 @@ function updateArticleElement(element, article) {
 }
 
 async function loadFromCacheOnly() {
-  const interests = getUserInterests();
-  const cachePromises = interests.concat(["general"]).map((category) => fetchFromCache(category));
+  const categoryCounts = calculateCategoryCounts();
+  const cachePromises = Object.entries(categoryCounts).map(([category, count]) => fetchFromCache(category, count));
 
   const results = await Promise.allSettled(cachePromises);
   allArticles = [];
-
   results.forEach((result) => {
     if (result.status === "fulfilled" && result.value) {
       allArticles.push(...result.value);
@@ -329,7 +328,6 @@ async function loadFromCacheOnly() {
 
 function createFallbackContent() {
   const totalNeeded = sectionRequirements.reduce((sum, section) => sum + section.count, 0);
-
   allArticles = Array.from({ length: totalNeeded }, (_, index) => ({
     id: `fallback-${index}`,
     title: `Breaking News Story ${index + 1}`,
@@ -341,13 +339,11 @@ function createFallbackContent() {
     publishedAt: new Date().toISOString(),
     category: "general"
   }));
-
   fillAllSections();
 }
 
 $(document).ready(function () {
   loadAllNews();
-
   const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
   const currentMonth = monthNames[new Date().getMonth()];
   $("#month-title").text(currentMonth);

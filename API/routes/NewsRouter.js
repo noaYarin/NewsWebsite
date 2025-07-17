@@ -7,10 +7,13 @@ export const router = express.Router();
 const baseApiUrl = "https://newsapi.org/v2";
 const manager = new NlpManager({ languages: ["en"] });
 
-async function trainNlp() {
-  //const interests = ["Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology", "Travel", "Culture"];
+function formatCategory(categoryName) {
+  if (!categoryName) return "General";
+  const lower = categoryName.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
 
-  // Basically "limits" the categories to these interests
+async function trainNlp() {
   manager.addDocument("en", "market earnings profit stocks company", "Business");
   manager.addDocument("en", "movie film actor actress celebrity", "Entertainment");
   manager.addDocument("en", "government world news today people", "General");
@@ -37,16 +40,19 @@ router.get("/", async (req, res) => {
 
     const filteredArticles = data.articles.filter((article) => !article.source.name.includes("Al Jazeera"));
 
-    // Use the trained NLP model to categorize each article
     const categorizedArticles = await Promise.all(
       filteredArticles.map(async (article) => {
         const textToClassify = article.description || article.title || "";
         if (!textToClassify) {
-          return { ...article, category: "General" }; // Default to 'General' if no text
+          return { ...article, category: "General" };
         }
         const result = await manager.process("en", textToClassify);
-        const category = result.intent || "General";
-        return { ...article, category };
+
+        const rawCategory = result.intent && result.intent !== "None" ? result.intent : "General";
+
+        const finalCategory = formatCategory(rawCategory);
+
+        return { ...article, category: finalCategory };
       })
     );
 
@@ -66,9 +72,11 @@ router.get("/top-headlines", async (req, res) => {
 
     let articles = data.articles.filter((article) => !article.source.name.includes("Al Jazeera"));
 
+    const finalCategory = formatCategory(category);
+
     articles = articles.map((article) => ({
       ...article,
-      category: category
+      category: finalCategory
     }));
 
     res.json({ message: "Ok", data: articles });

@@ -47,11 +47,11 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("category/{categoryName}")]
-    public IActionResult GetArticlesByCategory(string categoryName)
+    public IActionResult GetArticlesByCategory(string categoryName, [FromQuery] int count = 20)
     {
         try
         {
-            var articles = Article.GetRecentByCategory(categoryName);
+            var articles = Article.GetRecentByCategory(categoryName, count);
             return Ok(articles);
         }
         catch (System.Exception ex)

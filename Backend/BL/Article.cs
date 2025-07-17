@@ -58,9 +58,9 @@ public class Article
         return existingArticles;
     }
 
-    public static List<Article> GetRecentByCategory(string categoryName)
+    public static List<Article> GetRecentByCategory(string categoryName, int count)
     {
         var articleService = new ArticleService();
-        return articleService.FetchRecentByCategory(categoryName);
+        return articleService.FetchRecentByCategory(categoryName, count);
     }
 }

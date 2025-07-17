@@ -1,0 +1,135 @@
+/* ==========================================================================
+   CATEGORY PAGE STYLES
+   ========================================================================== */
+
+body {
+  background-color: var(--c-light);
+  color: var(--c-dark);
+}
+
+.category-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.category-title {
+  font-size: 42px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.category-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: var(--c-primary);
+}
+
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.article-list-item {
+  display: flex;
+  gap: 20px;
+  background-color: #fff;
+  border: 1px solid var(--c-border-light);
+  text-decoration: none;
+  color: var(--c-dark);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+}
+
+.article-list-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.article-item-image {
+  flex-shrink: 0;
+  width: 220px;
+  height: 180px;
+}
+
+.article-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-item-content {
+  padding: 15px 20px 15px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-item-content .category-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-primary);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.article-item-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.article-item-description {
+  font-size: 15px;
+  color: var(--c-text-muted);
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.article-item-author {
+  font-size: 13px;
+  color: var(--c-text-subtle);
+  margin-top: 10px;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  font-size: 18px;
+  color: var(--c-text-muted);
+  padding: 50px 0;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .article-list-item {
+    flex-direction: column;
+  }
+
+  .article-item-image {
+    width: 100%;
+    height: 200px;
+  }
+
+  .article-item-content {
+    padding: 20px;
+  }
+
+  .category-title {
+    font-size: 32px;
+  }
+}

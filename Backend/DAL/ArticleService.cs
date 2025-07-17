@@ -91,14 +91,18 @@ public class ArticleService : DBService
         finally { con?.Close(); }
     }
 
-    public List<Article> FetchRecentByCategory(string categoryName)
+    public List<Article> FetchRecentByCategory(string categoryName, int count)
     {
         var articles = new List<Article>();
         SqlConnection con = null;
         try
         {
             con = Connect();
-            var parameters = new Dictionary<string, object> { { "@CategoryName", categoryName } };
+            var parameters = new Dictionary<string, object>
+        {
+            { "@CategoryName", categoryName },
+            { "@Count", count }
+        };
             SqlCommand cmd = CreateCommand("SP_GetRecentArticlesByCategory", con, parameters);
             using (var reader = cmd.ExecuteReader())
             {

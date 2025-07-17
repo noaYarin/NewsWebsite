@@ -34,12 +34,12 @@ $(document).ready(function () {
           </div>
         </a>
         <ul class="nav-items">
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Entertainment</a></li>
-          <li><a href="#">Health</a></li>
-          <li><a href="#">Science</a></li>
-          <li><a href="#">Sports</a></li>
-          <li><a href="#">Technology</a></li>
+          <li><a href="../html/category.html?name=business">Business</a></li>
+          <li><a href="../html/category.html?name=entertainment">Entertainment</a></li>
+          <li><a href="../html/category.html?name=health">Health</a></li>
+          <li><a href="../html/category.html?name=science">Science</a></li>
+          <li><a href="../html/category.html?name=sports">Sports</a></li>
+          <li><a href="../html/category.html?name=technology">Technology</a></li>
           <li><a href="#">More</a></li>
         </ul>
       </div>
