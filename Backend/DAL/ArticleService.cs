@@ -23,6 +23,29 @@ public class ArticleService : DBService
         };
     }
 
+    public List<Article> SearchArticles(string searchTerm)
+    {
+        var articles = new List<Article>();
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object> { { "@SearchTerm", searchTerm } };
+            SqlCommand cmd = CreateCommand("SP_SearchArticles", con, parameters);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    articles.Add(MapReaderToArticle(reader));
+                }
+            }
+            return articles;
+        }
+        finally { con?.Close(); }
+    }
+
+
     public List<Article> GetArticlesByUrls(List<string> urls)
     {
         var articles = new List<Article>();

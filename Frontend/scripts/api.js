@@ -39,6 +39,11 @@ function getArticleById(id, successCallback, errorCallback) {
   ajaxCall("GET", `${articlesEndpoint}/${id}`, null, successCallback, errorCallback);
 }
 
+function searchDatabaseArticles(term, successCallback, errorCallback) {
+  const url = `${articlesEndpoint}/search?term=${encodeURIComponent(term)}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
 function getRecentArticles(category, count, successCallback, errorCallback) {
   const url = `${articlesEndpoint}/category/${category}?count=${count}`;
   ajaxCall("GET", url, null, successCallback, errorCallback);

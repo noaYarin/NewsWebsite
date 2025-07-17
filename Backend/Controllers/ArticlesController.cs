@@ -8,6 +8,25 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
+    [HttpGet("search")]
+    public IActionResult SearchArticles([FromQuery] string term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return BadRequest("Search term cannot be empty.");
+        }
+        try
+        {
+            var articles = Article.Search(term);
+            return Ok(articles);
+        }
+        catch (System.Exception)
+        {
+            return StatusCode(500, "An error occurred while searching articles.");
+        }
+    }
+
+
     [HttpGet("{id}")]
     public IActionResult GetArticle(int id)
     {

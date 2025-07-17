@@ -382,11 +382,74 @@ function setupEventHandlers() {
   }
 
   function performSearch(query) {
-    showPopup(`Searching for: "${query}"`, true);
     $("main").hide();
+    $("#search-results-container").remove();
 
-    // TODO: Implement actual search functionality here
-    showPopup(`Search functionality not yet implemented. Query: "${query}"`, "muted");
+    const searchContainerHtml = `
+    <div id="search-results-container">
+      <div class="search-results-content">
+        <h1 class="search-results-title">Searching for: <span class="query-term">"${query}"</span></h1>
+        <div id="search-results-list" class="articles-list"></div>
+        <div id="search-loading-message" class="loading-message">
+          <p>Searching articles...</p>
+        </div>
+      </div>
+    </div>
+  `;
+    $("body").append(searchContainerHtml);
+
+    const apiSearchPromise = new Promise((resolve) => {
+      searchNews(
+        query,
+        1,
+        (response) => resolve(response.data || []),
+        () => resolve([])
+      );
+    });
+
+    const dbSearchPromise = new Promise((resolve) => {
+      searchDatabaseArticles(
+        query,
+        (articles) => resolve(articles || []),
+        () => resolve([])
+      );
+    });
+
+    Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
+      $("#search-loading-message").hide();
+
+      const combined = [...apiArticles, ...dbArticles];
+      const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
+
+      uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+      if (uniqueArticles.length > 0) {
+        displaySearchResults(uniqueArticles);
+      } else {
+        $("#search-results-list").html(`<p class="error-message">No articles found for "${query}".</p>`);
+      }
+    });
+  }
+
+  function displaySearchResults(articles) {
+    const $listContainer = $("#search-results-list");
+    $listContainer.empty();
+    articles.forEach((article) => {
+      const articleHtml = `
+      <a href="../html/article.html?id=${article.id}" class="article-list-item">
+        <div class="article-item-image">
+          <img src="${article.imageUrl || "../sources/images/placeholder.png"}" alt="${article.title}" />
+        </div>
+        <div class="article-item-content">
+          <span class="category-tag">${article.category || "News"}</span>
+          <h3 class="article-item-title">${article.title}</h3>
+          <p class="article-item-description">${article.description || ""}</p>
+          <span class="article-item-author">${article.author || "Unknown Author"}</span>
+        </div>
+      </a>
+    `;
+      $listContainer.append(articleHtml);
+    });
   }
 }
 
