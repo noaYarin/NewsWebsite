@@ -13,7 +13,6 @@ $(document).ready(function () {
     document.title = `HORIZON / ${formattedTitle}`;
     $(".category-title").text(formattedTitle);
 
-    // ADDED: Set the background image of the banner
     const bannerImageUrl = `../sources/images/categories/${formattedTitle}.jpg`;
     $(".category-banner").css("background-image", `url('${bannerImageUrl}')`);
 
@@ -31,7 +30,6 @@ $(document).ready(function () {
   });
 });
 
-// ... The rest of the file (loadCategoryArticles, displayArticles, etc.) remains the same
 function loadCategoryArticles() {
   if (isLoading || allArticlesLoaded) return;
   isLoading = true;
@@ -67,7 +65,7 @@ function loadCategoryArticles() {
       }
       isLoading = false;
     },
-    (error) => {
+    () => {
       $initialLoadingMessage.hide();
       $infiniteScrollLoader.hide();
       showCategoryError("Could not load articles. Please try again later.");
