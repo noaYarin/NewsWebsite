@@ -116,6 +116,32 @@ public class ArticleService : DBService
         finally { con?.Close(); }
     }
 
+    public List<Article> FetchRecentByCategoryPaged(string categoryName, int page, int pageSize)
+    {
+        var articles = new List<Article>();
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object>
+        {
+            { "@CategoryName", categoryName },
+            { "@PageNumber", page },
+            { "@PageSize", pageSize }
+        };
+            SqlCommand cmd = CreateCommand("SP_GetArticlesByCategory_Paged", con, parameters);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    articles.Add(MapReaderToArticle(reader));
+                }
+            }
+            return articles;
+        }
+        finally { con?.Close(); }
+    }
+
     public Article GetArticleById(int id)
     {
         SqlConnection con = null;

@@ -59,4 +59,18 @@ public class ArticlesController : ControllerBase
             return StatusCode(500, "Could not retrieve articles.");
         }
     }
+
+    [HttpGet("category/{categoryName}/paged")]
+    public IActionResult GetArticlesByCategoryPaged(string categoryName, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        try
+        {
+            var pagedArticles = Article.GetRecentByCategoryPaged(categoryName, page, pageSize);
+            return Ok(pagedArticles);
+        }
+        catch (System.Exception ex)
+        {
+            return StatusCode(500, "Could not retrieve paged articles.");
+        }
+    }
 }

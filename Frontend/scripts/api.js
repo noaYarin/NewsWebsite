@@ -44,6 +44,11 @@ function getRecentArticles(category, count, successCallback, errorCallback) {
   ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
+function getArticlesByCategoryPaged(category, page, pageSize, successCallback, errorCallback) {
+  const url = `${articlesEndpoint}/category/${category}/paged?page=${page}&pageSize=${pageSize}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
 function syncArticles(articleList, successCallback, errorCallback) {
   ajaxCall("POST", `${articlesEndpoint}/sync`, JSON.stringify(articleList), successCallback, errorCallback);
 }

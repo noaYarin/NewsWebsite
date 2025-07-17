@@ -114,7 +114,21 @@ body {
   padding: 50px 0;
 }
 
-/* --- Responsive Adjustments --- */
+.show-more-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.show-more-container .styled-button {
+  padding: 12px 40px;
+  font-size: 16px;
+}
+
+.show-more-container .styled-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .article-list-item {
     flex-direction: column;

@@ -63,4 +63,10 @@ public class Article
         var articleService = new ArticleService();
         return articleService.FetchRecentByCategory(categoryName, count);
     }
+
+    public static List<Article> GetRecentByCategoryPaged(string categoryName, int page, int pageSize)
+    {
+        var articleService = new ArticleService();
+        return articleService.FetchRecentByCategoryPaged(categoryName, page, pageSize);
+    }
 }

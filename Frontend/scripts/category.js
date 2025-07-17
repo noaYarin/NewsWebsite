@@ -1,41 +1,71 @@
+let currentPage = 1;
+const pageSize = 10;
+let currentCategory = "";
+let isLoading = false;
+
 $(document).ready(function () {
   const urlParams = new URLSearchParams(window.location.search);
-  const categoryName = urlParams.get("name");
+  currentCategory = urlParams.get("name");
 
-  if (categoryName) {
-    const formattedTitle = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+  if (currentCategory) {
+    const formattedTitle = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
     document.title = `HORIZON / ${formattedTitle}`;
     $(".category-title").text(formattedTitle);
-    loadCategoryArticles(categoryName);
+    loadCategoryArticles();
   } else {
     showCategoryError("No category specified.");
   }
+
+  $("#show-more-btn").on("click", loadCategoryArticles);
 });
 
-function loadCategoryArticles(categoryName) {
+function loadCategoryArticles() {
+  if (isLoading) return;
+  isLoading = true;
+
   const $listContainer = $("#category-articles-list");
   const $loadingMessage = $("#category-loading-message");
+  const $showMoreBtn = $("#show-more-btn");
 
-  getRecentArticles(
-    categoryName,
+  if (currentPage === 1) {
+    $loadingMessage.show();
+  }
+  $showMoreBtn.text("Loading...").prop("disabled", true);
+
+  getArticlesByCategoryPaged(
+    currentCategory,
+    currentPage,
+    pageSize,
     (articles) => {
       $loadingMessage.hide();
+
       if (articles && articles.length > 0) {
         displayArticles($listContainer, articles);
-      } else {
-        showCategoryError(`No articles found for ${categoryName}.`);
+        currentPage++;
       }
+
+      if (!articles || articles.length < pageSize) {
+        $showMoreBtn.hide();
+        if ($listContainer.is(":empty")) {
+          showCategoryError(`No articles found for ${currentCategory}.`);
+        }
+      } else {
+        $showMoreBtn.show();
+      }
+
+      isLoading = false;
+      $showMoreBtn.text("Show More").prop("disabled", false);
     },
     (error) => {
       $loadingMessage.hide();
       showCategoryError("Could not load articles. Please try again later.");
-      console.error("Error fetching category articles:", error);
+      isLoading = false;
+      $showMoreBtn.text("Show More").prop("disabled", false);
     }
   );
 }
 
 function displayArticles(container, articles) {
-  container.empty();
   articles.forEach((article) => {
     const articleHtml = `
       <a href="../html/article.html?id=${article.id}" class="article-list-item">
