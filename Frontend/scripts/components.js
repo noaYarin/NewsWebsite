@@ -530,7 +530,7 @@ function showDialog(message, isReportDialog = false) {
 
     $yesButton.on("click", () => {
       if (isReportDialog) {
-        transformToReportForm($dialog, $message, $actions, closeDialog);
+        transformToReasonSelection($dialog, $message, $actions, closeDialog);
       } else {
         closeDialog(true);
       }
@@ -558,15 +558,52 @@ function showDialog(message, isReportDialog = false) {
   });
 }
 
-function transformToReportForm($dialog, $message, $actions, closeDialog) {
-  $message.text("Please provide a reason for reporting this comment");
-
+function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
   $dialog.addClass("report-dialog");
+  $message.text("Please select a reason for your report.");
+
+  const reasons = ["Spam or Misleading", "Hate Speech or Harassment", "Violent Content", "Other"];
+  const $reportControls = $("<div></div>").addClass("report-dialog-controls");
+  const $select = $("<select></select>").addClass("report-dialog-select");
+
+  $select.append($("<option>", { value: "", text: "Select a reason...", disabled: true, selected: true }));
+  reasons.forEach((reason) => {
+    $select.append($("<option>", { value: reason, text: reason }));
+  });
+
+  const $continueButton = $("<button>Continue</button>").addClass("report-dialog-continue-btn").prop("disabled", true);
+
+  $select.on("change", function () {
+    if ($(this).val()) {
+      $continueButton.prop("disabled", false);
+    } else {
+      $continueButton.prop("disabled", true);
+    }
+  });
+
+  $continueButton.on("click", () => {
+    const selectedReason = $select.val();
+    if (selectedReason) {
+      transformToReportForm($dialog, $message, $reportControls, closeDialog, selectedReason);
+    }
+  });
+
+  $reportControls.append($select, $continueButton);
+
+  $actions.fadeOut(200, function () {
+    $(this).remove();
+    $dialog.append($reportControls);
+    $reportControls.hide().fadeIn(200);
+    $dialog.addClass("expanded");
+  });
+}
+
+function transformToReportForm($dialog, $message, $reportControls, closeDialog, reasonCategory) {
+  $message.text(`Please provide more details for "${reasonCategory}"`);
+
   const $inputContainer = $("<div></div>").addClass("dialog-input-container");
   const $textarea = $("<textarea></textarea>").addClass("dialog-textarea").attr("placeholder", "Enter your report here...").attr("max-length", "200");
   const $sendButton = $("<button><img src='../sources/icons/send-alt-1-svgrepo-com.svg' alt='Send' /></button>").addClass("dialog-send");
-
-  const $newActions = $("<div></div>").addClass("dialog-actions");
 
   $sendButton.on("click", () => {
     const reportText = $textarea.val().trim();
@@ -576,24 +613,15 @@ function transformToReportForm($dialog, $message, $actions, closeDialog) {
       setTimeout(() => $textarea.removeClass("error"), 2000);
       return;
     }
-    closeDialog({ reported: true, reason: reportText });
+    closeDialog({ reported: true, reason: reportText, reasonCategory: reasonCategory });
   });
 
   $inputContainer.append($textarea, $sendButton);
-  $newActions.append();
 
-  $dialog.addClass("transforming");
-
-  setTimeout(() => {
-    $actions.fadeOut(200, () => {
-      $actions.remove();
-      $dialog.append($inputContainer, $newActions);
-
-      setTimeout(() => {
-        $dialog.addClass("expanded");
-        $inputContainer.addClass("show");
-        $textarea.focus();
-      }, 50);
-    });
-  }, 100);
+  $reportControls.fadeOut(200, function () {
+    $(this).remove();
+    $dialog.append($inputContainer);
+    $inputContainer.hide().fadeIn(200).addClass("show");
+    $textarea.focus();
+  });
 }

@@ -428,9 +428,10 @@ function setupArticleEventHandlers() {
 
     showDialog("Are you sure you want to report this comment?", true).then((result) => {
       if (result && result.reported) {
+        const fullReason = `${result.reasonCategory}: ${result.reason}`;
         reportComment(
           commentId,
-          result.reason,
+          fullReason,
           () => showPopup("Comment reported. Thank you for your feedback.", true),
           () => showPopup("Failed to report comment. Please try again.", false)
         );

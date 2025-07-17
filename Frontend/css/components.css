@@ -641,6 +641,60 @@
   color: var(--c-light);
 }
 
+/* Report Dialog Reason Selection */
+.report-dialog .report-dialog-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.report-dialog .report-dialog-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--c-border-light);
+  background-color: var(--c-light);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 1em;
+}
+
+.report-dialog .report-dialog-select:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  color: var(--c-dark);
+}
+
+.report-dialog .report-dialog-continue-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.report-dialog .report-dialog-continue-btn:hover:not(:disabled) {
+  background-color: #ffde4d;
+}
+
+.report-dialog .report-dialog-continue-btn:disabled {
+  background-color: var(--c-border-light);
+  color: var(--c-text-muted);
+  cursor: not-allowed;
+}
+
 /* Mobile - Full screen on small devices */
 @media (max-width: 1024px) {
   .nav-profile-menu {
