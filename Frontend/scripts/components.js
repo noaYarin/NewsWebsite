@@ -191,7 +191,6 @@ $(document).ready(function () {
       </div>
     `
   };
-  // TODO: Remember to make notifications show an icon when there are new notifications and change the icon based on that to - notifications-alert-svgrepo-com.svg
 
   for (const id in htmlSnippets) {
     const $element = $(`#${id}`);
@@ -376,16 +375,18 @@ function setupEventHandlers() {
         performSearch(query);
       }
     } else {
+      $("#search-results-container").remove();
       $("main").show();
       lastQuery = "";
     }
   }
+}
 
-  function performSearch(query) {
-    $("main").hide();
-    $("#search-results-container").remove();
+function performSearch(query) {
+  $("main").hide();
+  $("#search-results-container").remove();
 
-    const searchContainerHtml = `
+  const searchContainerHtml = `
     <div id="search-results-container">
       <div class="search-results-content">
         <h1 class="search-results-title">Searching for: <span class="query-term">"${query}"</span></h1>
@@ -396,46 +397,46 @@ function setupEventHandlers() {
       </div>
     </div>
   `;
-    $("body").append(searchContainerHtml);
+  $("#footer").before(searchContainerHtml);
 
-    const apiSearchPromise = new Promise((resolve) => {
-      searchNews(
-        query,
-        1,
-        (response) => resolve(response.data || []),
-        () => resolve([])
-      );
-    });
+  const apiSearchPromise = new Promise((resolve) => {
+    searchNews(
+      query,
+      1,
+      (response) => resolve(response.data || []),
+      () => resolve([])
+    );
+  });
 
-    const dbSearchPromise = new Promise((resolve) => {
-      searchDatabaseArticles(
-        query,
-        (articles) => resolve(articles || []),
-        () => resolve([])
-      );
-    });
+  const dbSearchPromise = new Promise((resolve) => {
+    searchDatabaseArticles(
+      query,
+      (articles) => resolve(articles || []),
+      () => resolve([])
+    );
+  });
 
-    Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
-      $("#search-loading-message").hide();
+  Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
+    $("#search-loading-message").hide();
 
-      const combined = [...apiArticles, ...dbArticles];
-      const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
+    const combined = [...apiArticles, ...dbArticles];
+    const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
 
-      uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-      if (uniqueArticles.length > 0) {
-        displaySearchResults(uniqueArticles);
-      } else {
-        $("#search-results-list").html(`<p class="error-message">No articles found for "${query}".</p>`);
-      }
-    });
-  }
+    if (uniqueArticles.length > 0) {
+      displaySearchResults(uniqueArticles);
+    } else {
+      $("#search-results-list").html(`<p class="error-message">No articles found for "${query}".</p>`);
+    }
+  });
+}
 
-  function displaySearchResults(articles) {
-    const $listContainer = $("#search-results-list");
-    $listContainer.empty();
-    articles.forEach((article) => {
-      const articleHtml = `
+function displaySearchResults(articles) {
+  const $listContainer = $("#search-results-list");
+  $listContainer.empty();
+  articles.forEach((article) => {
+    const articleHtml = `
       <a href="../html/article.html?id=${article.id}" class="article-list-item">
         <div class="article-item-image">
           <img src="${article.imageUrl || "../sources/images/placeholder.png"}" alt="${article.title}" />
@@ -448,8 +449,22 @@ function setupEventHandlers() {
         </div>
       </a>
     `;
-      $listContainer.append(articleHtml);
-    });
+    $listContainer.append(articleHtml);
+  });
+}
+
+function toggleSearch() {
+  const $overlay = $("#searchOverlay");
+  $overlay.toggleClass("active");
+
+  if ($overlay.hasClass("active")) {
+    setTimeout(() => {
+      const inputToFocus = $(window).width() <= MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
+      $(inputToFocus).focus();
+    }, 100);
+  } else {
+    $("#search-results-container").remove();
+    $("main").show();
   }
 }
 
@@ -459,7 +474,6 @@ function setupAuthNavLinks() {
   });
 
   $(document).on("click", ".subscribe-btn, .mobile-subscribe-btn", () => {
-    // TODO: Implement subscription functionality
     showPopup("Subscribe functionality coming soon!", "muted");
   });
 }
@@ -518,30 +532,6 @@ function toggleMobileMenu() {
 
   if ($searchIcon.length) {
     $searchIcon.toggleClass("hide");
-  }
-}
-
-function toggleSearch() {
-  const $overlay = $("#searchOverlay");
-
-  if (!$overlay.length) {
-    return;
-  }
-
-  $overlay.toggleClass("active");
-
-  if ($overlay.hasClass("active")) {
-    setTimeout(() => {
-      const inputToFocus = $(window).width() <= MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
-      const $input = $(inputToFocus);
-      if ($input.length) {
-        $input.focus();
-      }
-    }, 100);
-  } else {
-    if ($("main").is(":hidden")) {
-      $("main").show();
-    }
   }
 }
 
