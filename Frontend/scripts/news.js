@@ -82,6 +82,18 @@ function initializeSectionRequirements() {
   sectionRequirements[6].sources = [`category:${interests[2]}`, "category:general"];
 }
 
+function setupCategoryLinks() {
+  const interests = getUserInterests();
+
+  $("#see-more-latest").attr("href", `../html/category.html?name=general`);
+  $("#see-articles-travel").attr("href", `../html/category.html?name=travel`);
+  $("#view-all-trending").attr("href", `../html/category.html?name=general`);
+
+  if (interests[0]) {
+    $("#see-more-interest1").attr("href", `../html/category.html?name=${interests[0]}`);
+  }
+}
+
 async function loadAllNews() {
   try {
     initializeSectionRequirements();
@@ -344,6 +356,8 @@ function createFallbackContent() {
 
 $(document).ready(function () {
   loadAllNews();
+  setupCategoryLinks();
+
   const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
   const currentMonth = monthNames[new Date().getMonth()];
   $("#month-title").text(currentMonth);
