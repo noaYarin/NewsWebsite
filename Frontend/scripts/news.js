@@ -175,9 +175,9 @@ async function fetchFromCache(category) {
 
 function mapArticles(apiArticles, category) {
   return apiArticles
-    .filter((a) => a && a.url && a.title)
+    .filter((a) => a && a.url && a.title && a.title !== "[Removed]" && (a.urlToImage || a.imageUrl) && a.description)
     .map((a) => ({
-      id: a.id || a.Id || `${Date.now()}-${Math.random()}`,
+      id: a.id || a.Id || `${Date.now()}-${Math.random()}`, // Unique ID generation fallback
       title: a.title || a.Title,
       url: a.url || a.Url,
       description: a.description || a.Description || "",
