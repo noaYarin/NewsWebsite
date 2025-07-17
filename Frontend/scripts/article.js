@@ -56,6 +56,7 @@ function showArticle() {
   $("#article-error-message").hide();
 
   setupComments();
+  checkBookmarkStatus();
 }
 
 function showError() {
@@ -226,6 +227,32 @@ function setupArticleEventHandlers() {
       );
     });
 
+  /* Article Button Handlers */
+  $(document).on("click", "#bookmark-btn", function () {
+    if (!currentUser || !currentArticle) {
+      showPopup("Please log in to save articles.", false);
+      return;
+    }
+
+    const data = {
+      UserId: currentUser.id,
+      ArticleId: currentArticle.id
+    };
+
+    toggleBookmark(
+      data,
+      (response) => {
+        updateBookmarkButton(response.isBookmarked);
+        const message = response.isBookmarked ? "Article saved!" : "Article removed from bookmarks.";
+        showPopup(message, true);
+      },
+      () => {
+        showPopup("An error occurred. Please try again.", false);
+      }
+    );
+  });
+
+  /* Comment Handlers */
   $(document).on("click", ".edit-comment-btn", function () {
     const commentItem = $(this).closest(".comment-item");
     commentItem.find(".comment-text").hide();
@@ -443,6 +470,30 @@ function setupArticleEventHandlers() {
       }
     });
   });
+}
+
+function checkBookmarkStatus() {
+  if (!currentUser || !currentArticle) return;
+
+  isArticleBookmarked(
+    currentUser.id,
+    currentArticle.id,
+    (response) => {
+      updateBookmarkButton(response.isBookmarked);
+    },
+    () => {}
+  );
+}
+
+function updateBookmarkButton(isBookmarked) {
+  const $button = $("#bookmark-btn");
+  if (isBookmarked) {
+    $button.addClass("bookmarked").attr("title", "Remove from Bookmarks");
+    $button.find("span").text("Saved");
+  } else {
+    $button.removeClass("bookmarked").attr("title", "Save Article");
+    $button.find("span").text("Save");
+  }
 }
 
 function formatContent(content) {

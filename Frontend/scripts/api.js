@@ -9,6 +9,7 @@ const newsEndpoint = `${nodeBaseUrl}/News`;
 const articlesEndpoint = `${dotnetBaseUrl}/Articles`;
 const commentsEndpoint = `${dotnetBaseUrl}/Comments`;
 const reportsEndpoint = `${dotnetBaseUrl}/Reports`;
+const bookmarksEndpoint = `${dotnetBaseUrl}/Bookmarks`;
 
 const NEWS_PAGE_SIZE = 10;
 
@@ -81,6 +82,19 @@ function toggleLikeComment(commentId, userId, successCallback, errorCallback) {
 
 function reportComment(reportData, successCallback, errorCallback) {
   ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
+}
+
+function toggleBookmark(data, successCallback, errorCallback) {
+  ajaxCall("POST", `${bookmarksEndpoint}/toggle`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+function getUserBookmarks(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${bookmarksEndpoint}/${userId}`, null, successCallback, errorCallback);
+}
+
+function isArticleBookmarked(userId, articleId, successCallback, errorCallback) {
+  const url = `${bookmarksEndpoint}/status?userId=${userId}&articleId=${articleId}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
 // --- User Management Functions ---

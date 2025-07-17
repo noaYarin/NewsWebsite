@@ -7,7 +7,7 @@ namespace Horizon.DAL;
 
 public class ArticleService : DBService
 {
-    private Article MapReaderToArticle(SqlDataReader reader)
+    public Article MapReaderToArticle(SqlDataReader reader)
     {
         return new Article
         {

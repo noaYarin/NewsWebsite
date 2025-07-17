@@ -1,0 +1,8 @@
+CREATE TABLE UserBookmarkedArticles (
+    UserId INT NOT NULL,
+    ArticleId INT NOT NULL,
+    SavedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    PRIMARY KEY (UserId, ArticleId),
+    CONSTRAINT FK_Bookmark_User FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    CONSTRAINT FK_Bookmark_Article FOREIGN KEY (ArticleId) REFERENCES Articles(Id) ON DELETE CASCADE
+);
