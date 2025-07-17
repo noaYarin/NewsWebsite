@@ -560,35 +560,92 @@ function showDialog(message, isReportDialog = false) {
 
 function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
   $dialog.addClass("report-dialog");
-  $message.text("Please select a reason for your report.");
+  $message.text("Please select a reason for your report");
 
-  const reasons = ["Spam or Misleading", "Hate Speech or Harassment", "Violent Content", "Other"];
+  const reasons = ["Spam or Misleading", "Hate Speech or Harassment", "Violent Speech", "Other"];
   const $reportControls = $("<div></div>").addClass("report-dialog-controls");
-  const $select = $("<select></select>").addClass("report-dialog-select");
 
-  $select.append($("<option>", { value: "", text: "Select a reason...", disabled: true, selected: true }));
+  // Create custom dropdown structure
+  const $customDropdown = $("<div></div>").addClass("custom-dropdown");
+  const $dropdownButton = $("<button></button>").addClass("dropdown-button");
+  const $selectedText = $("<span></span>").addClass("selected-text").text("Select a reason...");
+  const $dropdownArrow = $(`<svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>`);
+
+  const $dropdownOptions = $("<div></div>").addClass("dropdown-options");
+
+  // Add options to dropdown
   reasons.forEach((reason) => {
-    $select.append($("<option>", { value: reason, text: reason }));
+    const $option = $("<div></div>").addClass("dropdown-option").attr("data-value", reason).text(reason);
+    $dropdownOptions.append($option);
   });
+
+  // Assemble dropdown
+  $dropdownButton.append($selectedText, $dropdownArrow);
+  $customDropdown.append($dropdownButton, $dropdownOptions);
 
   const $continueButton = $("<button>Continue</button>").addClass("report-dialog-continue-btn").prop("disabled", true);
 
-  $select.on("change", function () {
-    if ($(this).val()) {
-      $continueButton.prop("disabled", false);
-    } else {
-      $continueButton.prop("disabled", true);
+  let selectedValue = null;
+
+  // Dropdown functionality
+  $dropdownButton.on("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $dropdownButton.toggleClass("active");
+    $dropdownOptions.toggleClass("show");
+  });
+
+  // Option selection
+  $dropdownOptions.on("click", ".dropdown-option", function (e) {
+    e.stopPropagation();
+
+    // Remove selected class from all options
+    $dropdownOptions.find(".dropdown-option").removeClass("selected");
+
+    // Add selected class to clicked option
+    $(this).addClass("selected");
+
+    // Update button text and value
+    selectedValue = $(this).attr("data-value");
+    $selectedText.text(selectedValue);
+    $dropdownButton.addClass("selected");
+
+    // Enable continue button
+    $continueButton.prop("disabled", false).addClass("enabled");
+
+    // Close dropdown
+    $dropdownButton.removeClass("active");
+    $dropdownOptions.removeClass("show");
+  });
+
+  // Close dropdown when clicking outside
+  $(document).on("click.dropdown", function (e) {
+    if (!$customDropdown.is(e.target) && $customDropdown.has(e.target).length === 0) {
+      $dropdownButton.removeClass("active");
+      $dropdownOptions.removeClass("show");
     }
   });
 
-  $continueButton.on("click", () => {
-    const selectedReason = $select.val();
-    if (selectedReason) {
-      transformToReportForm($dialog, $message, $reportControls, closeDialog, selectedReason);
+  // Continue button functionality
+  $continueButton.on("click", function () {
+    if (selectedValue) {
+      // Clean up event listener
+      $(document).off("click.dropdown");
+      transformToReportForm($dialog, $message, $reportControls, closeDialog, selectedValue);
     }
   });
 
-  $reportControls.append($select, $continueButton);
+  // Keyboard navigation
+  $dropdownButton.on("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      $dropdownButton.click();
+    }
+  });
+
+  $reportControls.append($customDropdown, $continueButton);
 
   $actions.fadeOut(200, function () {
     $(this).remove();

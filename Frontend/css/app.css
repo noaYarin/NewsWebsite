@@ -48,6 +48,7 @@
   --c-red: #dc3545;
   --c-yellow: #ffc107;
   --c-green: #28a745;
+  --c-primary-rgb: 255, 204, 0;
 
   /* Typography */
   --font-primary: "GeographWeb", sans-serif;
