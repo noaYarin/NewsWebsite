@@ -171,6 +171,7 @@ function showComments(comments) {
 
       if (!isAuthor) {
         actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment"><img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" /></button>`;
+        actionsHtml += `<button class="block-user-btn action-icon-btn" title="Block user"><img src="../sources/icons/block-2-svgrepo-com.svg" alt="Block" /></button>`;
       }
       if (isAuthor) {
         actionsHtml += `<button class="edit-comment-btn action-icon-btn" title="Edit comment"><img src="../sources/icons/edit-3-svgrepo-com.svg" alt="Edit" /></button>`;
@@ -317,6 +318,37 @@ function setupArticleEventHandlers() {
           }
         },
         () => showPopup("Failed to delete comment. Please try again.", false)
+      );
+    });
+  });
+
+  $(document).on("click", ".block-user-btn", function () {
+    if (!currentUser) {
+      showPopup("Please log in to block users.", false);
+      return;
+    }
+
+    const commentItem = $(this).closest(".comment-item");
+    const authorId = commentItem.data("author-id");
+
+    showDialog("Are you sure you want to block this user? You will no longer see their comments.").then((userClickedYes) => {
+      if (!userClickedYes) return;
+
+      toggleBlockUser(
+        currentUser.id,
+        authorId,
+        () => {
+          if (!currentUser.blockedUsers) {
+            currentUser.blockedUsers = [];
+          }
+          currentUser.blockedUsers.push({ id: authorId });
+          localStorage.setItem("currentUser", JSON.stringify(currentUser));
+          showPopup("User has been blocked.", true);
+          loadComments();
+        },
+        () => {
+          showPopup("Failed to block user. Please try again.", false);
+        }
       );
     });
   });
