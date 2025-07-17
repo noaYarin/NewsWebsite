@@ -62,10 +62,25 @@ function validatePassword(val) {
   return { valid: true };
 }
 
-function validateImageUrl(val) {
-  if (!val) return { valid: true }; // URL is optional
-  if (!CONFIG.VALIDATION_REGEX.URL.test(val)) return { valid: false, message: "Please enter a valid URL." };
-  return { valid: true };
+function validateImageUrl(url) {
+  if (!url) return { valid: false };
+
+  const pattern = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg)$/i;
+
+  const isValid = pattern.test(url);
+  return {
+    valid: isValid,
+    message: isValid ? "" : "Image URL cannot contain parameters. Please use a direct link."
+  };
+}
+
+function cleanImageUrl(url) {
+  if (!url) return "";
+  const queryIndex = url.indexOf("?");
+  if (queryIndex !== -1) {
+    return url.substring(0, queryIndex);
+  }
+  return url;
 }
 
 // ========== Shared UI Helper Functions ==========

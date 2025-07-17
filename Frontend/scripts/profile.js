@@ -102,16 +102,44 @@ function handleUnblockUser(e) {
 }
 
 function handleImagePreview() {
-  const newUrl = $(this).val();
-  if (newUrl && validateImageUrl(newUrl).valid) {
-    $("#avatarPreview").attr("src", newUrl);
-  } else if (!newUrl) {
-    $("#avatarPreview").attr("src", "../sources/images/no-image.png");
+  const imageUrlInput = $(this);
+  const cleanedUrl = cleanImageUrl(imageUrlInput.val().trim());
+  imageUrlInput.val(cleanedUrl);
+
+  const newUrl = cleanedUrl;
+  const avatarPreview = $("#avatarPreview");
+  const fallbackImage = "../sources/images/no-image.png";
+
+  if (!newUrl) {
+    avatarPreview.attr("src", fallbackImage);
+    return;
   }
+
+  const validation = validateImageUrl(newUrl);
+  if (!validation.valid) {
+    return;
+  }
+
+  const tempImage = new Image();
+
+  tempImage.onload = function () {
+    avatarPreview.attr("src", newUrl);
+  };
+
+  tempImage.onerror = function () {
+    avatarPreview.attr("src", fallbackImage);
+  };
+
+  tempImage.src = newUrl;
 }
 
 function handleProfileUpdate(e) {
   e.preventDefault();
+
+  const imageUrlInput = $("#imageUrl");
+  const cleanedUrl = cleanImageUrl(imageUrlInput.val().trim());
+  imageUrlInput.val(cleanedUrl);
+
   let isValid = true;
   const form = $("#profileForm");
 
