@@ -1,10 +1,9 @@
 const MOBILE_BREAKPOINT = 1024;
 const SCROLL_THRESHOLD = 1200;
-let searchScope = null;
 
 const PLACEHOLDER_IMAGE_URL = "../sources/images/placeholder.png";
 
-// State variables for search pagination
+let searchScope = null;
 let searchCurrentPage = 1;
 let isSearchLoading = false;
 let allSearchResultsLoaded = false;
@@ -375,12 +374,16 @@ function setupEventHandlers() {
     }
   });
 
-  $(document).on("scroll", "#search-results-container", function () {
-    const container = $(this);
+  $(window).on("scroll", function () {
+    if ($("#search-results-container").length && $("#search-results-container").is(":visible")) {
+      const scrollTop = $(window).scrollTop();
+      const windowHeight = $(window).height();
+      const documentHeight = $(document).height();
 
-    if (container.scrollTop() + container.height() > container.prop("scrollHeight") - 400) {
-      if (!isSearchLoading && !allSearchResultsLoaded) {
-        performSearch(lastQuery, false);
+      if (scrollTop + windowHeight > documentHeight - 400) {
+        if (!isSearchLoading && !allSearchResultsLoaded && lastQuery) {
+          performSearch(lastQuery, false);
+        }
       }
     }
   });
@@ -392,7 +395,7 @@ function setupEventHandlers() {
     $input.removeClass("scoped").attr("placeholder", "Search Here...").focus();
     const currentQuery = $input.val().trim();
     if (currentQuery.length > 2) {
-      handleSearch(currentQuery, true); // Treat as a new search
+      handleSearch(currentQuery, true);
     } else {
       $("#search-results-container").remove();
       $("main").show();
@@ -404,9 +407,9 @@ function setupEventHandlers() {
     if (query.length > 2) {
       if (query !== lastQuery || isNewSearch) {
         lastQuery = query;
-        searchCurrentPage = 1; // Reset for new search
+        searchCurrentPage = 1;
         allSearchResultsLoaded = false;
-        performSearch(query, true); // Always a new search from here
+        performSearch(query, true);
       }
     } else {
       $("#search-results-container").remove();
