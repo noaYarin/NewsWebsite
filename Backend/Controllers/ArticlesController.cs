@@ -9,7 +9,7 @@ namespace Horizon.Controllers;
 public class ArticlesController : ControllerBase
 {
     [HttpGet("search")]
-    public IActionResult SearchArticles([FromQuery] string term)
+    public IActionResult SearchArticles([FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         if (string.IsNullOrWhiteSpace(term))
         {
@@ -17,7 +17,7 @@ public class ArticlesController : ControllerBase
         }
         try
         {
-            var articles = Article.Search(term);
+            var articles = Article.Search(term, page, pageSize);
             return Ok(articles);
         }
         catch (System.Exception)
@@ -66,7 +66,7 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet("category/{categoryName}")]
-    public IActionResult GetArticlesByCategory(string categoryName, [FromQuery] int count = 20)
+    public IActionResult GetArticlesByCategory(string categoryName, [FromQuery] int count = 10)
     {
         try
         {

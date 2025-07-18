@@ -51,17 +51,16 @@ namespace Horizon.Controllers
         }
 
         [HttpGet("{userId}/search")]
-        public IActionResult SearchBookmarks(int userId, [FromQuery] string term)
+        public IActionResult SearchBookmarks(int userId, [FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(term))
             {
-                var allBookmarks = Bookmark.GetUserBookmarks(userId);
-                return Ok(allBookmarks);
+                return Ok(new List<Article>());
             }
 
             try
             {
-                var searchResults = Bookmark.Search(userId, term);
+                var searchResults = Bookmark.Search(userId, term, page, pageSize);
                 return Ok(searchResults);
             }
             catch (System.Exception)

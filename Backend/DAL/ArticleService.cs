@@ -23,14 +23,19 @@ public class ArticleService : DBService
         };
     }
 
-    public List<Article> SearchArticles(string searchTerm)
+    public List<Article> SearchArticles(string searchTerm, int page, int pageSize)
     {
         var articles = new List<Article>();
         SqlConnection con = null;
         try
         {
             con = Connect();
-            var parameters = new Dictionary<string, object> { { "@SearchTerm", searchTerm } };
+            var parameters = new Dictionary<string, object>
+        {
+            { "@SearchTerm", searchTerm },
+            { "@PageNumber", page },
+            { "@PageSize", pageSize }
+        };
             SqlCommand cmd = CreateCommand("SP_SearchArticles", con, parameters);
 
             using (var reader = cmd.ExecuteReader())

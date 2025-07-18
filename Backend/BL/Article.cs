@@ -70,9 +70,9 @@ public class Article
         return articleService.FetchRecentByCategoryPaged(categoryName, page, pageSize);
     }
 
-    public static List<Article> Search(string searchTerm)
+    public static List<Article> Search(string searchTerm, int page, int pageSize)
     {
         var articleService = new ArticleService();
-        return articleService.SearchArticles(searchTerm);
+        return articleService.SearchArticles(searchTerm, page, pageSize);
     }
 }

@@ -55,7 +55,7 @@ namespace Horizon.DAL
             finally { con?.Close(); }
         }
 
-        public List<Article> SearchUserBookmarks(int userId, string searchTerm)
+        public List<Article> SearchUserBookmarks(int userId, string searchTerm, int page, int pageSize)
         {
             var articles = new List<Article>();
             SqlConnection con = null;
@@ -63,10 +63,12 @@ namespace Horizon.DAL
             {
                 con = Connect();
                 var parameters = new Dictionary<string, object>
-                {
-                    { "@UserId", userId },
-                    { "@SearchTerm", searchTerm }
-                };
+        {
+            { "@UserId", userId },
+            { "@SearchTerm", searchTerm },
+            { "@PageNumber", page },
+            { "@PageSize", pageSize }
+        };
                 SqlCommand cmd = CreateCommand("SP_SearchUserBookmarks", con, parameters);
                 using (var reader = cmd.ExecuteReader())
                 {

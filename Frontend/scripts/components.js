@@ -4,13 +4,17 @@ let searchScope = null;
 
 const PLACEHOLDER_IMAGE_URL = "../sources/images/placeholder.png";
 
+// State variables for search pagination
+let searchCurrentPage = 1;
+let isSearchLoading = false;
+let allSearchResultsLoaded = false;
+const SEARCH_PAGE_SIZE = 10;
+
 function getNavHref(targetPage) {
   const currentPath = window.location.pathname;
-
   if (currentPath.includes(`${targetPage}.html`) || (targetPage === "index" && (currentPath.includes("index.html") || currentPath.endsWith("/")))) {
     return "#";
   }
-
   return `../html/${targetPage}.html`;
 }
 
@@ -288,11 +292,9 @@ function setupProfileMenu() {
 
 function toggleProfileMenu() {
   const $profileMenu = $("#profileMenu");
-
   if (!$profileMenu.length) {
     return;
   }
-
   $profileMenu.toggleClass("active");
 }
 
@@ -300,7 +302,6 @@ function logout() {
   try {
     localStorage.removeItem("currentUser");
     showPopup("Logged out successfully!", true);
-
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -360,9 +361,8 @@ function setupEventHandlers() {
   $(document).on("input", ".search-input, .mobile-search-input", function () {
     clearTimeout(debounceTimer);
     const query = $(this).val().trim();
-
     debounceTimer = setTimeout(() => {
-      handleSearch(query);
+      handleSearch(query, true);
     }, 500);
   });
 
@@ -371,23 +371,28 @@ function setupEventHandlers() {
       e.preventDefault();
       clearTimeout(debounceTimer);
       const query = $(this).val().trim();
-      handleSearch(query);
+      handleSearch(query, true);
+    }
+  });
+
+  $(document).on("scroll", "#search-results-container", function () {
+    const container = $(this);
+
+    if (container.scrollTop() + container.height() > container.prop("scrollHeight") - 400) {
+      if (!isSearchLoading && !allSearchResultsLoaded) {
+        performSearch(lastQuery, false);
+      }
     }
   });
 
   $(document).on("click", ".remove-scope", function () {
     searchScope = null;
     $(".search-scope-indicator").hide();
-
     const $input = $(window).width() <= MOBILE_BREAKPOINT ? $(".mobile-search-input") : $(".search-input");
-
     $input.removeClass("scoped").attr("placeholder", "Search Here...").focus();
-
     const currentQuery = $input.val().trim();
-
     if (currentQuery.length > 2) {
-      lastQuery = "";
-      handleSearch(currentQuery);
+      handleSearch(currentQuery, true); // Treat as a new search
     } else {
       $("#search-results-container").remove();
       $("main").show();
@@ -395,11 +400,13 @@ function setupEventHandlers() {
     }
   });
 
-  function handleSearch(query) {
+  function handleSearch(query, isNewSearch) {
     if (query.length > 2) {
-      if (query !== lastQuery) {
+      if (query !== lastQuery || isNewSearch) {
         lastQuery = query;
-        performSearch(query);
+        searchCurrentPage = 1; // Reset for new search
+        allSearchResultsLoaded = false;
+        performSearch(query, true); // Always a new search from here
       }
     } else {
       $("#search-results-container").remove();
@@ -409,46 +416,44 @@ function setupEventHandlers() {
   }
 }
 
-function performSearch(query) {
-  $("main").hide();
-  $("#search-results-container").remove();
+function performSearch(query, isNewSearch) {
+  if (isSearchLoading || (allSearchResultsLoaded && !isNewSearch)) return;
+
+  isSearchLoading = true;
+
+  if (isNewSearch) {
+    $("main").hide();
+    $("#search-results-container").remove();
+    const searchContainerHtml = `
+      <div id="search-results-container">
+        <div class="search-results-content">
+          <div id="search-results-list" class="articles-list"></div>
+          <div id="search-loading-message" class="loading-message">
+            <p>Searching articles...</p>
+          </div>
+        </div>
+      </div>`;
+    $("#footer").before(searchContainerHtml);
+  } else {
+    $("#search-loading-message").show();
+  }
 
   const currentUser = getCurrentUser();
-
-  const searchContainerHtml = `
-    <div id="search-results-container">
-      <div class="search-results-content">
-        <div id="search-results-list" class="articles-list"></div>
-        <div id="search-loading-message" class="loading-message">
-          <p>Searching articles...</p>
-        </div>
-      </div>
-    </div>
-  `;
-  $("#footer").before(searchContainerHtml);
 
   if (searchScope && searchScope === "bookmarks" && currentUser) {
     searchBookmarks(
       currentUser.id,
       query,
-      (articles) => {
-        $("#search-loading-message").hide();
-        if (articles && articles.length > 0) {
-          displaySearchResults(articles);
-        } else {
-          $("#search-results-list").html(`<p class="error-message">No bookmarks found for "${query}".</p>`);
-        }
-      },
-      () => {
-        $("#search-loading-message").hide();
-        $("#search-results-list").html(`<p class="error-message">An error occurred while searching your bookmarks.</p>`);
-      }
+      searchCurrentPage,
+      SEARCH_PAGE_SIZE,
+      (articles) => handleSearchResults(articles, query),
+      () => handleSearchError()
     );
   } else {
     const apiSearchPromise = new Promise((resolve) => {
       searchNews(
         query,
-        1,
+        searchCurrentPage,
         (response) => resolve(response.data || []),
         () => resolve([])
       );
@@ -457,48 +462,71 @@ function performSearch(query) {
     const dbSearchPromise = new Promise((resolve) => {
       searchDatabaseArticles(
         query,
+        searchCurrentPage,
+        SEARCH_PAGE_SIZE,
         (articles) => resolve(articles || []),
         () => resolve([])
       );
     });
 
     Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
-      $("#search-loading-message").hide();
       let combined = [...apiArticles, ...dbArticles];
-
       if (searchScope) {
         combined = combined.filter((article) => article.category && article.category.toLowerCase() === searchScope.toLowerCase());
       }
-
-      const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
-      uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-
-      if (uniqueArticles.length > 0) {
-        displaySearchResults(uniqueArticles);
-      } else {
-        const message = searchScope ? `No articles found for "${query}" in ${searchScope}.` : `No articles found for "${query}".`;
-        $("#search-results-list").html(`<p class="error-message">${message}</p>`);
-      }
+      handleSearchResults(combined, query);
     });
   }
 }
 
+function handleSearchResults(articles, query) {
+  $("#search-loading-message").hide();
+  isSearchLoading = false;
+  const $listContainer = $("#search-results-list");
+
+  if (!articles || articles.length === 0) {
+    allSearchResultsLoaded = true;
+    if (searchCurrentPage === 1) {
+      const message = searchScope ? `No articles found for "${query}" in ${searchScope}.` : `No articles found for "${query}".`;
+      $listContainer.html(`<p class="error-message">${message}</p>`);
+    }
+    return;
+  }
+
+  if (articles.length < SEARCH_PAGE_SIZE) {
+    allSearchResultsLoaded = true;
+  }
+
+  const uniqueArticles = Array.from(new Map(articles.map((article) => [article.url, article])).values());
+  uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  displaySearchResults(uniqueArticles);
+  searchCurrentPage++;
+}
+
+function handleSearchError() {
+  $("#search-loading-message").hide();
+  isSearchLoading = false;
+  allSearchResultsLoaded = true;
+  $("#search-results-list").append(`<p class="error-message">An error occurred while searching.</p>`);
+}
+
 function displaySearchResults(articles) {
   const $listContainer = $("#search-results-list");
-  $listContainer.empty();
+  if (searchCurrentPage === 1 && $listContainer.is(":empty")) {
+    $listContainer.empty();
+  }
   articles.forEach((article) => {
     const articleHtml = `
       <a href="../html/article.html?id=${article.id}" class="article-list-item">
         <div class="article-item-image">
-          <img src="${article.imageUrl || "../sources/images/placeholder.png"}" alt="${article.title}" />
+          <img src="${article.imageUrl || PLACEHOLDER_IMAGE_URL}" alt="${article.title}" />
         </div>
         <div class="article-item-content">
           <span class="category-tag">${article.category || "News"}</span>
           <h3 class="article-item-title">${article.title}</h3>
           <span class="article-item-author">${article.author || "Unknown Author"}</span>
         </div>
-      </a>
-    `;
+      </a>`;
     $listContainer.append(articleHtml);
   });
 }
@@ -509,7 +537,6 @@ function toggleSearch() {
 
   if ($overlay.hasClass("active")) {
     const pathname = window.location.pathname;
-
     if (pathname.includes("bookmarks.html")) {
       searchScope = "bookmarks";
     } else if (pathname.includes("category.html")) {
@@ -522,10 +549,8 @@ function toggleSearch() {
 
     if (searchScope) {
       const scopeText = searchScope.charAt(0).toUpperCase() + searchScope.slice(1);
-
       $(".search-scope-indicator span").text(scopeText);
       $(".search-scope-indicator").show();
-
       const placeholder = `Search in ${scopeText}`;
       $(".search-input, .mobile-search-input").addClass("scoped").attr("placeholder", placeholder);
     }
@@ -556,7 +581,6 @@ function setupAuthNavLinks() {
 function setupBackToTop() {
   const $backToTop = $("#backToTop");
   const $footer = $("#footer");
-
   if (!$backToTop.length) {
     return;
   }
@@ -598,13 +622,10 @@ function setupBackToTop() {
 function toggleMobileMenu() {
   const $mobileMenu = $("#mobileMenu");
   const $searchIcon = $("#navbar .search-icon");
-
   if (!$mobileMenu.length) {
     return;
   }
-
   $mobileMenu.toggleClass("active");
-
   if ($searchIcon.length) {
     $searchIcon.toggleClass("hide");
   }
@@ -648,7 +669,6 @@ function showDialog(message, isReportDialog = false) {
 
     const closeDialog = (value) => {
       $(document).off("click.dialog");
-
       $dialog.removeClass("show");
       setTimeout(() => {
         $dialog.remove();
@@ -674,7 +694,6 @@ function showDialog(message, isReportDialog = false) {
 
     setTimeout(() => {
       $dialog.addClass("show");
-
       setTimeout(() => {
         $(document).on("click.dialog", (event) => {
           if (!$(event.target).closest("#dialog-popup").length) {
@@ -730,16 +749,12 @@ function transformToReasonSelection($dialog, $message, $actions, closeDialog) {
 
   $dropdownOptions.on("click", ".dropdown-option", function (e) {
     e.stopPropagation();
-
     $dropdownOptions.find(".dropdown-option").removeClass("selected");
     $(this).addClass("selected");
-
     selectedValue = $(this).attr("data-value");
     $selectedText.text($(this).text());
     $dropdownButton.addClass("selected");
-
     $continueButton.prop("disabled", false).addClass("enabled");
-
     $dropdownButton.removeClass("active");
     $dropdownOptions.removeClass("show");
   });

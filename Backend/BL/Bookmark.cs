@@ -23,10 +23,10 @@ namespace Horizon.BL
             return bookmarkService.GetUserBookmarks(userId);
         }
 
-        public static List<Article> Search(int userId, string searchTerm)
+        public static List<Article> Search(int userId, string searchTerm, int page, int pageSize)
         {
             var bookmarkService = new BookmarkService();
-            return bookmarkService.SearchUserBookmarks(userId, searchTerm);
+            return bookmarkService.SearchUserBookmarks(userId, searchTerm, page, pageSize);
         }
     }
 }

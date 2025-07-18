@@ -40,8 +40,8 @@ function getArticleById(id, successCallback, errorCallback) {
   ajaxCall("GET", `${articlesEndpoint}/${id}`, null, successCallback, errorCallback);
 }
 
-function searchDatabaseArticles(term, successCallback, errorCallback) {
-  const url = `${articlesEndpoint}/search?term=${encodeURIComponent(term)}`;
+function searchDatabaseArticles(term, page, pageSize, successCallback, errorCallback) {
+  const url = `${articlesEndpoint}/search?term=${encodeURIComponent(term)}&page=${page}&pageSize=${pageSize}`;
   ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
@@ -96,8 +96,8 @@ function getUserBookmarks(userId, successCallback, errorCallback) {
   ajaxCall("GET", `${bookmarksEndpoint}/${userId}`, null, successCallback, errorCallback);
 }
 
-function searchBookmarks(userId, term, successCallback, errorCallback) {
-  const url = `${bookmarksEndpoint}/${userId}/search?term=${encodeURIComponent(term)}`;
+function searchBookmarks(userId, term, page, pageSize, successCallback, errorCallback) {
+  const url = `${bookmarksEndpoint}/${userId}/search?term=${encodeURIComponent(term)}&page=${page}&pageSize=${pageSize}`;
   ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
