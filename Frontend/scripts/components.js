@@ -1,5 +1,6 @@
 const MOBILE_BREAKPOINT = 1024;
 const SCROLL_THRESHOLD = 1200;
+let isBookmarkSearchActive = false;
 
 const PLACEHOLDER_IMAGE_URL = "../sources/images/placeholder.png";
 
@@ -65,6 +66,12 @@ $(document).ready(function () {
           </div>
         </a>
         <div class="search-container">
+          <div class="search-scope-indicator" style="display: none;">
+            <span>Bookmarks</span>
+            <button class="remove-scope" title="Remove filter">
+              <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Remove scope" />
+            </button>
+          </div>
           <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" style="display: none" />
           <input
             type="text"
@@ -368,6 +375,13 @@ function setupEventHandlers() {
     }
   });
 
+  $(document).on("click", ".remove-scope", function () {
+    isBookmarkSearchActive = false;
+    $(".search-scope-indicator").hide();
+    const $input = $(".search-input");
+    $input.removeClass("scoped").attr("placeholder", "Search Here...").focus();
+  });
+
   function handleSearch(query) {
     if (query.length > 2) {
       if (query !== lastQuery) {
@@ -386,6 +400,8 @@ function performSearch(query) {
   $("main").hide();
   $("#search-results-container").remove();
 
+  const currentUser = getCurrentUser();
+
   const searchContainerHtml = `
     <div id="search-results-container">
       <div class="search-results-content">
@@ -398,37 +414,54 @@ function performSearch(query) {
   `;
   $("#footer").before(searchContainerHtml);
 
-  const apiSearchPromise = new Promise((resolve) => {
-    searchNews(
+  if (isBookmarkSearchActive && currentUser) {
+    searchBookmarks(
+      currentUser.id,
       query,
-      1,
-      (response) => resolve(response.data || []),
-      () => resolve([])
+      (articles) => {
+        $("#search-loading-message").hide();
+        if (articles && articles.length > 0) {
+          displaySearchResults(articles);
+        } else {
+          $("#search-results-list").html(`<p class="error-message">No bookmarks found for "${query}".</p>`);
+        }
+      },
+      () => {
+        $("#search-loading-message").hide();
+        $("#search-results-list").html(`<p class="error-message">An error occurred while searching your bookmarks.</p>`);
+      }
     );
-  });
+  } else {
+    const apiSearchPromise = new Promise((resolve) => {
+      searchNews(
+        query,
+        1,
+        (response) => resolve(response.data || []),
+        () => resolve([])
+      );
+    });
 
-  const dbSearchPromise = new Promise((resolve) => {
-    searchDatabaseArticles(
-      query,
-      (articles) => resolve(articles || []),
-      () => resolve([])
-    );
-  });
+    const dbSearchPromise = new Promise((resolve) => {
+      searchDatabaseArticles(
+        query,
+        (articles) => resolve(articles || []),
+        () => resolve([])
+      );
+    });
 
-  Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
-    $("#search-loading-message").hide();
+    Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
+      $("#search-loading-message").hide();
+      const combined = [...apiArticles, ...dbArticles];
+      const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
+      uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-    const combined = [...apiArticles, ...dbArticles];
-    const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
-
-    uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-
-    if (uniqueArticles.length > 0) {
-      displaySearchResults(uniqueArticles);
-    } else {
-      $("#search-results-list").html(`<p class="error-message">No articles found for "${query}".</p>`);
-    }
-  });
+      if (uniqueArticles.length > 0) {
+        displaySearchResults(uniqueArticles);
+      } else {
+        $("#search-results-list").html(`<p class="error-message">No articles found for "${query}".</p>`);
+      }
+    });
+  }
 }
 
 function displaySearchResults(articles) {
@@ -455,7 +488,16 @@ function toggleSearch() {
   const $overlay = $("#searchOverlay");
   $overlay.toggleClass("active");
 
+  const isOnBookmarksPage = window.location.pathname.includes("bookmarks.html");
+
   if ($overlay.hasClass("active")) {
+    if (isOnBookmarksPage) {
+      isBookmarkSearchActive = true;
+      $(".search-scope-indicator").show();
+      $(".search-input").addClass("scoped").attr("placeholder", "Search in Bookmarks");
+      $(".mobile-search-input").attr("placeholder", "Search in Bookmarks");
+    }
+
     setTimeout(() => {
       const inputToFocus = $(window).width() <= MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
       $(inputToFocus).focus();
@@ -463,6 +505,9 @@ function toggleSearch() {
   } else {
     $("#search-results-container").remove();
     $("main").show();
+    isBookmarkSearchActive = false;
+    $(".search-scope-indicator").hide();
+    $(".search-input").removeClass("scoped").attr("placeholder", "Search Here...");
   }
 }
 

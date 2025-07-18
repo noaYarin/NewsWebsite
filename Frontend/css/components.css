@@ -32,7 +32,6 @@
   right: 0;
   z-index: var(--z-fixed-element);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  /* Centering for wide screens */
   padding-left: calc(50vw - 720px);
   padding-right: calc(50vw - 720px);
 }
@@ -148,7 +147,6 @@
 /* --------------------
    Component: Search Functionality (Desktop)
    -------------------- */
-
 .search-icon {
   cursor: pointer;
   width: 24px;
@@ -164,7 +162,7 @@
 }
 
 .search-overlay {
-  display: none; /* Hidden until .active */
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -173,7 +171,6 @@
   background-color: var(--c-light);
   align-items: center;
   z-index: var(--z-overlay-content);
-  /* Centering for wide screens */
   padding-left: calc(50vw - 720px);
   padding-right: calc(50vw - 720px);
 }
@@ -183,6 +180,7 @@
 }
 
 .search-container {
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
@@ -204,12 +202,54 @@
   color: var(--c-text-muted);
 }
 
+.search-scope-indicator {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--c-border-light);
+  border: 1px solid #dee2e6;
+  border-radius: 16px;
+  padding: 5px 8px 5px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-text-muted);
+  z-index: 1;
+}
+
+.search-scope-indicator .remove-scope {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.search-scope-indicator .remove-scope img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.search-scope-indicator .remove-scope:hover img {
+  opacity: 1;
+}
+
+#navbar .search-overlay .search-container .search-input.scoped {
+  padding-left: 130px;
+}
+
 /* --------------------
    Component: Mobile Menu
    -------------------- */
-
 .mobile-menu-btn {
-  display: none; /* Hidden by default, shown in mobile view */
+  display: none;
   background: none;
   border: none;
   cursor: pointer;
@@ -377,7 +417,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; /* Prevents footer from shrinking */
+  flex-shrink: 0;
 }
 
 .footer-content {
