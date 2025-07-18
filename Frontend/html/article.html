@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Article | HORIZON</title>
+    <title>HORIZON / Article</title>
     <link rel="icon" type="image/x-icon" href="../sources/logo.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/app.css" />
@@ -12,27 +12,10 @@
     <link rel="stylesheet" href="../css/article.css" />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Core utilities -->
-    <script src="../scripts/utils/constants.js"></script>
-    <script src="../scripts/utils/helpers.js"></script>
-    <script src="../scripts/api.js"></script>
-
-    <!-- UI components -->
-    <script src="../scripts/components/ui-manager.js"></script>
-    <script src="../scripts/components/report-dialog.js"></script>
-    <script src="../scripts/components/html-snippets.js"></script>
-    <script src="../scripts/components/navigation.js"></script>
-    <script src="../scripts/components/search-manager.js"></script>
-
-    <!-- Main coordinator -->
-    <script src="../scripts/components.js"></script>
-
-    <!-- Page-specific -->
-    <script src="../scripts/modules/comment-manager.js"></script>
-    <script src="../scripts/modules/bookmark-manager.js"></script>
-    <script src="../scripts/modules/article-reporter.js"></script>
-    <script src="../scripts/article.js"></script>
+    <script type="module" src="../scripts/core/script-loader.js"></script>
+    <script>
+      $(() => loadPageScripts());
+    </script>
   </head>
   <body>
     <nav id="navbar"></nav>
