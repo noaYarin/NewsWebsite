@@ -1,8 +1,5 @@
-const dotnetPort = 7171;
-const nodePort = 3000;
-
-const dotnetBaseUrl = `https://localhost:${dotnetPort}/api`;
-const nodeBaseUrl = `http://localhost:${nodePort}/api`;
+const dotnetBaseUrl = `https://localhost:${CONSTANTS.API.DOTNET_PORT}/api`;
+const nodeBaseUrl = `http://localhost:${CONSTANTS.API.NODE_PORT}/api`;
 
 const usersEndpoint = `${dotnetBaseUrl}/Users`;
 const newsEndpoint = `${nodeBaseUrl}/News`;
@@ -10,8 +7,6 @@ const articlesEndpoint = `${dotnetBaseUrl}/Articles`;
 const commentsEndpoint = `${dotnetBaseUrl}/Comments`;
 const reportsEndpoint = `${dotnetBaseUrl}/Reports`;
 const bookmarksEndpoint = `${dotnetBaseUrl}/Bookmarks`;
-
-const NEWS_PAGE_SIZE = 10;
 
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({
@@ -28,11 +23,11 @@ function ajaxCall(method, api, data, successCB, errorCB) {
 
 /* --- Node.js Calls --- */
 function getTopHeadlines(category, page = 1, successCallback, errorCallback) {
-  ajaxCall("GET", `${nodeBaseUrl}/News/top-headlines?category=${category}&page=${page}&pageSize=${NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
+  ajaxCall("GET", `${nodeBaseUrl}/News/top-headlines?category=${category}&page=${page}&pageSize=${CONSTANTS.NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
 }
 
 function searchNews(query, page = 1, successCallback, errorCallback) {
-  ajaxCall("GET", `${nodeBaseUrl}/News?query=${encodeURIComponent(query)}&page=${page}&pageSize=${NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
+  ajaxCall("GET", `${nodeBaseUrl}/News?query=${encodeURIComponent(query)}&page=${page}&pageSize=${CONSTANTS.NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
 }
 
 /* --- .NET Calls --- */

@@ -113,16 +113,23 @@ const SearchManager = {
     if (currentQuery.length > 2) {
       this.handleSearch(currentQuery, true);
     } else {
-      this.cleanup();
+      this.clearSearchResults();
     }
   },
 
   cleanup() {
-    $("#search-results-container").remove();
-    $("main").show();
+    this.clearSearchResults();
     this.scope = null;
     $(".search-scope-indicator").hide();
     $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...");
+  },
+
+  clearSearchResults() {
+    $("#search-results-container").remove();
+    $("main").show();
+    this.lastQuery = "";
+    this.currentPage = 1;
+    this.allResultsLoaded = false;
   },
 
   handleSearch(query, isNewSearch) {
@@ -134,8 +141,7 @@ const SearchManager = {
         this.performSearch(query, true);
       }
     } else {
-      this.cleanup();
-      this.lastQuery = "";
+      this.clearSearchResults();
     }
   },
 
