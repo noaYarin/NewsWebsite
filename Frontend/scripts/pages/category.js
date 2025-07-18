@@ -36,7 +36,7 @@ const CategoryPage = {
     this.pagination.init();
   },
 
-  loadArticles() {
+  async loadArticles() {
     if (this.isLoading || this.allArticlesLoaded) return;
     this.isLoading = true;
 
@@ -46,13 +46,58 @@ const CategoryPage = {
 
     this.showLoadingState($initialLoadingMessage, $infiniteScrollLoader);
 
-    getArticlesByCategoryPaged(
-      this.currentCategory,
-      this.currentPage,
-      this.pageSize,
-      (articles) => this.handleSuccess(articles, $listContainer, $initialLoadingMessage, $infiniteScrollLoader),
-      () => this.handleError($initialLoadingMessage, $infiniteScrollLoader)
-    );
+    try {
+      if (this.currentPage === 1) {
+        await this.fetchAndSyncFromAPI();
+      }
+
+      getArticlesByCategoryPaged(
+        this.currentCategory,
+        this.currentPage,
+        this.pageSize,
+        (articles) => this.handleSuccess(articles, $listContainer, $initialLoadingMessage, $infiniteScrollLoader),
+        () => this.handleError($initialLoadingMessage, $infiniteScrollLoader)
+      );
+    } catch (error) {
+      this.handleError($initialLoadingMessage, $infiniteScrollLoader);
+    }
+  },
+
+  async fetchAndSyncFromAPI() {
+    return new Promise((resolve) => {
+      getTopHeadlines(
+        this.currentCategory,
+        1,
+        (response) => {
+          if (response && response.data && response.data.length > 0) {
+            const articles = this.mapAPIArticles(response.data);
+            syncArticles(
+              articles,
+              () => resolve(),
+              () => resolve()
+            );
+          } else {
+            resolve();
+          }
+        },
+        () => resolve()
+      );
+    });
+  },
+
+  mapAPIArticles(articles) {
+    return articles.map((article) => ({
+      title: article.title,
+      url: article.url,
+      imageUrl: article.urlToImage,
+      description: article.description || "",
+      author: article.author || "Unknown Author",
+      sourceName: (article.source && article.source.name) || "Unknown Source",
+      publishedAt: article.publishedAt,
+      // Use the category from API if available (already properly formatted),
+      // otherwise use the current category with proper formatting
+      category: article.category || this.currentCategory.charAt(0).toUpperCase() + this.currentCategory.slice(1)
+    }));
   },
 
   showLoadingState($initialLoadingMessage, $infiniteScrollLoader) {
@@ -130,13 +175,11 @@ const CategoryPage = {
   },
 
   retry() {
-    // Reset state
     this.currentPage = 1;
     this.isLoading = false;
     this.allArticlesLoaded = false;
     this.pagination.reset();
 
-    // Clear container and retry
     $("#category-articles-list").empty();
     $("#category-loading-message").show();
     this.loadArticles();

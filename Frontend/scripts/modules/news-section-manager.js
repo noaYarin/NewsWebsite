@@ -219,13 +219,11 @@ const NewsSectionManager = {
   },
 
   updateSectionTitle(container, title) {
-    // Simple approach: just update #month-title with the interest-based title
     if (title && title.includes("TOP STORIES IN")) {
       $("#month-title").text(title);
     } else if (title && title.includes("TRENDING IN")) {
       $("#fourth-container .titles h1").text(title);
     } else if (title) {
-      // For other sections, find the closest title element
       const titleElement = container.closest("section, .our-picks").find(".titles h1, .our-picks-titles h1, h1, h2").first();
       if (titleElement.length) {
         titleElement.text(title);

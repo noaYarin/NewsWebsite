@@ -120,7 +120,6 @@ const SearchManager = {
     }
   },
 
-  // Helper method to format scope text
   formatScopeText(scope) {
     const categoryNames = {
       business: "Business",
@@ -136,7 +135,6 @@ const SearchManager = {
 
     const fullName = categoryNames[scope.toLowerCase()] || scope.charAt(0).toUpperCase() + scope.slice(1);
 
-    // Abbreviate long names on mobile
     if ($(window).width() <= 768 && fullName.length > 10) {
       const abbreviations = {
         Entertainment: "Entertain.",
@@ -267,39 +265,65 @@ const SearchManager = {
         searchBookmarks(currentUser.id, query, this.currentPage, CONSTANTS.SEARCH_PAGE_SIZE, resolve, reject);
       });
     } else {
-      const [apiArticles, dbArticles] = await Promise.all([this.fetchApiArticles(query), this.fetchDbArticles(query)]);
+      await this.fetchAndSyncFromAPI(query);
 
-      let combined = [...apiArticles, ...dbArticles];
+      return new Promise((resolve) => {
+        searchDatabaseArticles(
+          query,
+          this.currentPage,
+          CONSTANTS.SEARCH_PAGE_SIZE,
+          (articles) => {
+            let filteredArticles = articles || [];
 
-      if (this.scope && this.scope !== "bookmarks") {
-        combined = combined.filter((article) => article.category && article.category.toLowerCase() === this.scope.toLowerCase());
-      }
+            if (this.scope && this.scope !== "bookmarks") {
+              filteredArticles = filteredArticles.filter((article) => article.category && article.category.toLowerCase() === this.scope.toLowerCase());
+            }
 
-      return combined;
+            resolve(filteredArticles);
+          },
+          () => resolve([])
+        );
+      });
     }
   },
 
-  fetchApiArticles(query) {
+  async fetchAndSyncFromAPI(query) {
+    if (this.currentPage !== 1) {
+      return Promise.resolve();
+    }
+
     return new Promise((resolve) => {
       searchNews(
         query,
-        this.currentPage,
-        (response) => resolve(response.data || []),
-        () => resolve([])
+        1,
+        (response) => {
+          if (response && response.data && response.data.length > 0) {
+            const articles = this.mapAPIArticles(response.data);
+            syncArticles(
+              articles,
+              () => resolve(),
+              () => resolve()
+            );
+          } else {
+            resolve();
+          }
+        },
+        () => resolve()
       );
     });
   },
 
-  fetchDbArticles(query) {
-    return new Promise((resolve) => {
-      searchDatabaseArticles(
-        query,
-        this.currentPage,
-        CONSTANTS.SEARCH_PAGE_SIZE,
-        (articles) => resolve(articles || []),
-        () => resolve([])
-      );
-    });
+  mapAPIArticles(articles) {
+    return articles.map((article) => ({
+      title: article.title,
+      url: article.url,
+      imageUrl: article.urlToImage,
+      description: article.description || "",
+      author: article.author || "Unknown Author",
+      sourceName: (article.source && article.source.name) || "Unknown Source",
+      publishedAt: article.publishedAt,
+      category: article.category || (this.scope ? this.scope.charAt(0).toUpperCase() + this.scope.slice(1) : "General")
+    }));
   },
 
   handleSearchResults(articles, query) {

@@ -119,6 +119,7 @@
   padding: 12px 48px;
   gap: 8px;
   transition: all 0.3s ease-in-out;
+  min-width: 552px;
 }
 
 .report-dialog .dialog-message {
