@@ -96,6 +96,11 @@ function getUserBookmarks(userId, successCallback, errorCallback) {
   ajaxCall("GET", `${bookmarksEndpoint}/${userId}`, null, successCallback, errorCallback);
 }
 
+function searchBookmarks(userId, term, successCallback, errorCallback) {
+  const url = `${bookmarksEndpoint}/${userId}/search?term=${encodeURIComponent(term)}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
 function isArticleBookmarked(userId, articleId, successCallback, errorCallback) {
   const url = `${bookmarksEndpoint}/status?userId=${userId}&articleId=${articleId}`;
   ajaxCall("GET", url, null, successCallback, errorCallback);
