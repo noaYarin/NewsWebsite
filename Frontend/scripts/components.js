@@ -378,8 +378,21 @@ function setupEventHandlers() {
   $(document).on("click", ".remove-scope", function () {
     isBookmarkSearchActive = false;
     $(".search-scope-indicator").hide();
-    const $input = $(".search-input");
+
+    const $input = $(window).width() <= MOBILE_BREAKPOINT ? $(".mobile-search-input") : $(".search-input");
+
     $input.removeClass("scoped").attr("placeholder", "Search Here...").focus();
+
+    const currentQuery = $input.val().trim();
+
+    if (currentQuery.length > 2) {
+      lastQuery = "";
+      handleSearch(currentQuery);
+    } else {
+      $("#search-results-container").remove();
+      $("main").show();
+      lastQuery = "";
+    }
   });
 
   function handleSearch(query) {
