@@ -1,6 +1,6 @@
 const MOBILE_BREAKPOINT = 1024;
 const SCROLL_THRESHOLD = 1200;
-let isBookmarkSearchActive = false;
+let searchScope = null;
 
 const PLACEHOLDER_IMAGE_URL = "../sources/images/placeholder.png";
 
@@ -376,7 +376,7 @@ function setupEventHandlers() {
   });
 
   $(document).on("click", ".remove-scope", function () {
-    isBookmarkSearchActive = false;
+    searchScope = null;
     $(".search-scope-indicator").hide();
 
     const $input = $(window).width() <= MOBILE_BREAKPOINT ? $(".mobile-search-input") : $(".search-input");
@@ -427,7 +427,7 @@ function performSearch(query) {
   `;
   $("#footer").before(searchContainerHtml);
 
-  if (isBookmarkSearchActive && currentUser) {
+  if (searchScope && searchScope === "bookmarks" && currentUser) {
     searchBookmarks(
       currentUser.id,
       query,
@@ -464,14 +464,20 @@ function performSearch(query) {
 
     Promise.all([apiSearchPromise, dbSearchPromise]).then(([apiArticles, dbArticles]) => {
       $("#search-loading-message").hide();
-      const combined = [...apiArticles, ...dbArticles];
+      let combined = [...apiArticles, ...dbArticles];
+
+      if (searchScope) {
+        combined = combined.filter((article) => article.category && article.category.toLowerCase() === searchScope.toLowerCase());
+      }
+
       const uniqueArticles = Array.from(new Map(combined.map((article) => [article.url, article])).values());
       uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
       if (uniqueArticles.length > 0) {
         displaySearchResults(uniqueArticles);
       } else {
-        $("#search-results-list").html(`<p class="error-message">No articles found for "${query}".</p>`);
+        const message = searchScope ? `No articles found for "${query}" in ${searchScope}.` : `No articles found for "${query}".`;
+        $("#search-results-list").html(`<p class="error-message">${message}</p>`);
       }
     });
   }
@@ -501,14 +507,27 @@ function toggleSearch() {
   const $overlay = $("#searchOverlay");
   $overlay.toggleClass("active");
 
-  const isOnBookmarksPage = window.location.pathname.includes("bookmarks.html");
-
   if ($overlay.hasClass("active")) {
-    if (isOnBookmarksPage) {
-      isBookmarkSearchActive = true;
+    const pathname = window.location.pathname;
+
+    if (pathname.includes("bookmarks.html")) {
+      searchScope = "bookmarks";
+    } else if (pathname.includes("category.html")) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get("name");
+      if (category) {
+        searchScope = category;
+      }
+    }
+
+    if (searchScope) {
+      const scopeText = searchScope.charAt(0).toUpperCase() + searchScope.slice(1);
+
+      $(".search-scope-indicator span").text(scopeText);
       $(".search-scope-indicator").show();
-      $(".search-input").addClass("scoped").attr("placeholder", "Search in Bookmarks");
-      $(".mobile-search-input").attr("placeholder", "Search in Bookmarks");
+
+      const placeholder = `Search in ${scopeText}`;
+      $(".search-input, .mobile-search-input").addClass("scoped").attr("placeholder", placeholder);
     }
 
     setTimeout(() => {
@@ -518,9 +537,9 @@ function toggleSearch() {
   } else {
     $("#search-results-container").remove();
     $("main").show();
-    isBookmarkSearchActive = false;
+    searchScope = null;
     $(".search-scope-indicator").hide();
-    $(".search-input").removeClass("scoped").attr("placeholder", "Search Here...");
+    $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...");
   }
 }
 
