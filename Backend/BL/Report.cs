@@ -6,7 +6,8 @@ namespace Horizon.BL
     {
         public int Id { get; set; }
         public int ReporterUserId { get; set; }
-        public int ReportedCommentId { get; set; }
+        public int? ReportedCommentId { get; set; }
+        public int? ReportedArticleId { get; set; }
         public ReportReason Reason { get; set; }
         public string Details { get; set; }
         public ReportStatus Status { get; set; }

@@ -15,6 +15,7 @@ namespace Horizon.DAL
                 {
                     { "@ReporterUserId", report.ReporterUserId },
                     { "@ReportedCommentId", report.ReportedCommentId },
+                    { "@ReportedArticleId", report.ReportedArticleId },
                     { "@Reason", report.Reason.ToString() },
                     { "@Details", report.Details }
                 };

@@ -1,5 +1,6 @@
 ﻿using Horizon.BL;
 using Horizon.DTOs;
+using Horizon.DTOs.Horizon.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Horizon.Controllers
@@ -11,10 +12,20 @@ namespace Horizon.Controllers
         [HttpPost]
         public IActionResult CreateReport([FromBody] CreateReportRequestDto request)
         {
+            if (!request.CommentId.HasValue && !request.ArticleId.HasValue)
+            {
+                return BadRequest("Either CommentId or ArticleId must be provided.");
+            }
+            if (request.CommentId.HasValue && request.ArticleId.HasValue)
+            {
+                return BadRequest("A report can be for a comment or an article, not both.");
+            }
+
             var report = new Report
             {
                 ReporterUserId = request.ReporterUserId,
                 ReportedCommentId = request.CommentId,
+                ReportedArticleId = request.ArticleId,
                 Reason = request.Reason,
                 Details = request.Details
             };
