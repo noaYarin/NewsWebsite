@@ -1,100 +1,146 @@
-let currentPage = 1;
-const pageSize = 10;
-let currentCategory = "";
-let isLoading = false;
-let allArticlesLoaded = false;
+const CategoryPage = {
+  currentPage: 1,
+  pageSize: 10,
+  currentCategory: "",
+  isLoading: false,
+  allArticlesLoaded: false,
+  pagination: null,
 
-$(document).ready(function () {
-  const urlParams = new URLSearchParams(window.location.search);
-  currentCategory = urlParams.get("name");
+  init() {
+    this.currentCategory = Utils.getUrlParam("name");
 
-  if (currentCategory) {
-    const formattedTitle = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+    if (this.currentCategory) {
+      this.setupPage();
+      this.setupPagination();
+      this.loadArticles();
+    } else {
+      this.showError("No category specified.");
+    }
+  },
+
+  setupPage() {
+    const formattedTitle = this.currentCategory.charAt(0).toUpperCase() + this.currentCategory.slice(1);
     document.title = `HORIZON / ${formattedTitle}`;
     $(".category-title").text(formattedTitle);
 
-    const bannerImageUrl = `../sources/images/categories/${formattedTitle}.jpg`;
+    const bannerImageUrl = `${CONSTANTS.PATHS.CATEGORIES}${formattedTitle}.jpg`;
     $(".category-banner").css("background-image", `url('${bannerImageUrl}')`);
+  },
 
-    loadCategoryArticles();
-  } else {
-    showCategoryError("No category specified.");
-  }
+  setupPagination() {
+    this.pagination = PaginationManager.create({
+      pageSize: this.pageSize,
+      threshold: 300,
+      loadMore: () => this.loadArticles()
+    });
+    this.pagination.init();
+  },
 
-  $(window).on("scroll", function () {
-    if ($(window).scrollTop() + $(window).height() > $(document).height() - 300) {
-      if (!isLoading && !allArticlesLoaded) {
-        loadCategoryArticles();
+  loadArticles() {
+    if (this.isLoading || this.allArticlesLoaded) return;
+    this.isLoading = true;
+
+    const $listContainer = $("#category-articles-list");
+    const $initialLoadingMessage = $("#category-loading-message");
+    const $infiniteScrollLoader = $("#infinite-scroll-loader");
+
+    this.showLoadingState($initialLoadingMessage, $infiniteScrollLoader);
+
+    getArticlesByCategoryPaged(
+      this.currentCategory,
+      this.currentPage,
+      this.pageSize,
+      (articles) => this.handleSuccess(articles, $listContainer, $initialLoadingMessage, $infiniteScrollLoader),
+      () => this.handleError($initialLoadingMessage, $infiniteScrollLoader)
+    );
+  },
+
+  showLoadingState($initialLoadingMessage, $infiniteScrollLoader) {
+    if (this.currentPage === 1) {
+      $initialLoadingMessage.show();
+    } else {
+      $infiniteScrollLoader.show();
+    }
+  },
+
+  handleSuccess(articles, $listContainer, $initialLoadingMessage, $infiniteScrollLoader) {
+    $initialLoadingMessage.hide();
+    $infiniteScrollLoader.hide();
+
+    if (articles && articles.length > 0) {
+      this.displayArticles($listContainer, articles);
+      this.currentPage++;
+
+      this.pagination.nextPage();
+    }
+
+    if (!articles || articles.length < this.pageSize) {
+      this.allArticlesLoaded = true;
+      this.pagination.setAllLoaded(true);
+
+      if ($listContainer.is(":empty")) {
+        this.showEmptyState($listContainer);
       }
     }
-  });
-});
 
-function loadCategoryArticles() {
-  if (isLoading || allArticlesLoaded) return;
-  isLoading = true;
+    this.isLoading = false;
+    this.pagination.setLoading(false);
+  },
 
-  const $listContainer = $("#category-articles-list");
-  const $initialLoadingMessage = $("#category-loading-message");
-  const $infiniteScrollLoader = $("#infinite-scroll-loader");
+  handleError($initialLoadingMessage, $infiniteScrollLoader) {
+    $initialLoadingMessage.hide();
+    $infiniteScrollLoader.hide();
+    this.showError("Could not load articles. Please try again later.");
+    this.isLoading = false;
+    this.allArticlesLoaded = true;
+    this.pagination.setLoading(false);
+    this.pagination.setAllLoaded(true);
+  },
 
-  if (currentPage === 1) {
-    $initialLoadingMessage.show();
-  } else {
-    $infiniteScrollLoader.show();
+  displayArticles(container, articles) {
+    articles.forEach((article) => {
+      const articleHtml = ArticleRenderer.renderListItem(article);
+      container.append(articleHtml);
+    });
+  },
+
+  showEmptyState(container) {
+    const categoryName = this.currentCategory.charAt(0).toUpperCase() + this.currentCategory.slice(1);
+    container.html(`
+      <div class="empty-state">
+        <img src="../sources/icons/search-svgrepo-com.svg" alt="No articles" class="empty-state-icon" />
+        <h3>No articles found</h3>
+        <p>No articles found in the ${categoryName} category.</p>
+        <a href="../html/index.html" class="highlight">Browse All Articles</a>
+      </div>
+    `);
+  },
+
+  showError(message) {
+    this.allArticlesLoaded = true;
+    const $listContainer = $("#category-articles-list");
+    $listContainer.html(`
+      <div class="error-state">
+        <img src="../sources/icons/alert-circle-svgrepo-com.svg" alt="Error" class="error-state-icon" />
+        <h3>Oops! Something went wrong</h3>
+        <p>${message}</p>
+        <button onclick="CategoryPage.retry()" class="retry-btn">Try Again</button>
+      </div>
+    `);
+  },
+
+  retry() {
+    // Reset state
+    this.currentPage = 1;
+    this.isLoading = false;
+    this.allArticlesLoaded = false;
+    this.pagination.reset();
+
+    // Clear container and retry
+    $("#category-articles-list").empty();
+    $("#category-loading-message").show();
+    this.loadArticles();
   }
+};
 
-  getArticlesByCategoryPaged(
-    currentCategory,
-    currentPage,
-    pageSize,
-    (articles) => {
-      $initialLoadingMessage.hide();
-      $infiniteScrollLoader.hide();
-
-      if (articles && articles.length > 0) {
-        displayArticles($listContainer, articles);
-        currentPage++;
-      }
-
-      if (!articles || articles.length < pageSize) {
-        allArticlesLoaded = true;
-        if ($listContainer.is(":empty")) {
-          showCategoryError(`No articles found for "${currentCategory}".`);
-        }
-      }
-      isLoading = false;
-    },
-    () => {
-      $initialLoadingMessage.hide();
-      $infiniteScrollLoader.hide();
-      showCategoryError("Could not load articles. Please try again later.");
-      isLoading = false;
-      allArticlesLoaded = true;
-    }
-  );
-}
-
-function displayArticles(container, articles) {
-  articles.forEach((article) => {
-    const articleHtml = `
-      <a href="../html/article.html?id=${article.id}" class="article-list-item">
-        <div class="article-item-image">
-          <img src="${article.imageUrl || "../sources/images/placeholder.png"}" alt="${article.title}" />
-        </div>
-        <div class="article-item-content">
-          <span class="category-tag">${article.sourceName || "News"}</span>
-          <h3 class="article-item-title">${article.title}</h3>
-          <span class="article-item-author">${article.author || "Unknown Author"}</span>
-        </div>
-      </a>
-    `;
-    container.append(articleHtml);
-  });
-}
-
-function showCategoryError(message) {
-  allArticlesLoaded = true;
-  const $listContainer = $("#category-articles-list");
-  $listContainer.html(`<p class="error-message">${message}</p>`);
-}
+$(document).ready(() => CategoryPage.init());

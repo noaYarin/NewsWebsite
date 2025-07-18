@@ -1,50 +1,66 @@
-$(document).ready(function () {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const BookmarksPage = {
+  currentUser: null,
 
-  if (!currentUser) {
-    window.location.href = "auth.html";
-    return;
-  }
+  init() {
+    this.currentUser = Utils.getCurrentUser();
 
-  loadBookmarks(currentUser.id);
-});
-
-function loadBookmarks(userId) {
-  const $listContainer = $("#bookmarks-list");
-  const $loadingMessage = $("#bookmarks-loading-message");
-
-  getUserBookmarks(
-    userId,
-    (articles) => {
-      $loadingMessage.hide();
-      if (articles && articles.length > 0) {
-        displayBookmarks($listContainer, articles);
-      } else {
-        $listContainer.html(`<p class="error-message">You have no saved articles.</p>`);
-      }
-    },
-    (error) => {
-      $loadingMessage.hide();
-      $listContainer.html(`<p class="error-message">Could not load your bookmarks.</p>`);
+    if (!this.currentUser) {
+      window.location.href = "auth.html";
+      return;
     }
-  );
-}
 
-function displayBookmarks(container, articles) {
-  container.empty();
-  articles.forEach((article) => {
-    const articleHtml = `
-      <a href="../html/article.html?id=${article.id}" class="article-list-item">
-        <div class="article-item-image">
-          <img src="${article.imageUrl || "../sources/images/placeholder.png"}" alt="${article.title}" />
-        </div>
-        <div class="article-item-content">
-          <span class="category-tag">${article.sourceName || "News"}</span>
-          <h3 class="article-item-title">${article.title}</h3>
-          <span class="article-item-author">${article.author || "Unknown Author"}</span>
-        </div>
-      </a>
-    `;
-    container.append(articleHtml);
-  });
-}
+    this.loadBookmarks();
+  },
+
+  loadBookmarks() {
+    const $listContainer = $("#bookmarks-list");
+    const $loadingMessage = $("#bookmarks-loading-message");
+
+    getUserBookmarks(
+      this.currentUser.id,
+      (articles) => {
+        $loadingMessage.hide();
+        if (articles && articles.length > 0) {
+          this.displayBookmarks($listContainer, articles);
+        } else {
+          this.showEmptyState($listContainer);
+        }
+      },
+      (error) => {
+        $loadingMessage.hide();
+        this.showErrorState($listContainer);
+      }
+    );
+  },
+
+  displayBookmarks(container, articles) {
+    container.empty();
+    articles.forEach((article) => {
+      const articleHtml = ArticleRenderer.renderListItem(article);
+      container.append(articleHtml);
+    });
+  },
+
+  showEmptyState(container) {
+    container.html(`
+      <div class="empty-state">
+        <img src="../sources/icons/bookmarks-svgrepo-com.svg" alt="No bookmarks" class="empty-state-icon" />
+        <h3>No saved articles yet</h3>
+        <p>Articles you bookmark will appear here for easy access later.</p>
+        <a href="../html/index.html" class="highlight">Browse Articles</a>
+      </div>
+    `);
+  },
+
+  showErrorState(container) {
+    container.html(`
+      <div class="error-state">
+        <h3>Could not load your bookmarks</h3>
+        <p>There was an error loading your saved articles. Please try again.</p>
+        <button onclick="BookmarksPage.loadBookmarks()" class="retry-btn">Try Again</button>
+      </div>
+    `);
+  }
+};
+
+$(document).ready(() => BookmarksPage.init());

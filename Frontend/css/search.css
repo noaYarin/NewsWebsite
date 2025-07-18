@@ -65,8 +65,8 @@
   margin-top: 10px;
 }
 
-.loading-message,
-.error-message {
+#search-results-list .loading-message,
+#search-results-list .error-message {
   text-align: center;
   font-size: 18px;
   color: var(--c-text-muted);

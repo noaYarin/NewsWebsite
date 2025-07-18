@@ -1,0 +1,267 @@
+const SearchManager = {
+  scope: null,
+  currentPage: 1,
+  isLoading: false,
+  allResultsLoaded: false,
+  lastQuery: "",
+
+  init() {
+    this.setupEventHandlers();
+  },
+
+  setupEventHandlers() {
+    // Search icon clicks
+    $(document).on("click", ".nav-right .search-icon, .close-search, .mobile-close-search", () => {
+      this.toggle();
+    });
+
+    // Profile menu search
+    $(document).on("click", ".nav-profile-menu-search", (e) => {
+      e.preventDefault();
+      if ($("#profileMenu").hasClass("active")) {
+        Navigation.toggleProfileMenu();
+      }
+      this.toggle();
+    });
+
+    // Mobile menu search
+    $(document).on("click", ".mobile-menu-header .search-icon", () => {
+      if ($("#mobileMenu").hasClass("active")) {
+        Navigation.toggleMobileMenu();
+      }
+      this.toggle();
+    });
+
+    // Search input handlers
+    const debouncedSearch = Utils.debounce((query) => {
+      this.handleSearch(query, true);
+    }, 500);
+
+    $(document).on("input", ".search-input, .mobile-search-input", function () {
+      const query = $(this).val().trim();
+      debouncedSearch(query);
+    });
+
+    $(document).on("keydown", ".search-input, .mobile-search-input", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const query = $(e.target).val().trim();
+        this.handleSearch(query, true);
+      }
+    });
+
+    // Scroll pagination
+    $(window).on("scroll", () => {
+      if ($("#search-results-container").length && $("#search-results-container").is(":visible")) {
+        const scrollTop = $(window).scrollTop();
+        const windowHeight = $(window).height();
+        const documentHeight = $(document).height();
+
+        if (scrollTop + windowHeight > documentHeight - 400) {
+          if (!this.isLoading && !this.allResultsLoaded && this.lastQuery) {
+            this.performSearch(this.lastQuery, false);
+          }
+        }
+      }
+    });
+
+    $(document).on("click", ".remove-scope", () => {
+      this.removeScope();
+    });
+  },
+
+  toggle() {
+    const $overlay = $("#searchOverlay");
+    $overlay.toggleClass("active");
+
+    if ($overlay.hasClass("active")) {
+      this.setScope();
+      setTimeout(() => {
+        const inputToFocus = $(window).width() <= CONSTANTS.MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
+        $(inputToFocus).focus();
+      }, 100);
+    } else {
+      this.cleanup();
+    }
+  },
+
+  setScope() {
+    const pathname = window.location.pathname;
+    if (pathname.includes("bookmarks.html")) {
+      this.scope = "bookmarks";
+    } else if (pathname.includes("category.html")) {
+      const category = Utils.getUrlParam("name");
+      if (category) this.scope = category;
+    }
+
+    if (this.scope) {
+      const scopeText = this.scope.charAt(0).toUpperCase() + this.scope.slice(1);
+      $(".search-scope-indicator span").text(scopeText);
+      $(".search-scope-indicator").show();
+      const placeholder = `Search in ${scopeText}`;
+      $(".search-input, .mobile-search-input").addClass("scoped").attr("placeholder", placeholder);
+    }
+  },
+
+  removeScope() {
+    this.scope = null;
+    $(".search-scope-indicator").hide();
+    const $input = $(window).width() <= CONSTANTS.MOBILE_BREAKPOINT ? $(".mobile-search-input") : $(".search-input");
+    $input.removeClass("scoped").attr("placeholder", "Search Here...").focus();
+
+    const currentQuery = $input.val().trim();
+    if (currentQuery.length > 2) {
+      this.handleSearch(currentQuery, true);
+    } else {
+      this.cleanup();
+    }
+  },
+
+  cleanup() {
+    $("#search-results-container").remove();
+    $("main").show();
+    this.scope = null;
+    $(".search-scope-indicator").hide();
+    $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...");
+  },
+
+  handleSearch(query, isNewSearch) {
+    if (query.length > 2) {
+      if (query !== this.lastQuery || isNewSearch) {
+        this.lastQuery = query;
+        this.currentPage = 1;
+        this.allResultsLoaded = false;
+        this.performSearch(query, true);
+      }
+    } else {
+      this.cleanup();
+      this.lastQuery = "";
+    }
+  },
+
+  async performSearch(query, isNewSearch) {
+    if (this.isLoading || (this.allResultsLoaded && !isNewSearch)) return;
+
+    this.isLoading = true;
+
+    if (isNewSearch) {
+      $("main").hide();
+      $("#search-results-container").remove();
+      const searchContainerHtml = `
+        <div id="search-results-container">
+          <div class="search-results-content">
+            <div id="search-results-list" class="articles-list"></div>
+            <div id="search-loading-message" class="loading-message">
+              <p>Searching articles...</p>
+            </div>
+          </div>
+        </div>`;
+      $("#footer").before(searchContainerHtml);
+    } else {
+      $("#search-loading-message").show();
+    }
+
+    try {
+      const articles = await this.fetchSearchResults(query);
+      this.handleSearchResults(articles, query);
+    } catch (error) {
+      this.handleSearchError();
+    }
+  },
+
+  async fetchSearchResults(query) {
+    const currentUser = Utils.getCurrentUser();
+
+    if (this.scope === "bookmarks" && currentUser) {
+      return new Promise((resolve, reject) => {
+        searchBookmarks(currentUser.id, query, this.currentPage, CONSTANTS.SEARCH_PAGE_SIZE, resolve, reject);
+      });
+    } else {
+      const [apiArticles, dbArticles] = await Promise.all([this.fetchApiArticles(query), this.fetchDbArticles(query)]);
+
+      let combined = [...apiArticles, ...dbArticles];
+      if (this.scope) {
+        combined = combined.filter((article) => article.category && article.category.toLowerCase() === this.scope.toLowerCase());
+      }
+      return combined;
+    }
+  },
+
+  fetchApiArticles(query) {
+    return new Promise((resolve) => {
+      searchNews(
+        query,
+        this.currentPage,
+        (response) => resolve(response.data || []),
+        () => resolve([])
+      );
+    });
+  },
+
+  fetchDbArticles(query) {
+    return new Promise((resolve) => {
+      searchDatabaseArticles(
+        query,
+        this.currentPage,
+        CONSTANTS.SEARCH_PAGE_SIZE,
+        (articles) => resolve(articles || []),
+        () => resolve([])
+      );
+    });
+  },
+
+  handleSearchResults(articles, query) {
+    $("#search-loading-message").hide();
+    this.isLoading = false;
+
+    if (!articles || articles.length === 0) {
+      this.allResultsLoaded = true;
+      if (this.currentPage === 1) {
+        const message = this.scope ? `No articles found for "${query}" in ${this.scope}.` : `No articles found for "${query}".`;
+        $("#search-results-list").html(`<p class="error-message">${message}</p>`);
+      }
+      return;
+    }
+
+    if (articles.length < CONSTANTS.SEARCH_PAGE_SIZE) {
+      this.allResultsLoaded = true;
+    }
+
+    const uniqueArticles = Array.from(new Map(articles.map((article) => [article.url, article])).values());
+    uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+    this.displayResults(uniqueArticles);
+    this.currentPage++;
+  },
+
+  handleSearchError() {
+    $("#search-loading-message").hide();
+    this.isLoading = false;
+    this.allResultsLoaded = true;
+    $("#search-results-list").append(`<p class="error-message">An error occurred while searching.</p>`);
+  },
+
+  displayResults(articles) {
+    const $listContainer = $("#search-results-list");
+    if (this.currentPage === 1 && $listContainer.is(":empty")) {
+      $listContainer.empty();
+    }
+
+    articles.forEach((article) => {
+      const articleHtml = `
+        <a href="../html/article.html?id=${article.id}" class="article-list-item">
+          <div class="article-item-image">
+            <img src="${article.imageUrl || CONSTANTS.PLACEHOLDER_IMAGE_URL}" alt="${article.title}" />
+          </div>
+          <div class="article-item-content">
+            <span class="category-tag">${article.category || "News"}</span>
+            <h3 class="article-item-title">${article.title}</h3>
+            <span class="article-item-author">${article.author || "Unknown Author"}</span>
+          </div>
+        </a>`;
+      $listContainer.append(articleHtml);
+    });
+  }
+};
+
+window.SearchManager = SearchManager;

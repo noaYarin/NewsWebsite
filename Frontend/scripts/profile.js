@@ -2,12 +2,12 @@ let currentUser = null;
 let selectedInterests = [];
 
 const validationMap = {
-  firstName: (val) => validateName(val, "First name"),
-  lastName: (val) => validateName(val, "Last name"),
-  birthdate: validateBirthdate,
-  imageUrl: validateImageUrl,
+  firstName: (val) => ValidationManager.validateName(val, "First name"),
+  lastName: (val) => ValidationManager.validateName(val, "Last name"),
+  birthdate: ValidationManager.validateBirthdate,
+  imageUrl: ValidationManager.validateImageUrl,
   newPassword: (val) => {
-    return val ? validatePassword(val) : { valid: true };
+    return val ? ValidationManager.validatePassword(val) : { valid: true };
   },
   confirmPassword: () => {
     const newPassword = $("#newPassword").val();
@@ -25,14 +25,14 @@ function populateForm(userProfile) {
   $("#lastName").val(userProfile.lastName);
   $("#birthdate").val(userProfile.birthDate);
   $("#imageUrl").val(userProfile.imageUrl);
-  $("#avatarPreview").attr("src", userProfile.imageUrl || "../sources/images/no-image.png");
+  $("#avatarPreview").attr("src", userProfile.imageUrl || CONSTANTS.NO_IMAGE_URL);
 
   selectedInterests = [...userProfile.interests];
   $(".interest-item").removeClass("selected");
   selectedInterests.forEach((interest) => {
     $(`.interest-item[data-interest="${interest}"]`).addClass("selected");
   });
-  updateInterestSubtitle(selectedInterests.length);
+  ValidationManager.updateInterestSubtitle(selectedInterests.length);
 
   populateBlockedUsersList(userProfile.blockedUsers);
 }
@@ -49,7 +49,7 @@ function populateBlockedUsersList(users) {
   users.forEach((user) => {
     const userHtml = `
       <div class="blocked-user-item" data-user-id="${user.id}">
-        <img src="${user.avatar || "../sources/images/no-image.png"}" alt="${user.name}" class="blocked-user-avatar" />
+        <img src="${user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.name}" class="blocked-user-avatar" />
         <span class="blocked-user-name">${user.name}</span>
         <button type="button" class="unblock-btn">Unblock</button>
       </div>
@@ -68,7 +68,7 @@ function handleInterestListItemSelection(e) {
   } else {
     selectedInterests = selectedInterests.filter((i) => i !== interest);
   }
-  updateInterestSubtitle(selectedInterests.length);
+  ValidationManager.updateInterestSubtitle(selectedInterests.length);
 }
 
 function handleUnblockUser(e) {
@@ -79,7 +79,7 @@ function handleUnblockUser(e) {
     currentUser.id,
     blockedUserId,
     (response) => {
-      showPopup(response.message, true);
+      UIManager.showPopup(response.message, true);
 
       if (currentUser && currentUser.blockedUsers) {
         currentUser.blockedUsers = currentUser.blockedUsers.filter((user) => user.id != blockedUserId);
@@ -95,26 +95,26 @@ function handleUnblockUser(e) {
       });
     },
     () => {
-      showPopup("Failed to unblock user. Please try again.", false);
+      UIManager.showPopup("Failed to unblock user. Please try again.", false);
     }
   );
 }
 
 function handleImagePreview() {
   const imageUrlInput = $(this);
-  const cleanedUrl = cleanImageUrl(imageUrlInput.val().trim());
+  const cleanedUrl = ValidationManager.cleanImageUrl(imageUrlInput.val().trim());
   imageUrlInput.val(cleanedUrl);
 
   const newUrl = cleanedUrl;
   const avatarPreview = $("#avatarPreview");
-  const fallbackImage = "../sources/images/no-image.png";
+  const fallbackImage = CONSTANTS.NO_IMAGE_URL;
 
   if (!newUrl) {
     avatarPreview.attr("src", fallbackImage);
     return;
   }
 
-  const validation = validateImageUrl(newUrl);
+  const validation = ValidationManager.validateImageUrl(newUrl);
   if (!validation.valid) {
     return;
   }
@@ -136,7 +136,7 @@ function handleProfileUpdate(e) {
   e.preventDefault();
 
   const imageUrlInput = $("#imageUrl");
-  const cleanedUrl = cleanImageUrl(imageUrlInput.val().trim());
+  const cleanedUrl = ValidationManager.cleanImageUrl(imageUrlInput.val().trim());
   imageUrlInput.val(cleanedUrl);
 
   let isValid = true;
@@ -152,7 +152,7 @@ function handleProfileUpdate(e) {
       const result = validator(input.val().trim());
       if (!result.valid) {
         isValid = false;
-        showError(input, result.message);
+        ValidationManager.showError(input, result.message);
       }
     }
   });
@@ -165,13 +165,13 @@ function handleProfileUpdate(e) {
     const newPasswordResult = validationMap.newPassword(newPassword);
     if (!newPasswordResult.valid) {
       isValid = false;
-      showError(newPasswordInput, newPasswordResult.message);
+      ValidationManager.showError(newPasswordInput, newPasswordResult.message);
     }
 
     const confirmPasswordResult = validationMap.confirmPassword();
     if (!confirmPasswordResult.valid) {
       isValid = false;
-      showError(confirmPasswordInput, confirmPasswordResult.message);
+      ValidationManager.showError(confirmPasswordInput, confirmPasswordResult.message);
     }
   }
 
@@ -203,17 +203,17 @@ function handleProfileUpdate(e) {
     currentUser.id,
     updatedData,
     (updatedUserFromServer) => {
-      showPopup("Profile updated successfully!", true);
+      UIManager.showPopup("Profile updated successfully!", true);
 
       localStorage.setItem("currentUser", JSON.stringify(updatedUserFromServer));
 
       currentUser = updatedUserFromServer;
-      $(".nav-profile-picture").attr("src", currentUser.imageUrl || "../sources/images/no-image.png");
+      $(".nav-profile-picture").attr("src", currentUser.imageUrl || CONSTANTS.NO_IMAGE_URL);
 
       button.text("Save Changes").prop("disabled", false);
     },
     (err) => {
-      showPopup("Failed to update profile. Please check your inputs.", false);
+      UIManager.showPopup("Failed to update profile. Please check your inputs.", false);
       button.text("Save Changes").prop("disabled", false);
     }
   );
@@ -234,7 +234,7 @@ function handleNewPasswordInput() {
   const confirmContainer = $(".confirm-password-container");
   const passwordValue = $(this).val();
   confirmContainer.toggleClass("show", !!passwordValue);
-  updatePasswordCriteria(passwordValue);
+  ValidationManager.updatePasswordCriteria(passwordValue);
 }
 
 function loadUserProfile() {
@@ -246,7 +246,7 @@ function loadUserProfile() {
       populateForm(profileData);
     },
     (err) => {
-      showPopup("Could not load your profile data. Please log in again.", false);
+      UIManager.showPopup("Could not load your profile data. Please log in again.", false);
       localStorage.removeItem("currentUser");
       window.location.href = "auth.html";
     }
@@ -261,7 +261,7 @@ $(document).ready(function () {
   }
   currentUser = JSON.parse(userJson);
 
-  populateInterestsList();
+  ValidationManager.populateInterestsList();
   loadUserProfile();
 
   $(document)
@@ -271,13 +271,13 @@ $(document).ready(function () {
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("click", ".password-toggle-btn", handlePasswordToggle)
     .on("input", "#newPassword", handleNewPasswordInput)
-    .on("focus", "#newPassword", showPasswordCriteria)
+    .on("focus", "#newPassword", ValidationManager.showPasswordCriteria)
     .on("input", ".form-group input", function () {
-      clearValidationState($(this));
+      ValidationManager.clearValidationState($(this));
     })
     .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()));
 
   $("#avatarPreview").on("error", function () {
-    $(this).off("error").attr("src", "../sources/images/no-image.png");
+    $(this).off("error").attr("src", CONSTANTS.NO_IMAGE_URL);
   });
 });
