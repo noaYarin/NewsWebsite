@@ -68,7 +68,7 @@ input[type="date"]:focus {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
+  filter: invert(67.5%) sepia(100%) saturate(700%) hue-rotate(0deg) brightness(1.1);
   border-radius: 3px;
   cursor: pointer;
   padding: 3px;
