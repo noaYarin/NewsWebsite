@@ -1,8 +1,3 @@
-/* ==========================================================================
-   CATEGORY PAGE STYLES
-   ========================================================================== */
-
-/* --- Banner Styles --- */
 .category-banner {
   position: relative;
   height: 480px;
@@ -26,7 +21,6 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* --- Title Styles --- */
 .category-title {
   position: relative;
   z-index: 1;
@@ -56,9 +50,8 @@
   padding: 20px;
 }
 
-/* --- Loader & Message Styles --- */
-.loading-message,
-.error-message {
+#error-message .loading-message,
+#error-message .error-message {
   text-align: center;
   font-size: 18px;
   color: var(--c-text-muted);
@@ -78,16 +71,4 @@
   border-top-color: var(--c-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .category-banner {
-    height: 300px;
-  }
 }

@@ -1,0 +1,254 @@
+/* Generic styled button */
+.styled-button {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.styled-button span {
+  position: relative;
+  z-index: 1;
+  transition: color var(--transition-fast);
+}
+
+.styled-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--c-light);
+  transition: left var(--transition-fast);
+  z-index: 0;
+}
+
+.styled-button:hover::before {
+  left: 0;
+}
+
+/* Auth button */
+.auth-button {
+  width: 100%;
+  background: var(--c-primary);
+  color: var(--c-dark);
+  padding: 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.auth-button:hover {
+  background: var(--c-primary-light);
+  transform: translateY(-2px);
+}
+
+/* Navbar buttons */
+.login-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.login-btn:hover {
+  color: var(--c-text-subtle);
+}
+
+.subscribe-btn {
+  background-color: var(--c-primary);
+  height: 100%;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  transition: color var(--transition-medium);
+}
+
+.subscribe-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.subscribe-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--c-dark);
+  transition: left var(--transition-medium);
+  z-index: 0;
+}
+
+.subscribe-btn:hover {
+  color: var(--c-light);
+}
+
+.subscribe-btn:hover::before {
+  left: 0;
+}
+
+.mobile-subscribe-btn,
+.mobile-login-btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 50px;
+}
+
+.mobile-subscribe-btn {
+  background-color: var(--c-primary);
+}
+
+.mobile-login-btn {
+  background-color: var(--c-light);
+  border: 2px solid var(--c-dark);
+}
+
+/* Back to top button */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--c-light);
+  mix-blend-mode: exclusion;
+  border-radius: 50%;
+  z-index: var(--z-fixed-element);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all var(--transition-fast);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
+}
+
+.back-to-top svg {
+  width: 24px;
+  height: 24px;
+  color: var(--c-dark);
+  transition: color var(--transition-fast);
+}
+
+/* Article action buttons */
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--c-light);
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  color: var(--c-dark);
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.action-btn:hover {
+  background-color: var(--c-border-light);
+}
+
+.action-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.action-icon-btn {
+  padding: 2px;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+  position: relative;
+}
+
+.action-icon-btn:hover {
+  opacity: 1;
+}
+
+.action-icon-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Bookmark button states */
+#bookmark-btn .icon-bookmark-filled {
+  display: none;
+}
+#bookmark-btn.bookmarked .icon-bookmark-outline {
+  display: none;
+}
+#bookmark-btn.bookmarked .icon-bookmark-filled {
+  display: inline-block;
+}
+
+/* Profile unblock button */
+.unblock-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-red);
+  background-color: transparent;
+  border: 1px solid var(--c-red);
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.unblock-btn:hover {
+  background-color: var(--c-red);
+  color: var(--c-light);
+}
+
+/* Close buttons */
+.close-btn,
+.close-search,
+.mobile-close-search {
+  line-height: 0;
+}
+.close-btn,
+.close-search {
+  padding: 8px;
+}
+.mobile-close-search {
+  padding: 4px;
+}
+.close-btn img,
+.close-search img,
+.mobile-close-search img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Comment edit/save buttons */
+.save-edit-btn,
+.cancel-edit-btn {
+  padding: 6px 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 14px;
+}
+.save-edit-btn {
+  background-color: var(--c-primary);
+}

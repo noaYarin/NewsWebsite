@@ -1,0 +1,10 @@
+#container,
+#secondary-container,
+#third-container,
+#fourth-container {
+  display: block;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 20px 0 50px;
+  color: var(--c-light);
+}

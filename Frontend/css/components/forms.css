@@ -1,10 +1,3 @@
-/* ==========================================================================
-   FORM VALIDATION & INPUT STYLES
-   ========================================================================== */
-
-/* --------------------
-   Base Form Group
-   -------------------- */
 .form-group {
   position: relative;
   display: flex;
@@ -19,10 +12,6 @@
   display: block;
 }
 
-/* --------------------
-   Base Input Styling
-   -------------------- */
-
 input[type="text"],
 input[type="email"],
 input[type="url"],
@@ -35,7 +24,6 @@ input[type="password"] {
   background: var(--c-input-bg);
   width: 100%;
   transition: all var(--transition-fast);
-  font-family: inherit;
 }
 
 input:focus {
@@ -48,7 +36,7 @@ input::placeholder {
   color: var(--c-placeholder);
 }
 
-/* Input Validation States */
+/* Validation States */
 .input-error {
   border-color: var(--c-red) !important;
   background: #fff5f5 !important;
@@ -66,10 +54,7 @@ input::placeholder {
   text-align: left;
 }
 
-/* --------------------
-   Component: Date Input
-   -------------------- */
-
+/* Date Input */
 input[type="date"] {
   color: var(--c-placeholder);
 }
@@ -83,7 +68,6 @@ input[type="date"]:focus {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  color-scheme: light dark;
   filter: invert(35%) sepia(100%) saturate(750%) hue-rotate(0deg) brightness(1.1);
   border-radius: 3px;
   cursor: pointer;
@@ -96,10 +80,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-color: var(--c-primary);
 }
 
-/* --------------------
-   Component: Password Input Group
-   -------------------- */
-
+/* Password Input */
 .password-input-group {
   position: relative;
 }
@@ -113,9 +94,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
   border-radius: 4px;
   transition: all var(--transition-fast);
   z-index: 10;
@@ -139,10 +117,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   pointer-events: none;
 }
 
-/* --------------------
-   Component: Password Criteria & Progress
-   -------------------- */
-
+/* Password Criteria */
 .password-criteria {
   background: var(--c-input-bg);
   border: 2px solid var(--c-input-border);
@@ -244,39 +219,47 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-color: var(--c-green);
 }
 
-/* --------------------
-   Component: Shared Auth Button
-   -------------------- */
+/* Interests Selection */
+.interests-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 16px;
+  background-color: var(--c-input-bg);
+}
 
-.auth-button {
-  width: 100%;
-  background: var(--c-primary);
+.interest-item {
+  position: relative;
+  overflow: hidden;
+  padding: 12px 16px;
   color: var(--c-dark);
-  border: none;
-  padding: 20px;
-  border-radius: 50px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  text-transform: uppercase;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.auth-button:hover {
-  background: var(--c-primary-light);
-  transform: translateY(-2px);
+.interest-item:hover {
+  background-color: var(--c-border-light);
 }
 
-/* --------------------
-   Component: Interest Selection Validation
-   -------------------- */
-
-.interests-subtitle.is-valid {
-  color: var(--c-primary);
-  font-weight: 500;
+.interest-item.selected {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+  font-weight: 600;
 }
 
-.interests-subtitle.is-invalid {
-  color: var(--c-red);
-  font-weight: 500;
+.interest-item.selected::before {
+  content: "✔";
+  font-family: sans-serif;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-dark);
+  font-size: 18px;
 }

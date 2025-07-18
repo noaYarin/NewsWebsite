@@ -1,7 +1,3 @@
-/* ==========================================================================
-   SHARED ARTICLE LIST STYLES
-   ========================================================================== */
-
 .articles-list {
   display: flex;
   flex-direction: column;
@@ -72,22 +68,5 @@
   color: var(--c-text-muted);
   padding: 50px 0;
   font-weight: 400;
-  text-align: center;
   display: block;
-}
-
-@media (max-width: 768px) {
-  .article-list-item {
-    flex-direction: column;
-    max-height: none;
-  }
-
-  .article-item-image {
-    width: 100%;
-    height: 200px;
-  }
-
-  .article-item-content {
-    padding: 20px;
-  }
 }

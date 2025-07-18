@@ -1,0 +1,301 @@
+/* Popup Notification */
+.popup {
+  z-index: var(--z-modal);
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--c-light);
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  font-weight: bold;
+  font-family: "Helvetica", "Arial", sans-serif;
+  text-align: center;
+  max-width: 90%;
+}
+
+.popup.success {
+  background-color: rgba(50, 205, 50, 0.85);
+}
+.popup.failure {
+  background-color: rgba(220, 20, 60, 0.85);
+}
+.popup.warning {
+  background-color: rgba(255, 204, 0, 0.85);
+}
+.popup.info {
+  background-color: rgba(23, 162, 184, 0.85);
+}
+.popup.muted {
+  background-color: rgba(108, 117, 125, 0.85);
+}
+
+.popup.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
+  pointer-events: auto;
+}
+
+/* Dialog Popup */
+.dialog-popup {
+  z-index: var(--z-modal);
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--c-dark);
+  padding: 16px 28px;
+  border-radius: 50px;
+  min-width: 350px;
+  max-width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dialog-popup.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-20px);
+  pointer-events: auto;
+}
+
+.dialog-message {
+  font-size: 16px;
+  font-weight: 500;
+  margin-right: 24px;
+  margin-bottom: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.dialog-actions button {
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  border-radius: 50px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dialog-actions button.dialog-yes:hover {
+  background-color: rgba(40, 167, 69, 0.75);
+  color: var(--c-light);
+}
+
+.dialog-actions button.dialog-no:hover {
+  background-color: rgba(220, 53, 69, 0.75);
+  color: var(--c-light);
+}
+
+/* Report Dialog Specifics */
+.dialog-popup.transforming {
+  transition: all 0.3s ease-in-out;
+}
+
+.dialog-popup.expanded {
+  transition: all 0.3s ease-in-out;
+}
+
+.report-dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 48px;
+  gap: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+.report-dialog .dialog-message {
+  margin: 0px;
+}
+
+.report-dialog-controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.report-dialog .custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.report-dialog .dropdown-button {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--c-border-light);
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  font-size: 16px;
+  color: var(--c-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.report-dialog .dropdown-button.selected {
+  color: var(--c-dark);
+}
+
+.report-dialog .dropdown-arrow {
+  width: 1em;
+  height: 1em;
+  transition: transform 0.3s ease;
+  opacity: 0.7;
+}
+
+.report-dialog .dropdown-button.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.report-dialog .dropdown-options {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 210px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.report-dialog .dropdown-options.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.report-dialog .dropdown-option {
+  padding: 12px;
+  color: var(--c-text-muted);
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 16px;
+}
+
+.report-dialog .dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.report-dialog .dropdown-option:hover {
+  background-color: rgba(var(--c-primary-rgb), 0.5);
+  color: var(--c-dark);
+}
+
+.report-dialog .dropdown-option.selected {
+  background-color: rgba(var(--c-primary-rgb), 0.75);
+  color: var(--c-dark);
+  font-weight: 500;
+}
+
+.report-dialog .report-dialog-continue-btn {
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 20px;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  border-radius: 50px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.report-dialog .report-dialog-continue-btn:disabled {
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.report-dialog .report-dialog-continue-btn.enabled {
+  color: var(--c-dark);
+}
+
+.report-dialog .report-dialog-continue-btn.enabled:hover {
+  background-color: rgba(var(--c-primary-rgb), 0.75);
+}
+
+.dialog-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease-in-out;
+}
+
+.dialog-input-container.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.report-dialog textarea {
+  max-height: 52px;
+  padding: 12px;
+  border: 1px solid var(--c-border-light);
+  border-radius: 50px;
+  font-size: 16px;
+  resize: none;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.report-dialog textarea.error {
+  border-color: var(--c-red);
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+  animation: shake 0.35s ease-in-out;
+}
+
+.dialog-send {
+  padding: 8px;
+  background-color: var(--c-light);
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.dialog-send:hover {
+  background-color: rgba(255, 204, 0, 0.75);
+}
+
+.dialog-send:active {
+  transform: scale(0.95);
+}
+
+.dialog-send img {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.2s ease-in-out;
+}
