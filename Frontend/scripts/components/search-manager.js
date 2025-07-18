@@ -10,29 +10,25 @@ const SearchManager = {
   },
 
   setupEventHandlers() {
-    // Search icon clicks
     $(document).on("click", ".nav-right .search-icon, .close-search, .mobile-close-search", () => {
-      this.toggle();
+      this.toggle(false);
     });
 
-    // Profile menu search
+    $(document).on("click", ".mobile-menu-header .search-icon", () => {
+      if ($("#mobileMenu").hasClass("active")) {
+        Navigation.toggleMobileMenu();
+      }
+      this.toggle(true);
+    });
+
     $(document).on("click", ".nav-profile-menu-search", (e) => {
       e.preventDefault();
       if ($("#profileMenu").hasClass("active")) {
         Navigation.toggleProfileMenu();
       }
-      this.toggle();
+      this.toggle(true);
     });
 
-    // Mobile menu search
-    $(document).on("click", ".mobile-menu-header .search-icon", () => {
-      if ($("#mobileMenu").hasClass("active")) {
-        Navigation.toggleMobileMenu();
-      }
-      this.toggle();
-    });
-
-    // Search input handlers
     const debouncedSearch = Utils.debounce((query) => {
       this.handleSearch(query, true);
     }, 500);
@@ -50,7 +46,6 @@ const SearchManager = {
       }
     });
 
-    // Scroll pagination
     $(window).on("scroll", () => {
       if ($("#search-results-container").length && $("#search-results-container").is(":visible")) {
         const scrollTop = $(window).scrollTop();
@@ -70,12 +65,17 @@ const SearchManager = {
     });
   },
 
-  toggle() {
+  toggle(removeFilter = false) {
     const $overlay = $("#searchOverlay");
     $overlay.toggleClass("active");
 
     if ($overlay.hasClass("active")) {
-      this.setScope();
+      if (removeFilter) {
+        this.clearScope();
+      } else {
+        this.setScope();
+      }
+
       setTimeout(() => {
         const inputToFocus = $(window).width() <= CONSTANTS.MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
         $(inputToFocus).focus();
@@ -85,21 +85,105 @@ const SearchManager = {
     }
   },
 
+  clearScope() {
+    this.scope = null;
+    $(".search-scope-indicator").hide();
+    $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...");
+  },
+
   setScope() {
     const pathname = window.location.pathname;
-    if (pathname.includes("bookmarks.html")) {
-      this.scope = "bookmarks";
-    } else if (pathname.includes("category.html")) {
+
+    if (pathname.includes("category.html")) {
       const category = Utils.getUrlParam("name");
-      if (category) this.scope = category;
+      if (category) {
+        this.scope = category;
+      }
+    } else if (pathname.includes("bookmarks.html")) {
+      this.scope = "bookmarks";
+    } else {
+      this.clearScope();
+      return;
     }
 
     if (this.scope) {
-      const scopeText = this.scope.charAt(0).toUpperCase() + this.scope.slice(1);
-      $(".search-scope-indicator span").text(scopeText);
-      $(".search-scope-indicator").show();
+      const scopeText = this.formatScopeText(this.scope);
+      const $scopeIndicator = $(".search-scope-indicator");
+      const $scopeSpan = $scopeIndicator.find("span");
+
+      $scopeSpan.text(scopeText).attr("title", this.getFullCategoryName(this.scope));
+      this.applyScopeClasses(scopeText, $scopeIndicator);
+      $scopeIndicator.show();
+
       const placeholder = `Search in ${scopeText}`;
       $(".search-input, .mobile-search-input").addClass("scoped").attr("placeholder", placeholder);
+    }
+  },
+
+  // Helper method to format scope text
+  formatScopeText(scope) {
+    const categoryNames = {
+      business: "Business",
+      entertainment: "Entertainment",
+      general: "General",
+      health: "Health",
+      science: "Science",
+      sports: "Sports",
+      technology: "Technology",
+      travel: "Travel",
+      bookmarks: "Bookmarks"
+    };
+
+    const fullName = categoryNames[scope.toLowerCase()] || scope.charAt(0).toUpperCase() + scope.slice(1);
+
+    // Abbreviate long names on mobile
+    if ($(window).width() <= 768 && fullName.length > 10) {
+      const abbreviations = {
+        Entertainment: "Entertain.",
+        Technology: "Tech",
+        Business: "Business",
+        General: "General",
+        Health: "Health",
+        Science: "Science",
+        Sports: "Sports",
+        Travel: "Travel",
+        Bookmarks: "Saved"
+      };
+      return abbreviations[fullName] || fullName.substring(0, 8) + "...";
+    }
+
+    return fullName;
+  },
+
+  getFullCategoryName(scope) {
+    const categoryNames = {
+      business: "Business",
+      entertainment: "Entertainment",
+      general: "General",
+      health: "Health",
+      science: "Science",
+      sports: "Sports",
+      technology: "Technology",
+      travel: "Travel",
+      bookmarks: "Bookmarks"
+    };
+
+    return categoryNames[scope.toLowerCase()] || scope.charAt(0).toUpperCase() + scope.slice(1);
+  },
+
+  applyScopeClasses(scopeText, $scopeIndicator) {
+    const $container = $(".search-container");
+
+    $scopeIndicator.removeClass("two-line with-icon");
+    $container.removeClass("long-category");
+
+    const isLongText = scopeText.length > 10;
+    const isMobile = $(window).width() <= 768;
+
+    if (isLongText && isMobile) {
+      $scopeIndicator.addClass("two-line");
+    } else if (isLongText) {
+      $scopeIndicator.addClass("with-icon");
     }
   },
 
@@ -186,9 +270,11 @@ const SearchManager = {
       const [apiArticles, dbArticles] = await Promise.all([this.fetchApiArticles(query), this.fetchDbArticles(query)]);
 
       let combined = [...apiArticles, ...dbArticles];
-      if (this.scope) {
+
+      if (this.scope && this.scope !== "bookmarks") {
         combined = combined.filter((article) => article.category && article.category.toLowerCase() === this.scope.toLowerCase());
       }
+
       return combined;
     }
   },
