@@ -12,7 +12,7 @@
 }
 
 .section-divider {
-  border-color: var(--c-border-light);
+  border-color: var(--c-border-medium);
   margin: 20px 0;
 }
 
@@ -103,4 +103,15 @@
   padding: 20px;
   background-color: var(--c-input-bg);
   border-radius: 8px;
+}
+
+.no-changes {
+  color: var(--c-text-muted);
+  background-color: var(--c-border-light);
+  cursor: not-allowed;
+}
+
+.no-changes:hover {
+  background-color: var(--c-border-light);
+  transform: none;
 }

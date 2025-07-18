@@ -1,5 +1,6 @@
 let currentUser = null;
 let selectedInterests = [];
+let originalFormState = null;
 
 const validationMap = {
   firstName: (val) => ValidationManager.validateName(val, "First name"),
@@ -19,6 +20,51 @@ const validationMap = {
   }
 };
 
+function captureOriginalFormState() {
+  originalFormState = {
+    firstName: $("#firstName").val(),
+    lastName: $("#lastName").val(),
+    birthdate: $("#birthdate").val(),
+    imageUrl: $("#imageUrl").val(),
+    interests: [...selectedInterests],
+    newPassword: ""
+  };
+}
+
+function hasFormChanged() {
+  if (!originalFormState) return false;
+
+  const currentState = {
+    firstName: $("#firstName").val(),
+    lastName: $("#lastName").val(),
+    birthdate: $("#birthdate").val(),
+    imageUrl: $("#imageUrl").val(),
+    interests: [...selectedInterests],
+    newPassword: $("#newPassword").val()
+  };
+
+  return (
+    currentState.firstName !== originalFormState.firstName ||
+    currentState.lastName !== originalFormState.lastName ||
+    currentState.birthdate !== originalFormState.birthdate ||
+    currentState.imageUrl !== originalFormState.imageUrl ||
+    currentState.newPassword !== originalFormState.newPassword ||
+    JSON.stringify(currentState.interests.sort()) !== JSON.stringify(originalFormState.interests.sort())
+  );
+}
+
+function updateSubmitButtonState() {
+  const submitButton = $("#profileForm button[type='submit']");
+  const hasChanges = hasFormChanged();
+
+  submitButton.prop("disabled", !hasChanges);
+  if (hasChanges) {
+    submitButton.text("Save Changes").removeClass("no-changes");
+  } else {
+    submitButton.text("No Changes").addClass("no-changes");
+  }
+}
+
 function populateForm(userProfile) {
   $("#emailDisplay").text(userProfile.email);
   $("#firstName").val(userProfile.firstName);
@@ -35,6 +81,9 @@ function populateForm(userProfile) {
   ValidationManager.updateInterestSubtitle(selectedInterests.length);
 
   populateBlockedUsersList(userProfile.blockedUsers);
+
+  captureOriginalFormState();
+  updateSubmitButtonState();
 }
 
 function populateBlockedUsersList(users) {
@@ -69,6 +118,7 @@ function handleInterestListItemSelection(e) {
     selectedInterests = selectedInterests.filter((i) => i !== interest);
   }
   ValidationManager.updateInterestSubtitle(selectedInterests.length);
+  updateSubmitButtonState();
 }
 
 function handleUnblockUser(e) {
@@ -134,6 +184,10 @@ function handleImagePreview() {
 
 function handleProfileUpdate(e) {
   e.preventDefault();
+
+  if (!hasFormChanged()) {
+    return;
+  }
 
   const imageUrlInput = $("#imageUrl");
   const cleanedUrl = ValidationManager.cleanImageUrl(imageUrlInput.val().trim());
@@ -210,6 +264,13 @@ function handleProfileUpdate(e) {
       currentUser = updatedUserFromServer;
       $(".nav-profile-picture").attr("src", currentUser.imageUrl || CONSTANTS.NO_IMAGE_URL);
 
+      $("#newPassword").val("");
+      $("#confirmPassword").val("");
+      $(".confirm-password-container").removeClass("show");
+
+      captureOriginalFormState();
+      updateSubmitButtonState();
+
       button.text("Save Changes").prop("disabled", false);
     },
     (err) => {
@@ -274,8 +335,12 @@ $(document).ready(function () {
     .on("focus", "#newPassword", ValidationManager.showPasswordCriteria)
     .on("input", ".form-group input", function () {
       ValidationManager.clearValidationState($(this));
+      updateSubmitButtonState();
     })
-    .on("input change", 'input[type="date"]', (e) => $(e.target).toggleClass("has-value", !!$(e.target).val()));
+    .on("input change", 'input[type="date"]', (e) => {
+      $(e.target).toggleClass("has-value", !!$(e.target).val());
+      updateSubmitButtonState();
+    });
 
   $("#avatarPreview").on("error", function () {
     $(this).off("error").attr("src", CONSTANTS.NO_IMAGE_URL);

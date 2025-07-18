@@ -244,7 +244,7 @@
 .newsletter-signup {
   width: 100%;
   min-height: 300px;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../sources/images/wp3396925-newspaper-wallpaperbackground.jpg");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../sources/images/wp3396925-newspaper-wallpaperbackground.jpg");
   background-size: cover;
   background-position: center;
   display: flex;

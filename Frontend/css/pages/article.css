@@ -79,7 +79,7 @@
   margin-bottom: 16px;
 }
 
-.article-content .highlight {
+.read-full-article-btn {
   color: var(--c-dark);
 }
 
@@ -104,7 +104,12 @@
   font-size: 28px;
   margin-bottom: 16px;
 }
+
 .article-error p {
   color: var(--c-text-muted);
   margin-bottom: 24px;
+}
+
+.back-to-homepage {
+  color: var(--c-dark);
 }
