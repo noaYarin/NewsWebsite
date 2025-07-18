@@ -270,12 +270,10 @@ function handleProfileUpdate(e) {
 
       captureOriginalFormState();
       updateSubmitButtonState();
-
-      button.text("Save Changes").prop("disabled", false);
     },
     (err) => {
       UIManager.showPopup("Failed to update profile. Please check your inputs.", false);
-      button.text("Save Changes").prop("disabled", false);
+      updateSubmitButtonState();
     }
   );
 }
