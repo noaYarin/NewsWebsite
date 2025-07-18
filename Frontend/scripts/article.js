@@ -36,6 +36,13 @@ function showArticle() {
   $(".article-author").text(currentArticle.author ? `By ${currentArticle.author}` : "No Author");
   $(".article-date").text(formatDate(currentArticle.publishedAt));
 
+  const tagsContainer = $(".article-tags");
+  tagsContainer.empty();
+  if (currentArticle.category) {
+    const categoryHtml = `<div class="tag-item">${currentArticle.category}</div>`;
+    tagsContainer.append(categoryHtml);
+  }
+
   if (currentArticle.imageUrl) {
     $(".article-image").attr("src", currentArticle.imageUrl);
     $(".article-image").attr("onerror", "this.style.display='none';");

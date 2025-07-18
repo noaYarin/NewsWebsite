@@ -49,5 +49,25 @@ namespace Horizon.Controllers
                 return StatusCode(500, "An error occurred while checking bookmark status.");
             }
         }
+
+        [HttpGet("{userId}/search")]
+        public IActionResult SearchBookmarks(int userId, [FromQuery] string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                var allBookmarks = Bookmark.GetUserBookmarks(userId);
+                return Ok(allBookmarks);
+            }
+
+            try
+            {
+                var searchResults = Bookmark.Search(userId, term);
+                return Ok(searchResults);
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(500, "An error occurred while searching bookmarks.");
+            }
+        }
     }
 }

@@ -54,5 +54,30 @@ namespace Horizon.DAL
             }
             finally { con?.Close(); }
         }
+
+        public List<Article> SearchUserBookmarks(int userId, string searchTerm)
+        {
+            var articles = new List<Article>();
+            SqlConnection con = null;
+            try
+            {
+                con = Connect();
+                var parameters = new Dictionary<string, object>
+                {
+                    { "@UserId", userId },
+                    { "@SearchTerm", searchTerm }
+                };
+                SqlCommand cmd = CreateCommand("SP_SearchUserBookmarks", con, parameters);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        articles.Add(_articleService.MapReaderToArticle(reader));
+                    }
+                }
+                return articles;
+            }
+            finally { con?.Close(); }
+        }
     }
 }
