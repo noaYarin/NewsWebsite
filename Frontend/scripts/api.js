@@ -84,6 +84,10 @@ function reportComment(reportData, successCallback, errorCallback) {
   ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
 }
 
+function reportArticle(reportData, successCallback, errorCallback) {
+  ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
+}
+
 function toggleBookmark(data, successCallback, errorCallback) {
   ajaxCall("POST", `${bookmarksEndpoint}/toggle`, JSON.stringify(data), successCallback, errorCallback);
 }

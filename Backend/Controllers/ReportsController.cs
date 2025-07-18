@@ -1,6 +1,5 @@
 ﻿using Horizon.BL;
 using Horizon.DTOs;
-using Horizon.DTOs.Horizon.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Horizon.Controllers

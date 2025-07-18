@@ -252,6 +252,32 @@ function setupArticleEventHandlers() {
     );
   });
 
+  $(document).on("click", "#report-article-btn", function () {
+    if (!currentUser) {
+      showPopup("Please log in to report articles.", false);
+      return;
+    }
+
+    if (!currentArticle) return;
+
+    showDialog("Are you sure you want to report this article?", true).then((result) => {
+      if (result && result.reported) {
+        const reportData = {
+          reporterUserId: currentUser.id,
+          articleId: currentArticle.id,
+          reason: result.reasonCategory,
+          details: result.reason
+        };
+
+        reportArticle(
+          reportData,
+          () => showPopup("Article reported. Thank you for your feedback.", true),
+          () => showPopup("Failed to report article. Please try again.", false)
+        );
+      }
+    });
+  });
+
   /* Comment Handlers */
   $(document).on("click", ".edit-comment-btn", function () {
     const commentItem = $(this).closest(".comment-item");
