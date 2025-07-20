@@ -17,4 +17,19 @@
         ActionTaken,
         Dismissed
     }
+
+    public enum NotificationType
+    {
+        FriendRequest,
+        FriendRequestAccepted,
+        ArticleShare,
+        CommentLike
+    }
+
+    public enum FriendshipStatus
+    {
+        Pending,
+        Accepted,
+        Declined
+    }
 }

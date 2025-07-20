@@ -14,11 +14,11 @@ public class CommentService : DBService
         {
             con = Connect();
             var parameters = new Dictionary<string, object>
-        {
-            { "@ArticleId", comment.ArticleId },
-            { "@AuthorId", comment.AuthorId },
-            { "@Content", comment.Content }
-        };
+            {
+                { "@ArticleId", comment.ArticleId },
+                { "@AuthorId", comment.AuthorId },
+                { "@Content", comment.Content }
+            };
 
             SqlCommand cmd = CreateCommand("SP_InsertComment", con, parameters);
 
@@ -71,11 +71,11 @@ public class CommentService : DBService
         {
             con = Connect();
             var parameters = new Dictionary<string, object>
-        {
-            { "@CommentId", commentId },
-            { "@RequestingUserId", requestingUserId },
-            { "@Content", content }
-        };
+            {
+                { "@CommentId", commentId },
+                { "@RequestingUserId", requestingUserId },
+                { "@Content", content }
+            };
 
             SqlCommand cmd = CreateCommand("SP_UpdateComment", con, parameters);
             int rowsAffected = (int)cmd.ExecuteScalar();
@@ -91,10 +91,10 @@ public class CommentService : DBService
         {
             con = Connect();
             var parameters = new Dictionary<string, object>
-        {
-            { "@CommentId", commentId },
-            { "@RequestingUserId", requestingUserId }
-        };
+            {
+                { "@CommentId", commentId },
+                { "@RequestingUserId", requestingUserId }
+            };
 
             SqlCommand cmd = CreateCommand("SP_DeleteComment", con, parameters);
             int rowsAffected = (int)cmd.ExecuteScalar();
@@ -103,7 +103,7 @@ public class CommentService : DBService
         finally { con?.Close(); }
     }
 
-    public bool ToggleCommentLike(int commentId, int userId)
+    public (bool isLiked, int authorId) ToggleCommentLike(int commentId, int userId)
     {
         SqlConnection con = null;
         try
@@ -123,9 +123,18 @@ public class CommentService : DBService
             };
             cmd.Parameters.Add(isNowLikedParam);
 
+            SqlParameter commentAuthorIdParam = new SqlParameter("@CommentAuthorId", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+            cmd.Parameters.Add(commentAuthorIdParam);
+
             cmd.ExecuteNonQuery();
 
-            return Convert.ToBoolean(isNowLikedParam.Value);
+            bool isLiked = Convert.ToBoolean(isNowLikedParam.Value);
+            int authorId = Convert.ToInt32(commentAuthorIdParam.Value);
+
+            return (isLiked, authorId);
         }
         finally
         {

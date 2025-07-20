@@ -1,53 +1,68 @@
-﻿namespace Horizon.BL;
-
-using Horizon.DAL;
-using Horizon.DTOs;
-
-public class Comment
+﻿namespace Horizon.BL
 {
-    public int Id { get; set; }
-    public string Content { get; set; }
-    public int AuthorId { get; set; }
-    public int ArticleId { get; set; }
+    using Horizon.DAL;
+    using Horizon.DTOs;
 
-    public Comment() { }
-
-    public Comment(int id, string content, int authorId, int articleId)
+    public class Comment
     {
-        Id = id;
-        Content = content;
-        AuthorId = authorId;
-        ArticleId = articleId;
-    }
+        public int Id { get; set; }
+        public string Content { get; set; }
+        public int AuthorId { get; set; }
+        public int ArticleId { get; set; }
 
-    public bool Add()
-    {
-        var commentService = new CommentService();
-        int newCommentId = commentService.AddComment(this);
-        return newCommentId > 0;
-    }
+        public Comment() { }
 
-    public static List<CommentResponseDto> GetByArticleId(int articleId, int? requestingUserId)
-    {
-        var commentService = new CommentService();
-        return commentService.GetCommentsByArticleId(articleId, requestingUserId);
-    }
+        public Comment(int id, string content, int authorId, int articleId)
+        {
+            Id = id;
+            Content = content;
+            AuthorId = authorId;
+            ArticleId = articleId;
+        }
 
-    public static bool Update(int commentId, int requestingUserId, string content)
-    {
-        var commentService = new CommentService();
-        return commentService.UpdateComment(commentId, requestingUserId, content);
-    }
+        public bool Add()
+        {
+            var commentService = new CommentService();
+            int newCommentId = commentService.AddComment(this);
+            return newCommentId > 0;
+        }
 
-    public static bool Delete(int commentId, int requestingUserId)
-    {
-        var commentService = new CommentService();
-        return commentService.DeleteComment(commentId, requestingUserId);
-    }
+        public static List<CommentResponseDto> GetByArticleId(int articleId, int? requestingUserId)
+        {
+            var commentService = new CommentService();
+            return commentService.GetCommentsByArticleId(articleId, requestingUserId);
+        }
 
-    public static bool ToggleLike(int commentId, int userId)
-    {
-        var commentService = new CommentService();
-        return commentService.ToggleCommentLike(commentId, userId);
+        public static bool Update(int commentId, int requestingUserId, string content)
+        {
+            var commentService = new CommentService();
+            return commentService.UpdateComment(commentId, requestingUserId, content);
+        }
+
+        public static bool Delete(int commentId, int requestingUserId)
+        {
+            var commentService = new CommentService();
+            return commentService.DeleteComment(commentId, requestingUserId);
+        }
+
+        public static bool ToggleLike(int commentId, int userId)
+        {
+            var commentService = new CommentService();
+            (bool isLiked, int commentAuthorId) = commentService.ToggleCommentLike(commentId, userId);
+
+            if (isLiked && userId != commentAuthorId)
+            {
+                var notificationService = new NotificationService();
+                notificationService.InsertNotification(
+                    recipientId: commentAuthorId,
+                    senderId: userId,
+                    notificationType: NotificationType.CommentLike,
+                    relatedEntityId: commentId,
+                    message: null
+                );
+            }
+
+            return isLiked;
+        }
     }
 }
