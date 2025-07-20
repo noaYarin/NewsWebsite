@@ -7,6 +7,8 @@ const articlesEndpoint = `${dotnetBaseUrl}/Articles`;
 const commentsEndpoint = `${dotnetBaseUrl}/Comments`;
 const reportsEndpoint = `${dotnetBaseUrl}/Reports`;
 const bookmarksEndpoint = `${dotnetBaseUrl}/Bookmarks`;
+const friendsEndpoint = `${dotnetBaseUrl}/Friends`;
+const notificationsEndpoint = `${dotnetBaseUrl}/Notifications`;
 
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({
@@ -21,7 +23,7 @@ function ajaxCall(method, api, data, successCB, errorCB) {
   });
 }
 
-/* --- Node.js Calls --- */
+// --- Node.js Calls ---
 function getTopHeadlines(category, page = 1, successCallback, errorCallback) {
   ajaxCall("GET", `${nodeBaseUrl}/News/top-headlines?category=${category}&page=${page}&pageSize=${CONSTANTS.NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
 }
@@ -30,7 +32,8 @@ function searchNews(query, page = 1, successCallback, errorCallback) {
   ajaxCall("GET", `${nodeBaseUrl}/News?query=${encodeURIComponent(query)}&page=${page}&pageSize=${CONSTANTS.NEWS_PAGE_SIZE}`, null, successCallback, errorCallback);
 }
 
-/* --- .NET Calls --- */
+// --- .NET Calls ---
+// --- Article Management Functions ---
 function getArticleById(id, successCallback, errorCallback) {
   ajaxCall("GET", `${articlesEndpoint}/${id}`, null, successCallback, errorCallback);
 }
@@ -54,6 +57,7 @@ function syncArticles(articleList, successCallback, errorCallback) {
   ajaxCall("POST", `${articlesEndpoint}/sync`, JSON.stringify(articleList), successCallback, errorCallback);
 }
 
+// --- Comment Management Functions ---
 function getComments(articleId, userId, successCallback, errorCallback) {
   const url = userId ? `${commentsEndpoint}/${articleId}?userId=${userId}` : `${commentsEndpoint}/${articleId}`;
   ajaxCall("GET", url, null, successCallback, errorCallback);
@@ -75,6 +79,7 @@ function toggleLikeComment(commentId, userId, successCallback, errorCallback) {
   ajaxCall("POST", `${commentsEndpoint}/${commentId}/like/${userId}`, null, successCallback, errorCallback);
 }
 
+// --- Report Management Functions ---
 function reportComment(reportData, successCallback, errorCallback) {
   ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
 }
@@ -83,6 +88,7 @@ function reportArticle(reportData, successCallback, errorCallback) {
   ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
 }
 
+// --- Bookmark Management Functions ---
 function toggleBookmark(data, successCallback, errorCallback) {
   ajaxCall("POST", `${bookmarksEndpoint}/toggle`, JSON.stringify(data), successCallback, errorCallback);
 }
@@ -129,4 +135,51 @@ function toggleBlockUser(userId, userToBlockId, successCallback, errorCallback) 
 function toggleUserStatus(userId, attributeName, successCallback, errorCallback) {
   const data = { attribute: attributeName };
   ajaxCall("PUT", `${usersEndpoint}/${userId}/toggle-status`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+// --- Friendship Functions ---
+function sendFriendRequest(data, successCallback, errorCallback) {
+  ajaxCall("POST", `${friendsEndpoint}/request`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+function respondToFriendRequest(data, successCallback, errorCallback) {
+  ajaxCall("PUT", `${friendsEndpoint}/respond`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+function cancelFriendRequest(data, successCallback, errorCallback) {
+  ajaxCall("DELETE", `${friendsEndpoint}/cancel`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+function getFriends(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${friendsEndpoint}/${userId}`, null, successCallback, errorCallback);
+}
+
+function getPendingFriendRequests(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${friendsEndpoint}/pending/${userId}`, null, successCallback, errorCallback);
+}
+
+// --- Notification Functions ---
+function shareArticle(data, successCallback, errorCallback) {
+  ajaxCall("POST", `${notificationsEndpoint}/share-article`, JSON.stringify(data), successCallback, errorCallback);
+}
+
+function getNotifications(userId, page, pageSize, successCallback, errorCallback) {
+  const url = `${notificationsEndpoint}/${userId}?page=${page}&pageSize=${pageSize}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
+function getRecentNotifications(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${notificationsEndpoint}/recent/${userId}`, null, successCallback, errorCallback);
+}
+
+function getUnreadNotificationCount(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${notificationsEndpoint}/unread-count/${userId}`, null, successCallback, errorCallback);
+}
+
+function markNotificationAsRead(notificationId, userId, successCallback, errorCallback) {
+  ajaxCall("PUT", `${notificationsEndpoint}/${notificationId}/read/${userId}`, null, successCallback, errorCallback);
+}
+
+function markAllNotificationsAsRead(userId, successCallback, errorCallback) {
+  ajaxCall("PUT", `${notificationsEndpoint}/read-all/${userId}`, null, successCallback, errorCallback);
 }
