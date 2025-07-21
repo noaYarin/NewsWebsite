@@ -1,4 +1,3 @@
-// pages/notifications.js - Simplified Version
 const NotificationsPage = {
   currentUser: null,
   currentPage: 1,
@@ -18,37 +17,31 @@ const NotificationsPage = {
     this.loadNotifications();
     this.loadUnreadCount();
 
-    // Update tab indicator after DOM is settled
     setTimeout(() => {
       this.updateTabIndicator();
     }, 0);
   },
 
   setupEventListeners() {
-    // Tab switching
     $("#notificationTabs .nav-link").on("click", (e) => {
       e.preventDefault();
       const $link = $(e.currentTarget);
       const targetTab = $link.attr("data-bs-target");
 
-      // Update active states
       $("#notificationTabs .nav-link").removeClass("active");
       $link.addClass("active");
 
       $(".tab-pane").removeClass("show active");
       $(targetTab).addClass("show active");
 
-      // Update tab indicator
       this.updateTabIndicator();
 
-      // Reset and load new tab
       this.activeTab = targetTab.replace("#", "");
       this.currentPage = 1;
       this.hasMorePages = true;
       this.loadNotifications();
     });
 
-    // Scroll for more
     $(window).on("scroll", () => {
       if (this.isLoading || !this.hasMorePages) return;
 
@@ -61,17 +54,14 @@ const NotificationsPage = {
       }
     });
 
-    // Mark as read
     $(document).on("click", ".mark-read-btn", (e) => {
       e.stopPropagation();
       const notificationId = $(e.currentTarget).closest(".notification-item").data("notification-id");
       this.markAsRead(notificationId);
     });
 
-    // Mark all as read
     $("#markAllReadBtn").on("click", () => this.markAllAsRead());
 
-    // Refresh
     $("#refreshBtn").on("click", () => {
       this.currentPage = 1;
       this.hasMorePages = true;
@@ -79,7 +69,6 @@ const NotificationsPage = {
       this.loadUnreadCount();
     });
 
-    // Window resize
     $(window).on("resize", () => {
       this.updateTabIndicator();
     });
@@ -118,13 +107,10 @@ const NotificationsPage = {
       (data) => {
         const notifications = data.notifications || data || [];
         const containerSelector = this.activeTab === "unread" ? "#unread .notifications-list" : "#all .notifications-list";
-
-        // Filter for unread if needed
         const displayNotifications = this.activeTab === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
 
         this.displayNotifications(containerSelector, displayNotifications, append);
 
-        // Update pagination state
         this.hasMorePages = notifications.length === this.pageSize;
 
         this.isLoading = false;

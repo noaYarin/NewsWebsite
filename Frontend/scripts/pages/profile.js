@@ -98,9 +98,9 @@ function populateBlockedUsersList(users) {
 
   users.forEach((user) => {
     const userHtml = `
-      <div class="blocked-user-item" data-user-id="${user.id}">
-        <img src="${user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.name}" class="blocked-user-avatar" />
-        <span class="blocked-user-name">${user.name}</span>
+      <div class="user-list-item" data-user-id="${user.id}">
+        <img src="${user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.name}" class="user-list-avatar" />
+        <span class="user-list-name">${user.name}</span>
         <button type="button" class="unblock-btn">Unblock</button>
       </div>
     `;
@@ -143,13 +143,13 @@ function populateFriendsList(friends) {
 
   friends.forEach((friend) => {
     const friendHtml = `
-      <div class="blocked-user-item" data-friend-id="${friend.id}">
-        <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="blocked-user-avatar" />
-        <span class="blocked-user-name">${friend.fullName}</span>
+      <div class="user-list-item" data-friend-id="${friend.id}">
+        <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="user-list-avatar" />
+        <span class="user-list-name">${friend.fullName}</span>
         <button type="button" class="unblock-btn remove-friend-btn" 
                 data-friend-id="${friend.id}" 
                 data-friend-name="${friend.fullName}"
-                title="Remove Friend">Remove Friend</button>
+                title="Remove Friend">Remove</button>
       </div>
     `;
     listContainer.append(friendHtml);
@@ -157,7 +157,7 @@ function populateFriendsList(friends) {
 }
 
 function handleRemoveFriend(e) {
-  const item = $(e.currentTarget).closest(".blocked-user-item");
+  const item = $(e.currentTarget).closest(".user-list-item");
   const friendId = $(e.currentTarget).data("friend-id");
   const friendName = $(e.currentTarget).data("friend-name");
 
@@ -178,7 +178,7 @@ function handleRemoveFriend(e) {
       item.fadeOut(300, function () {
         $(this).remove();
 
-        const remainingFriends = $("#friendsList .blocked-user-item").length;
+        const remainingFriends = $("#friendsList .user-list-item").length;
         $(".friends-count").text(`${remainingFriends} friend${remainingFriends !== 1 ? "s" : ""}`);
 
         // Show empty state if no friends left
@@ -209,7 +209,7 @@ function handleInterestListItemSelection(e) {
 }
 
 function handleUnblockUser(e) {
-  const item = $(e.currentTarget).closest(".blocked-user-item");
+  const item = $(e.currentTarget).closest(".user-list-item");
   const blockedUserId = item.data("user-id");
 
   toggleBlockUser(
@@ -226,7 +226,7 @@ function handleUnblockUser(e) {
       item.fadeOut(300, function () {
         $(this).remove();
 
-        if ($("#blockedUsersList .blocked-user-item").length === 0) {
+        if ($("#blockedUsersList .user-list-item").length === 0) {
           $("#blockedUsersList").html('<p class="empty-list-message">You have no blocked users.</p>');
         }
       });
