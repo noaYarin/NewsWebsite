@@ -286,7 +286,7 @@ function handleUserSearch(e) {
     return;
   }
 
-  resultsSection.html('<div class="loading-spinner"></div><p>Searching...</p>');
+  resultsSection.html('<div class="loading-spinner"></div>');
 
   searchUsers(
     email,
@@ -302,7 +302,7 @@ function handleUserSearch(e) {
   );
 }
 
-function displaySearchResults(users, searchedEmail) {
+function displaySearchResults(users) {
   const resultsSection = $("#searchResultsSection");
 
   let resultsHtml;

@@ -46,7 +46,6 @@
   font-size: 16px;
   color: var(--c-text-muted);
   margin-bottom: 16px;
-  transition: color var(--transition-fast);
 }
 
 .profile-image-section {
@@ -170,8 +169,6 @@
   min-width: 450px;
   max-width: 90vw;
   padding: 20px 32px;
-  flex-direction: column;
-  gap: 8px;
   text-align: left;
 }
 
@@ -183,16 +180,7 @@
 }
 
 .add-friend-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   width: 100%;
-}
-
-.add-friend-form label {
-  font-weight: 500;
-  color: var(--c-dark);
-  display: block;
 }
 
 .add-friend-form input {
@@ -225,14 +213,7 @@
 .search-results-section {
   width: 100%;
   max-height: 300px;
-  overflow-y: auto;
-}
-
-.search-results-section h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--c-dark);
+  margin-top: 16px;
 }
 
 .user-search-results {
@@ -264,7 +245,6 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 0;
 }
 
 .user-search-item .user-info {
@@ -334,34 +314,6 @@
   margin: 20px auto;
 }
 
-.results-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  position: relative;
-}
-
-.results-header .dialog-message {
-  flex-grow: 1;
-  text-align: center;
-  margin: 0;
-}
-
-.back-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  left: 0;
-  padding: 4px;
-}
-
-.back-btn img {
-  width: 24px;
-  height: 24px;
-}
-
 .search-input-row {
   display: flex;
   gap: 8px;
@@ -399,6 +351,4 @@
 .empty-search-message {
   text-align: center;
   color: rgba(var(--c-dark-rgb), 0.6);
-  font-style: italic;
-  padding: 20px;
 }
