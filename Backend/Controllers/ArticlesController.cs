@@ -103,12 +103,12 @@ public class ArticlesController : ControllerBase
     [HttpPost("summarize")]
     public async Task<IActionResult> SummarizeArticle([FromBody] SummarizeRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.ArticleText))
+        if (string.IsNullOrWhiteSpace(request.ArticleUrl))
             return BadRequest("No text provided.");
 
         try
         {
-            var summary = await _summarizer.SummarizeAsync(request.ArticleText);
+            var summary = await _summarizer.SummarizeAsync(request.ArticleUrl);
             return Ok(new { summary });
         }
         catch (Exception)
