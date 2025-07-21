@@ -137,27 +137,19 @@ function populateFriendsList(friends) {
   $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
 
   if (friends.length === 0) {
-    listContainer.html('<div class="empty-state text-center py-4"><h5 class="text-muted">No friends yet</h5><p class="text-muted">Start connecting with people!</p></div>');
+    listContainer.html('<p class="empty-list-message">You have no friends yet.</p>');
     return;
   }
 
   friends.forEach((friend) => {
     const friendHtml = `
-      <div class="friend-item" data-friend-id="${friend.id}">
-        <div class="friend-avatar">
-          <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="friend-avatar-img" />
-        </div>
-        <div class="friend-info">
-          <span class="friend-name">${friend.fullName}</span>
-        </div>
-        <div class="friend-actions">
-          <button class="btn btn-outline-danger btn-sm remove-friend-btn" 
-                  data-friend-id="${friend.id}" 
-                  data-friend-name="${friend.fullName}"
-                  title="Remove Friend">
-            <i class="bi bi-person-dash"></i> Remove
-          </button>
-        </div>
+      <div class="blocked-user-item" data-friend-id="${friend.id}">
+        <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="blocked-user-avatar" />
+        <span class="blocked-user-name">${friend.fullName}</span>
+        <button type="button" class="unblock-btn remove-friend-btn" 
+                data-friend-id="${friend.id}" 
+                data-friend-name="${friend.fullName}"
+                title="Remove Friend">Remove Friend</button>
       </div>
     `;
     listContainer.append(friendHtml);
@@ -165,6 +157,7 @@ function populateFriendsList(friends) {
 }
 
 function handleRemoveFriend(e) {
+  const item = $(e.currentTarget).closest(".blocked-user-item");
   const friendId = $(e.currentTarget).data("friend-id");
   const friendName = $(e.currentTarget).data("friend-name");
 
@@ -182,18 +175,15 @@ function handleRemoveFriend(e) {
     (response) => {
       UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
 
-      // Remove from UI
-      $(`.friend-item[data-friend-id="${friendId}"]`).fadeOut(300, function () {
+      item.fadeOut(300, function () {
         $(this).remove();
 
-        const remainingFriends = $("#friendsList .friend-item").length;
+        const remainingFriends = $("#friendsList .blocked-user-item").length;
         $(".friends-count").text(`${remainingFriends} friend${remainingFriends !== 1 ? "s" : ""}`);
 
         // Show empty state if no friends left
         if (remainingFriends === 0) {
-          $("#friendsList").html(
-            '<div class="empty-state text-center py-4"><h5 class="text-muted">No friends yet</h5><p class="text-muted">Start connecting with people!</p></div>'
-          );
+          $("#friendsList").html('<p class="empty-list-message">You have no friends yet.</p>');
         }
       });
     },
@@ -424,7 +414,7 @@ $(document).ready(function () {
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
     .on("click", ".remove-friend-btn", handleRemoveFriend)
-    .on("click", "#addFriendsBtn", loadAndPopulateFriendsList) // TODO: Change to addFriendsBtn
+    .on("click", "#addFriendsBtn", loadAndPopulateFriendsList)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("click", ".password-toggle-btn", handlePasswordToggle)
