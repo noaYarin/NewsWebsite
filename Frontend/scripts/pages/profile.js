@@ -161,37 +161,36 @@ function handleRemoveFriend(e) {
   const friendId = $(e.currentTarget).data("friend-id");
   const friendName = $(e.currentTarget).data("friend-name");
 
-  const confirmed = confirm(`Are you sure you want to remove ${friendName} from your friends list?`);
+  UIManager.showDialog(`Are you sure you want to remove ${friendName} from your friends list?`).then((confirmed) => {
+    if (!confirmed) return;
 
-  if (!confirmed) return;
+    const data = {
+      userId: currentUser.id,
+      friendId: friendId
+    };
 
-  const data = {
-    userId: currentUser.id,
-    friendId: friendId
-  };
+    removeFriend(
+      data,
+      () => {
+        UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
 
-  removeFriend(
-    data,
-    (response) => {
-      UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
+        item.fadeOut(300, function () {
+          $(this).remove();
 
-      item.fadeOut(300, function () {
-        $(this).remove();
+          const remainingFriends = $("#friendsList .user-list-item").length;
+          $(".friends-count").text(`${remainingFriends} friend${remainingFriends !== 1 ? "s" : ""}`);
 
-        const remainingFriends = $("#friendsList .user-list-item").length;
-        $(".friends-count").text(`${remainingFriends} friend${remainingFriends !== 1 ? "s" : ""}`);
-
-        // Show empty state if no friends left
-        if (remainingFriends === 0) {
-          $("#friendsList").html('<p class="empty-list-message">You have no friends yet.</p>');
-        }
-      });
-    },
-    (error) => {
-      console.error("Failed to remove friend:", error);
-      UIManager.showPopup("Failed to remove friend. Please try again.", false);
-    }
-  );
+          if (remainingFriends === 0) {
+            $("#friendsList").html('<p class="empty-list-message">You have no friends yet.</p>');
+          }
+        });
+      },
+      (error) => {
+        console.error("Failed to remove friend:", error);
+        UIManager.showPopup("Failed to remove friend. Please try again.", false);
+      }
+    );
+  });
 }
 
 function handleInterestListItemSelection(e) {
@@ -211,30 +210,35 @@ function handleInterestListItemSelection(e) {
 function handleUnblockUser(e) {
   const item = $(e.currentTarget).closest(".user-list-item");
   const blockedUserId = item.data("user-id");
+  const userName = item.find(".user-list-name").text();
 
-  toggleBlockUser(
-    currentUser.id,
-    blockedUserId,
-    (response) => {
-      UIManager.showPopup(response.message, true);
+  UIManager.showDialog(`Are you sure you want to unblock ${userName}?`).then((confirmed) => {
+    if (!confirmed) return;
 
-      if (currentUser && currentUser.blockedUsers) {
-        currentUser.blockedUsers = currentUser.blockedUsers.filter((user) => user.id != blockedUserId);
-      }
-      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    toggleBlockUser(
+      currentUser.id,
+      blockedUserId,
+      (response) => {
+        UIManager.showPopup(response.message, true);
 
-      item.fadeOut(300, function () {
-        $(this).remove();
-
-        if ($("#blockedUsersList .user-list-item").length === 0) {
-          $("#blockedUsersList").html('<p class="empty-list-message">You have no blocked users.</p>');
+        if (currentUser && currentUser.blockedUsers) {
+          currentUser.blockedUsers = currentUser.blockedUsers.filter((user) => user.id != blockedUserId);
         }
-      });
-    },
-    () => {
-      UIManager.showPopup("Failed to unblock user. Please try again.", false);
-    }
-  );
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+        item.fadeOut(300, function () {
+          $(this).remove();
+
+          if ($("#blockedUsersList .user-list-item").length === 0) {
+            $("#blockedUsersList").html('<p class="empty-list-message">You have no blocked users.</p>');
+          }
+        });
+      },
+      () => {
+        UIManager.showPopup("Failed to unblock user. Please try again.", false);
+      }
+    );
+  });
 }
 
 function handleImagePreview() {
