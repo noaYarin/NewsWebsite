@@ -2,7 +2,7 @@
 CREATE PROCEDURE SP_GetAllUsers
 AS
 BEGIN
-    SELECT Id, Email, FirstName, LastName, IsAdmin, IsLocked
+    SELECT Id, Email, FirstName, LastName, ImgUrl, IsAdmin, IsLocked
     FROM Users
     ORDER BY FirstName, LastName;
 END
@@ -13,7 +13,7 @@ CREATE PROCEDURE SP_SearchUsersByEmail
     @EmailTerm NVARCHAR(255)
 AS
 BEGIN
-    SELECT Id, Email, FirstName, LastName, IsAdmin, IsLocked
+    SELECT Id, Email, FirstName, LastName, ImgUrl, IsAdmin, IsLocked
     FROM Users
     WHERE Email LIKE '%' + @EmailTerm + '%'
     ORDER BY FirstName, LastName;
