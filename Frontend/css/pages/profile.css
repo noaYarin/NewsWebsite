@@ -291,14 +291,15 @@
 }
 
 .user-search-item .success-btn {
-  background-color: rgba(var(--c-success-rgb), 0.8) !important;
+  background-color: var(--c-placeholder);
+  color: var(--c-light);
   border-color: rgba(var(--c-success-rgb), 0.5) !important;
-  cursor: not-allowed;
+  cursor: pointer;
 }
 
 .user-search-item .success-btn:hover {
-  transform: none !important;
-  box-shadow: none !important;
+  background-color: rgba(var(--c-danger-rgb), 0.8);
+  border-color: rgba(var(--c-danger-rgb), 0.8) !important;
 }
 
 .dialog-content-wrapper {
@@ -360,5 +361,84 @@
 @media (max-width: 768px) {
   .user-search-item .send-friend-request-btn {
     font-size: 12px;
+  }
+}
+
+/* Pending Friend Requests Section */
+.pending-requests-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: var(--c-background);
+  border-radius: 12px;
+  border: 1px solid var(--c-border-light);
+}
+
+.pending-requests-title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.request-number {
+  color: var(--c-primary);
+}
+
+.pending-request-item {
+  background-color: var(--c-light);
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.pending-request-item:last-child {
+  margin-bottom: 0;
+}
+
+.pending-request-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.accept-friend-btn,
+.decline-friend-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  min-width: 70px;
+  color: var(--c-dark);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.accept-friend-btn:hover {
+  background-color: rgba(40, 167, 69, 0.75);
+  color: var(--c-light);
+}
+
+.decline-friend-btn:hover {
+  background-color: rgba(220, 53, 69, 0.75);
+  color: var(--c-light);
+}
+
+.accept-friend-btn:disabled,
+.decline-friend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .pending-request-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .accept-friend-btn,
+  .decline-friend-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    min-width: 60px;
   }
 }

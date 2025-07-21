@@ -65,5 +65,12 @@ namespace Horizon.Controllers
             var requests = Friendship.GetPendingRequests(userId);
             return Ok(requests);
         }
+
+        [HttpGet("outgoing/{userId}")]
+        public IActionResult GetOutgoingRequests(int userId)
+        {
+            var requests = Friendship.GetOutgoingRequests(userId);
+            return Ok(requests);
+        }
     }
 }

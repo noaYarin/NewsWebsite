@@ -130,5 +130,31 @@ namespace Horizon.DAL
             }
             finally { con?.Close(); }
         }
+
+        public List<FriendDto> GetOutgoingRequests(int userId)
+        {
+            var requests = new List<FriendDto>();
+            SqlConnection con = null;
+            try
+            {
+                con = Connect();
+                var parameters = new Dictionary<string, object> { { "@UserId", userId } };
+                SqlCommand cmd = CreateCommand("SP_GetOutgoingFriendRequests", con, parameters);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        requests.Add(new FriendDto
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            FullName = reader["FullName"].ToString(),
+                            Avatar = reader["Avatar"] == DBNull.Value ? null : reader["Avatar"].ToString()
+                        });
+                    }
+                }
+                return requests;
+            }
+            finally { con?.Close(); }
+        }
     }
 }

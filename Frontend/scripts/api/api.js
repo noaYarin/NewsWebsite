@@ -167,6 +167,10 @@ function getPendingFriendRequests(userId, successCallback, errorCallback) {
   ajaxCall("GET", `${friendsEndpoint}/pending/${userId}`, null, successCallback, errorCallback);
 }
 
+function getOutgoingFriendRequests(userId, successCallback, errorCallback) {
+  ajaxCall("GET", `${friendsEndpoint}/outgoing/${userId}`, null, successCallback, errorCallback);
+}
+
 // --- Notification Functions ---
 function shareArticle(data, successCallback, errorCallback) {
   ajaxCall("POST", `${notificationsEndpoint}/share-article`, JSON.stringify(data), successCallback, errorCallback);

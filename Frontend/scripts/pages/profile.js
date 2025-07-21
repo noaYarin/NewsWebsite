@@ -2,6 +2,8 @@ let currentUser = null;
 let selectedInterests = [];
 let originalFormState = null;
 let lastSearchedEmail = null;
+let pendingFriendRequests = new Set();
+let outgoingFriendRequests = new Set();
 
 const validationMap = {
   firstName: (val) => ValidationManager.validateName(val, "First name"),
@@ -120,9 +122,10 @@ function loadAndPopulateFriendsList() {
       populateFriendsList(friends);
       $("#friendsLoading").hide();
       $("#friendsList").show();
+
+      loadPendingFriendRequests();
     },
     (error) => {
-      console.error("Failed to load friends:", error);
       $("#friendsList").html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Failed to load friends list.</div>');
       $("#friendsLoading").hide();
       $("#friendsList").show();
@@ -185,8 +188,7 @@ function handleRemoveFriend(e) {
           }
         });
       },
-      (error) => {
-        console.error("Failed to remove friend:", error);
+      () => {
         UIManager.showPopup("Failed to remove friend. Please try again.", false);
       }
     );
@@ -253,6 +255,13 @@ function showAddFriendDialog() {
   });
   $("#friendEmailInput").on("input", function () {
     $(this).removeClass("error");
+    const email = $(this).val().trim();
+    const resultsSection = $("#searchResultsSection");
+
+    if (!email) {
+      resultsSection.removeClass("show");
+      lastSearchedEmail = null;
+    }
   });
 }
 
@@ -314,8 +323,7 @@ function performSearch(email, resultsSection) {
     (users) => {
       displaySearchResults(users);
     },
-    (error) => {
-      console.error("Search error:", error);
+    () => {
       resultsSection.html('<p class="empty-search-message">Error searching for users.</p>');
       UIManager.showPopup("Error searching for users.", false);
       $("#friendEmailInput").addClass("error");
@@ -330,19 +338,23 @@ function displaySearchResults(users) {
   const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
 
   if (filteredUsers.length === 0) {
-    resultsHtml = '<p class="empty-search-message">No new users found.</p>';
+    resultsHtml = '<p class="empty-search-message">No users found.</p>';
   } else {
     const userItems = filteredUsers
       .map((user) => {
+        const hasPendingRequest = outgoingFriendRequests.has(user.id);
+        const buttonText = hasPendingRequest ? "Cancel" : "Send Request";
+        const buttonClass = hasPendingRequest ? "cancel-friend-request-btn success-btn" : "send-friend-request-btn";
+
         return `
         <div class="user-search-item" data-user-id="${user.id}">
-          <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
+          <img src="${user.imageUrl || user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
           <div class="user-info">
             <span class="user-list-name">${user.fullName}</span>
             <span class="user-email">${user.email}</span>
           </div>
-          <button type="button" class="send-friend-request-btn" data-user-id="${user.id}" data-user-name="${user.fullName}">
-            Send Request
+          <button type="button" class="${buttonClass}" data-user-id="${user.id}" data-user-name="${user.fullName}">
+            ${buttonText}
           </button>
         </div>
       `;
@@ -354,12 +366,49 @@ function displaySearchResults(users) {
   resultsSection.html(resultsHtml);
 
   $(".send-friend-request-btn").on("click", handleSendFriendRequest);
+  $(".cancel-friend-request-btn").on("click", handleCancelFriendRequest);
+}
+
+function updateFriendsListWithPendingRequests(incomingRequests) {
+  $(".pending-requests-section").remove();
+
+  if (incomingRequests.length === 0) {
+    return;
+  }
+
+  const friendsList = $("#friendsList");
+
+  const pendingRequestsHtml = `
+    <div class="pending-requests-section">
+      <h4 class="pending-requests-title">Pending Friend Requests (<span class="request-number">${incomingRequests.length}</span>)</h4>
+      <div class="pending-requests-list">
+        ${incomingRequests
+          .map(
+            (request) => `
+          <div class="user-list-item pending-request-item" data-user-id="${request.id}">
+            <img src="${request.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${request.fullName}" class="user-list-avatar" />
+            <span class="user-list-name">${request.fullName}</span>
+            <div class="pending-request-buttons">
+              <button type="button" class="accept-friend-btn" data-user-id="${request.id}" data-user-name="${request.fullName}">
+                Accept
+              </button>
+              <button type="button" class="decline-friend-btn" data-user-id="${request.id}" data-user-name="${request.fullName}">
+                Decline
+              </button>
+            </div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+
+  friendsList.prepend(pendingRequestsHtml);
 }
 
 function isAlreadyFriend(userId) {
-  // This would need to check against the current friends list
-  // For now, we'll assume we need to implement this check
-  return false; // Placeholder - implement based on your friends data structure
+  return outgoingFriendRequests.has(userId);
 }
 
 function handleSendFriendRequest(e) {
@@ -367,30 +416,141 @@ function handleSendFriendRequest(e) {
   const userId = button.data("user-id");
   const userName = button.data("user-name");
 
-  UIManager.showDialog(`Send friend request to ${userName}?`).then((confirmed) => {
-    if (!confirmed) return;
+  const originalText = button.text();
+  button.text("Sending...").prop("disabled", true);
 
-    const originalText = button.text();
-    button.text("Sending...").prop("disabled", true);
+  const requestData = {
+    SenderId: currentUser.id,
+    RecipientId: userId
+  };
 
-    const requestData = {
-      senderId: currentUser.id,
-      receiverId: userId
-    };
+  sendFriendRequest(
+    requestData,
+    () => {
+      UIManager.showPopup(`Friend request sent to ${userName}!`, true);
+      outgoingFriendRequests.add(userId);
+      button.text("Cancel").prop("disabled", false).removeClass("send-friend-request-btn").addClass("cancel-friend-request-btn success-btn");
+      button.off("click").on("click", handleCancelFriendRequest);
+    },
+    () => {
+      button.text(originalText).prop("disabled", false);
+      UIManager.showPopup("Failed to send friend request. Please try again.", false);
+    }
+  );
+}
 
-    sendFriendRequest(
-      requestData,
-      () => {
-        UIManager.showPopup(`Friend request sent to ${userName}!`, true);
-        button.text("Sent").prop("disabled", true).removeClass("auth-button").addClass("success-btn");
-      },
-      (error) => {
-        console.error("Friend request error:", error);
-        button.text(originalText).prop("disabled", false);
-        UIManager.showPopup("Failed to send friend request. Please try again.", false);
-      }
-    );
-  });
+function handleCancelFriendRequest(e) {
+  const button = $(e.currentTarget);
+  const userId = button.data("user-id");
+  const userName = button.data("user-name");
+
+  const originalText = button.text();
+  button.text("Canceling...").prop("disabled", true);
+
+  const requestData = {
+    SenderId: currentUser.id,
+    RecipientId: userId
+  };
+
+  cancelFriendRequest(
+    requestData,
+    () => {
+      UIManager.showPopup(`Friend request to ${userName} canceled.`, true);
+      outgoingFriendRequests.delete(userId);
+      button.text("Send Request").prop("disabled", false).removeClass("cancel-friend-request-btn success-btn").addClass("send-friend-request-btn");
+      button.off("click").on("click", handleSendFriendRequest);
+    },
+    () => {
+      button.text(originalText).prop("disabled", false);
+      UIManager.showPopup("Failed to cancel friend request. Please try again.", false);
+    }
+  );
+}
+
+function handleAcceptFriendRequest(e) {
+  const button = $(e.currentTarget);
+  const userId = button.data("user-id");
+  const userName = button.data("user-name");
+  const item = button.closest(".pending-request-item");
+
+  button.text("Accepting...").prop("disabled", true);
+  button.siblings(".decline-friend-btn").prop("disabled", true);
+
+  const requestData = {
+    RequesterId: userId,
+    ResponderId: currentUser.id,
+    Response: 1
+  };
+
+  respondToFriendRequest(
+    requestData,
+    () => {
+      UIManager.showPopup(`You are now friends with ${userName}!`, true);
+      pendingFriendRequests.delete(userId);
+
+      item.fadeOut(300, function () {
+        $(this).remove();
+
+        const remainingRequests = $(".pending-request-item").length;
+        if (remainingRequests === 0) {
+          $(".pending-requests-section").fadeOut(300, function () {
+            $(this).remove();
+          });
+        } else {
+          $(".pending-requests-title").text(`Pending Friend Requests (${remainingRequests})`);
+        }
+
+        loadAndPopulateFriendsList();
+      });
+    },
+    () => {
+      button.text("Accept").prop("disabled", false);
+      button.siblings(".decline-friend-btn").prop("disabled", false);
+      UIManager.showPopup("Failed to accept friend request. Please try again.", false);
+    }
+  );
+}
+
+function handleDeclineFriendRequest(e) {
+  const button = $(e.currentTarget);
+  const userId = button.data("user-id");
+  const userName = button.data("user-name");
+  const item = button.closest(".pending-request-item");
+
+  button.text("Declining...").prop("disabled", true);
+  button.siblings(".accept-friend-btn").prop("disabled", true);
+
+  const requestData = {
+    RequesterId: userId,
+    ResponderId: currentUser.id,
+    Response: 2
+  };
+
+  respondToFriendRequest(
+    requestData,
+    () => {
+      UIManager.showPopup(`Friend request from ${userName} declined.`, true);
+      pendingFriendRequests.delete(userId);
+
+      item.fadeOut(300, function () {
+        $(this).remove();
+
+        const remainingRequests = $(".pending-request-item").length;
+        if (remainingRequests === 0) {
+          $(".pending-requests-section").fadeOut(300, function () {
+            $(this).remove();
+          });
+        } else {
+          $(".pending-requests-title").text(`Pending Friend Requests (${remainingRequests})`);
+        }
+      });
+    },
+    () => {
+      button.text("Decline").prop("disabled", false);
+      button.siblings(".accept-friend-btn").prop("disabled", false);
+      UIManager.showPopup("Failed to decline friend request. Please try again.", false);
+    }
+  );
 }
 
 function handleUnblockUser(e) {
@@ -573,6 +733,34 @@ function handleNewPasswordInput() {
   ValidationManager.updatePasswordCriteria(passwordValue);
 }
 
+function loadPendingFriendRequests() {
+  if (!currentUser || !currentUser.id) return;
+
+  getPendingFriendRequests(
+    currentUser.id,
+    (incomingRequests) => {
+      pendingFriendRequests.clear();
+      incomingRequests.forEach((request) => {
+        pendingFriendRequests.add(request.id);
+      });
+
+      updateFriendsListWithPendingRequests(incomingRequests);
+    },
+    () => {}
+  );
+
+  getOutgoingFriendRequests(
+    currentUser.id,
+    (outgoingRequests) => {
+      outgoingFriendRequests.clear();
+      outgoingRequests.forEach((request) => {
+        outgoingFriendRequests.add(request.id);
+      });
+    },
+    () => {}
+  );
+}
+
 function loadUserProfile() {
   if (!currentUser || !currentUser.id) return;
 
@@ -604,6 +792,8 @@ $(document).ready(function () {
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
     .on("click", ".remove-friend-btn", handleRemoveFriend)
+    .on("click", ".accept-friend-btn", handleAcceptFriendRequest)
+    .on("click", ".decline-friend-btn", handleDeclineFriendRequest)
     .on("click", "#addFriendsBtn", handleAddFriend)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)

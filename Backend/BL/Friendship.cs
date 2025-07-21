@@ -59,5 +59,11 @@ namespace Horizon.BL
             var friendshipService = new FriendshipService();
             return friendshipService.GetPendingRequests(userId);
         }
+
+        public static List<FriendDto> GetOutgoingRequests(int userId)
+        {
+            var friendshipService = new FriendshipService();
+            return friendshipService.GetOutgoingRequests(userId);
+        }
     }
 }
