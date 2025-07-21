@@ -211,16 +211,35 @@ function handleAddFriend() {
 }
 
 function showAddFriendDialog() {
-  $("#add-friend-dialog").remove();
+  if ($("#add-friend-dialog").length > 0) {
+    return;
+  }
 
   const dialogHtml = `
     <div id="add-friend-dialog" class="dialog-popup add-friend-dialog">
-      <div class="dialog-content-wrapper"></div>
+      <div class="dialog-content-wrapper">
+        <div id="add-friend-initial-state">
+          <p class="dialog-message">Add Friend</p>
+          <div class="add-friend-form">
+            <div class="search-input-row">
+              <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
+              <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
+            </div>
+          </div>
+        </div>
+        <div id="add-friend-results-state" style="display: none;">
+          <div class="results-header">
+            <button id="backToSearchBtn" class="back-btn"><img src="../sources/icons/arrow-left-svgrepo-com.svg" alt="Back"></button>
+            <p class="dialog-message">Search Results</p>
+          </div>
+          <div id="searchResultsSection" class="search-results-section"></div>
+        </div>
+      </div>
     </div>
   `;
 
   $("body").append(dialogHtml);
-  showInitialAddFriendState();
+  showInitialAddFriendState(true);
 
   setTimeout(() => {
     $("#add-friend-dialog").addClass("show");
@@ -231,22 +250,6 @@ function showAddFriendDialog() {
       closeAddFriendDialog();
     }
   });
-}
-
-function showInitialAddFriendState() {
-  const wrapper = $("#add-friend-dialog .dialog-content-wrapper");
-  const initialContent = `
-    <p class="dialog-message">Add Friend</p>
-    <div class="add-friend-form">
-      <div class="search-input-row">
-        <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
-        <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
-      </div>
-    </div>
-  `;
-  wrapper.html(initialContent);
-
-  $("#friendEmailInput").focus();
 
   $("#searchUserButton").on("click", function (e) {
     handleUserSearch(e);
@@ -260,6 +263,23 @@ function showInitialAddFriendState() {
   $("#friendEmailInput").on("input", function () {
     $(this).removeClass("error");
   });
+  $("#backToSearchBtn").on("click", () => showInitialAddFriendState(false));
+}
+
+function showInitialAddFriendState(isFirstTime) {
+  const initialContent = $("#add-friend-initial-state");
+  const resultsContent = $("#add-friend-results-state");
+
+  if (!isFirstTime) {
+    resultsContent.fadeOut(200, function () {
+      initialContent.fadeIn(200);
+    });
+  } else {
+    resultsContent.hide();
+    initialContent.show();
+  }
+
+  $("#friendEmailInput").val("").focus();
 }
 
 function closeAddFriendDialog() {
@@ -292,8 +312,14 @@ function handleUserSearch(e) {
     return;
   }
 
-  const wrapper = $("#add-friend-dialog .dialog-content-wrapper");
-  wrapper.html('<div class="loading-spinner"></div><p>Searching...</p>');
+  const initialContent = $("#add-friend-initial-state");
+  const resultsContent = $("#add-friend-results-state");
+  const resultsSection = $("#searchResultsSection");
+
+  resultsSection.html('<div class="loading-spinner"></div><p>Searching...</p>');
+  initialContent.fadeOut(200, function () {
+    resultsContent.fadeIn(200);
+  });
 
   searchUsers(
     email,
@@ -302,7 +328,7 @@ function handleUserSearch(e) {
     },
     (error) => {
       console.error("Search error:", error);
-      showInitialAddFriendState(); // Reset to initial state on error
+      showInitialAddFriendState(false);
       UIManager.showPopup("Error searching for users.", false);
       $("#friendEmailInput").addClass("error");
     }
@@ -310,7 +336,7 @@ function handleUserSearch(e) {
 }
 
 function displaySearchResults(users, searchedEmail) {
-  const wrapper = $("#add-friend-dialog .dialog-content-wrapper");
+  const resultsSection = $("#searchResultsSection");
 
   let resultsHtml;
   const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
@@ -337,20 +363,9 @@ function displaySearchResults(users, searchedEmail) {
     resultsHtml = `<div class="user-search-results">${userItems}</div>`;
   }
 
-  const finalHtml = `
-    <div class="results-header">
-      <button id="backToSearchBtn" class="back-btn"><img src="../sources/icons/arrow-left-svgrepo-com.svg" alt="Back"></button>
-      <p class="dialog-message">Search Results</p>
-    </div>
-    <div id="searchResultsSection" class="search-results-section">
-      ${resultsHtml}
-    </div>
-  `;
-
-  wrapper.html(finalHtml);
+  resultsSection.html(resultsHtml);
 
   $(".send-friend-request-btn").on("click", handleSendFriendRequest);
-  $("#backToSearchBtn").on("click", showInitialAddFriendState);
 }
 
 function isAlreadyFriend(userId) {
