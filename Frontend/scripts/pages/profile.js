@@ -207,85 +207,82 @@ function handleInterestListItemSelection(e) {
 }
 
 function handleAddFriend() {
-  showAddFriendPopup();
+  showAddFriendDialog();
 }
 
-function showAddFriendPopup() {
-  $("#addFriendPopup").remove();
+function showAddFriendDialog() {
+  $("#add-friend-dialog").remove();
 
-  const popupHtml = `
-    <div id="addFriendPopup" class="custom-popup">
-      <div class="popup-content">
-        <div class="popup-header">
-          <h3>Add Friend</h3>
-          <button type="button" class="close-popup">&times;</button>
+  const dialogHtml = `
+    <div id="add-friend-dialog" class="dialog-popup add-friend-dialog">
+      <p class="dialog-message">Add Friend</p>
+      <div class="add-friend-form">
+        <div class="search-input-row">
+          <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
+          <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
         </div>
-        <div class="popup-body">
-          <div class="form-group">
-            <label for="friendEmail">Search by Email:</label>
-            <input type="email" id="friendEmail" class="form-control" placeholder="Enter email address..." />
-          </div>
-          <div id="searchResults" class="search-results" style="display: none;">
-            <h4>Search Results:</h4>
-            <div id="userSearchList"></div>
-          </div>
-        </div>
-        <div class="popup-footer">
-          <button type="button" id="searchUserBtn" class="auth-button">Search</button>
+        <div id="searchResultsSection" class="search-results-section" style="display: none;">
+          <div id="userSearchResults" class="user-search-results"></div>
         </div>
       </div>
     </div>
   `;
 
-  $("body").append(popupHtml);
+  $("body").append(dialogHtml);
 
   setTimeout(() => {
-    $("#addFriendPopup").addClass("show");
+    $("#add-friend-dialog").addClass("show");
   }, 10);
 
-  $("#friendEmail").focus();
+  $("#friendEmailInput").focus();
 
-  $("#friendEmail").on("keypress", function (e) {
+  $("#friendEmailInput").on("keypress", function (e) {
     if (e.which === 13) {
       handleUserSearch();
     }
   });
 
-  $("#searchUserBtn").on("click", handleUserSearch);
-
-  $(".close-popup").on("click", function () {
-    closeAddFriendPopup();
+  $("#friendEmailInput").on("input", function () {
+    $(this).removeClass("error");
   });
 
-  $("#addFriendPopup").on("click", function (e) {
-    if (e.target === this) {
-      closeAddFriendPopup();
+  $("#searchUserButton").on("click", handleUserSearch);
+
+  $(document).on("click.addFriend", function (e) {
+    if (!$(e.target).closest("#add-friend-dialog").length) {
+      closeAddFriendDialog();
     }
   });
 }
 
-function closeAddFriendPopup() {
-  $("#addFriendPopup").removeClass("show");
+function closeAddFriendDialog() {
+  $("#add-friend-dialog").removeClass("show");
   setTimeout(() => {
-    $("#addFriendPopup").remove();
-  }, 300);
+    $("#add-friend-dialog").remove();
+    $(document).off("click.addFriend");
+  }, 400);
 }
 
 function handleUserSearch() {
-  const email = $("#friendEmail").val().trim();
+  const email = $("#friendEmailInput").val().trim();
+  const emailInput = $("#friendEmailInput");
+
+  emailInput.removeClass("error");
 
   if (!email) {
-    UIManager.showPopup("Please enter an email address.", false);
+    emailInput.addClass("error");
+    setTimeout(() => emailInput.removeClass("error"), 2000);
     return;
   }
 
   const emailValidation = ValidationManager.validateEmail(email);
   if (!emailValidation.valid) {
-    UIManager.showPopup(emailValidation.message, false);
+    emailInput.addClass("error");
+    setTimeout(() => emailInput.removeClass("error"), 2000);
     return;
   }
 
-  const searchBtn = $("#searchUserBtn");
+  const searchBtn = $("#searchUserButton");
   const originalText = searchBtn.text();
   searchBtn.text("Searching...").prop("disabled", true);
 
@@ -298,24 +295,24 @@ function handleUserSearch() {
     (error) => {
       searchBtn.text(originalText).prop("disabled", false);
       console.error("Search error:", error);
-      UIManager.showPopup("Failed to search for users. Please try again.", false);
+      emailInput.addClass("error");
     }
   );
 }
 
 function displaySearchResults(users, searchedEmail) {
-  const resultsContainer = $("#searchResults");
-  const userList = $("#userSearchList");
+  const resultsContainer = $("#searchResultsSection");
+  const userList = $("#userSearchResults");
 
   userList.empty();
 
   if (users.length === 0) {
-    userList.html(`<p class="empty-list-message">No users found with email containing "${searchedEmail}".</p>`);
+    userList.html(`<p class="empty-search-message">No users found with email containing "${searchedEmail}".</p>`);
   } else {
     const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
 
     if (filteredUsers.length === 0) {
-      userList.html(`<p class="empty-list-message">No new users found. They might already be your friends or blocked.</p>`);
+      userList.html(`<p class="empty-search-message">No new users found. They might already be your friends or blocked.</p>`);
     } else {
       filteredUsers.forEach((user) => {
         const userHtml = `
@@ -325,7 +322,7 @@ function displaySearchResults(users, searchedEmail) {
               <span class="user-list-name">${user.fullName}</span>
               <span class="user-email">${user.email}</span>
             </div>
-            <button type="button" class="send-friend-request-btn auth-button" data-user-id="${user.id}" data-user-name="${user.fullName}">
+            <button type="button" class="send-friend-request-btn" data-user-id="${user.id}" data-user-name="${user.fullName}">
               Send Request
             </button>
           </div>
