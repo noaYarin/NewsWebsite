@@ -34,6 +34,12 @@
 
 #markAllReadBtn {
   color: var(--c-dark);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+#markAllReadBtn:hover {
+  color: var(--c-dark-light);
 }
 
 #refreshBtn {
@@ -48,8 +54,8 @@
 }
 
 #refreshBtn img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 /* Enhanced Tab Navigation with Sliding Indicator */

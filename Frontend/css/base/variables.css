@@ -3,6 +3,7 @@
   --c-primary: #ffcc00;
   --c-primary-light: #ffe44c;
   --c-dark: #000000;
+  --c-dark-light: #444444;
   --c-light: #ffffff;
   --c-text-muted: #666666;
   --c-text-subtle: #999999;
@@ -40,4 +41,5 @@
   /* Transitions */
   --transition-fast: 0.3s ease;
   --transition-medium: 0.4s ease;
+  --transition-slow: 0.5s ease;
 }
