@@ -215,43 +215,50 @@ function showAddFriendDialog() {
 
   const dialogHtml = `
     <div id="add-friend-dialog" class="dialog-popup add-friend-dialog">
-      <p class="dialog-message">Add Friend</p>
-      <div class="add-friend-form">
-        <div class="search-input-row">
-          <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
-          <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
-        </div>
-        <div id="searchResultsSection" class="search-results-section" style="display: none;">
-          <div id="userSearchResults" class="user-search-results"></div>
-        </div>
-      </div>
+      <div class="dialog-content-wrapper"></div>
     </div>
   `;
 
   $("body").append(dialogHtml);
+  showInitialAddFriendState();
 
   setTimeout(() => {
     $("#add-friend-dialog").addClass("show");
   }, 10);
 
-  $("#friendEmailInput").focus();
-
-  $("#friendEmailInput").on("keypress", function (e) {
-    if (e.which === 13) {
-      handleUserSearch();
-    }
-  });
-
-  $("#friendEmailInput").on("input", function () {
-    $(this).removeClass("error");
-  });
-
-  $("#searchUserButton").on("click", handleUserSearch);
-
   $(document).on("click.addFriend", function (e) {
     if (!$(e.target).closest("#add-friend-dialog").length) {
       closeAddFriendDialog();
     }
+  });
+}
+
+function showInitialAddFriendState() {
+  const wrapper = $("#add-friend-dialog .dialog-content-wrapper");
+  const initialContent = `
+    <p class="dialog-message">Add Friend</p>
+    <div class="add-friend-form">
+      <div class="search-input-row">
+        <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
+        <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
+      </div>
+    </div>
+  `;
+  wrapper.html(initialContent);
+
+  $("#friendEmailInput").focus();
+
+  $("#searchUserButton").on("click", function (e) {
+    handleUserSearch(e);
+  });
+  $("#friendEmailInput").on("keypress", function (e) {
+    if (e.which === 13) {
+      e.preventDefault();
+      handleUserSearch(e);
+    }
+  });
+  $("#friendEmailInput").on("input", function () {
+    $(this).removeClass("error");
   });
 }
 
@@ -263,7 +270,10 @@ function closeAddFriendDialog() {
   }, 400);
 }
 
-function handleUserSearch() {
+function handleUserSearch(e) {
+  if (e) {
+    e.stopPropagation();
+  }
   const email = $("#friendEmailInput").val().trim();
   const emailInput = $("#friendEmailInput");
 
@@ -282,59 +292,65 @@ function handleUserSearch() {
     return;
   }
 
-  const searchBtn = $("#searchUserButton");
-  const originalText = searchBtn.text();
-  searchBtn.text("Searching...").prop("disabled", true);
+  const wrapper = $("#add-friend-dialog .dialog-content-wrapper");
+  wrapper.html('<div class="loading-spinner"></div><p>Searching...</p>');
 
   searchUsers(
     email,
     (users) => {
-      searchBtn.text(originalText).prop("disabled", false);
       displaySearchResults(users, email);
     },
     (error) => {
-      searchBtn.text(originalText).prop("disabled", false);
       console.error("Search error:", error);
-      emailInput.addClass("error");
+      showInitialAddFriendState(); // Reset to initial state on error
+      UIManager.showPopup("Error searching for users.", false);
+      $("#friendEmailInput").addClass("error");
     }
   );
 }
 
 function displaySearchResults(users, searchedEmail) {
-  const resultsContainer = $("#searchResultsSection");
-  const userList = $("#userSearchResults");
+  const wrapper = $("#add-friend-dialog .dialog-content-wrapper");
 
-  userList.empty();
+  let resultsHtml;
+  const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
 
-  if (users.length === 0) {
-    userList.html(`<p class="empty-search-message">No users found with email containing "${searchedEmail}".</p>`);
+  if (filteredUsers.length === 0) {
+    resultsHtml = '<p class="empty-search-message">No new users found.</p>';
   } else {
-    const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
-
-    if (filteredUsers.length === 0) {
-      userList.html(`<p class="empty-search-message">No new users found. They might already be your friends or blocked.</p>`);
-    } else {
-      filteredUsers.forEach((user) => {
-        const userHtml = `
-          <div class="user-search-item" data-user-id="${user.id}">
-            <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
-            <div class="user-info">
-              <span class="user-list-name">${user.fullName}</span>
-              <span class="user-email">${user.email}</span>
-            </div>
-            <button type="button" class="send-friend-request-btn" data-user-id="${user.id}" data-user-name="${user.fullName}">
-              Send Request
-            </button>
+    const userItems = filteredUsers
+      .map((user) => {
+        return `
+        <div class="user-search-item" data-user-id="${user.id}">
+          <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
+          <div class="user-info">
+            <span class="user-list-name">${user.fullName}</span>
+            <span class="user-email">${user.email}</span>
           </div>
-        `;
-        userList.append(userHtml);
-      });
-
-      $(".send-friend-request-btn").on("click", handleSendFriendRequest);
-    }
+          <button type="button" class="send-friend-request-btn" data-user-id="${user.id}" data-user-name="${user.fullName}">
+            Send Request
+          </button>
+        </div>
+      `;
+      })
+      .join("");
+    resultsHtml = `<div class="user-search-results">${userItems}</div>`;
   }
 
-  resultsContainer.show();
+  const finalHtml = `
+    <div class="results-header">
+      <button id="backToSearchBtn" class="back-btn"><img src="../sources/icons/arrow-left-svgrepo-com.svg" alt="Back"></button>
+      <p class="dialog-message">Search Results</p>
+    </div>
+    <div id="searchResultsSection" class="search-results-section">
+      ${resultsHtml}
+    </div>
+  `;
+
+  wrapper.html(finalHtml);
+
+  $(".send-friend-request-btn").on("click", handleSendFriendRequest);
+  $("#backToSearchBtn").on("click", showInitialAddFriendState);
 }
 
 function isAlreadyFriend(userId) {
