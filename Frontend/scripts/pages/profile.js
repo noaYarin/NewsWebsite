@@ -274,6 +274,7 @@ function handleUserSearch(e) {
   emailInput.removeClass("error");
 
   if (!email) {
+    resultsSection.removeClass("show");
     emailInput.addClass("error");
     setTimeout(() => emailInput.removeClass("error"), 2000);
     return;
@@ -281,17 +282,29 @@ function handleUserSearch(e) {
 
   const emailValidation = ValidationManager.validateEmail(email);
   if (!emailValidation.valid) {
+    resultsSection.removeClass("show");
     emailInput.addClass("error");
     setTimeout(() => emailInput.removeClass("error"), 2000);
     return;
   }
 
-  resultsSection.html('<div class="loading-spinner"></div>');
+  if (resultsSection.hasClass("show")) {
+    resultsSection.removeClass("show");
+    setTimeout(() => {
+      performSearch(email, resultsSection);
+    }, 500);
+  } else {
+    performSearch(email, resultsSection);
+  }
+}
+
+function performSearch(email, resultsSection) {
+  resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
 
   searchUsers(
     email,
     (users) => {
-      displaySearchResults(users, email);
+      displaySearchResults(users);
     },
     (error) => {
       console.error("Search error:", error);
