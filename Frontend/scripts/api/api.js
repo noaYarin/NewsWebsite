@@ -53,6 +53,11 @@ function getArticlesByCategoryPaged(category, page, pageSize, successCallback, e
   ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
+function getSummarizedArticle(text, successCallback, errorCallback) {
+  const url = `${articlesEndpoint}/summarize`;
+  ajaxCall("POST", url, JSON.stringify({ articleText: text }), successCallback, errorCallback);
+}
+
 function syncArticles(articleList, successCallback, errorCallback) {
   ajaxCall("POST", `${articlesEndpoint}/sync`, JSON.stringify(articleList), successCallback, errorCallback);
 }

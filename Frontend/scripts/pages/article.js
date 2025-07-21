@@ -37,6 +37,20 @@ function initializeModules() {
   }
 }
 
+$(document).on("click", "#ai-summarize-btn", summarizeArticle);
+
+function summarizeArticle() {
+  getSummarizedArticle(
+    $("#url-source").attr("href"),
+    (result) => {
+      console.log("Summary:", result.summary);
+    },
+    (error) => {
+      console.error("Error:", error);
+    }
+  );
+}
+
 function showArticle() {
   if (!currentArticle) {
     showError();

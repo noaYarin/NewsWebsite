@@ -1,5 +1,6 @@
 ﻿using Horizon.BL;
 using Horizon.DTOs;
+using Horizon.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Horizon.Controllers;
@@ -8,6 +9,13 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
+    private readonly HuggingFaceSummarizer _summarizer;
+
+    public ArticlesController(HuggingFaceSummarizer summarizer)
+    {
+        _summarizer = summarizer;
+    }
+
     [HttpGet("search")]
     public IActionResult SearchArticles([FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
@@ -92,4 +100,21 @@ public class ArticlesController : ControllerBase
             return StatusCode(500, "Could not retrieve paged articles.");
         }
     }
+    [HttpPost("summarize")]
+    public async Task<IActionResult> SummarizeArticle([FromBody] SummarizeRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.ArticleUrl))
+            return BadRequest("No text provided.");
+
+        try
+        {
+            var summary = await _summarizer.SummarizeAsync(request.ArticleUrl);
+            return Ok(new { summary });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while summarizing the article.");
+        }
+    }
+
 }
