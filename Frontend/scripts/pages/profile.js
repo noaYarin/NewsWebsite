@@ -1,6 +1,7 @@
 let currentUser = null;
 let selectedInterests = [];
 let originalFormState = null;
+let lastSearchedEmail = null;
 
 const validationMap = {
   firstName: (val) => ValidationManager.validateName(val, "First name"),
@@ -260,6 +261,7 @@ function closeAddFriendDialog() {
   setTimeout(() => {
     $("#add-friend-dialog").remove();
     $(document).off("click.addFriend");
+    lastSearchedEmail = null;
   }, 400);
 }
 
@@ -270,6 +272,10 @@ function handleUserSearch(e) {
   const email = $("#friendEmailInput").val().trim();
   const emailInput = $("#friendEmailInput");
   const resultsSection = $("#searchResultsSection");
+
+  if (email === lastSearchedEmail) {
+    return;
+  }
 
   emailInput.removeClass("error");
 
@@ -287,6 +293,8 @@ function handleUserSearch(e) {
     setTimeout(() => emailInput.removeClass("error"), 2000);
     return;
   }
+
+  lastSearchedEmail = email;
 
   if (resultsSection.hasClass("show")) {
     resultsSection.removeClass("show");
