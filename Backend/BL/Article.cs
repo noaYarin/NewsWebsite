@@ -1,35 +1,78 @@
-﻿using System.Xml.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Horizon.DAL;
+using Horizon.DTOs;
 
-namespace Horizon.BL
+namespace Horizon.BL;
+
+public class Article
 {
-    public class Article
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Url { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? Description { get; set; }
+    public string? Author { get; set; }
+    public string? SourceName { get; set; }
+    public DateTime? PublishedAt { get; set; }
+    public string? Category { get; set; }
+
+    public Article() { }
+
+    public Article(int id, string title, string url, string? imageUrl, string? description,
+                   string? author, string? sourceName, DateTime? publishedAt, string? category)
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public string Title { get; set; }
-        public DateTime PublishDate { get; set; }
-        public List<Tag> Tags { get; set; }
-        public List<Comment> Comments { get; set; }
-        public List<Report> Reports { get; set; }
+        Id = id;
+        Title = title;
+        Url = url;
+        ImageUrl = imageUrl;
+        Description = description;
+        Author = author;
+        SourceName = sourceName;
+        PublishedAt = publishedAt;
+        Category = category;
+    }
 
-        public Article(int id, int userId, string title, DateTime publishDate, List<Tag> tags, List<Comment> comments, List<Report> reports)
+    public static Article GetById(int id)
+    {
+        var articleService = new ArticleService();
+        return articleService.GetArticleById(id);
+    }
+
+    public static List<Article> Sync(List<ArticleSyncDto> articlesFromAPI)
+    {
+        var articleService = new ArticleService();
+        var urls = articlesFromAPI.Select(a => a.Url).ToList();
+
+        var existingArticles = articleService.GetArticlesByUrls(urls);
+        var existingUrls = existingArticles.Select(a => a.Url).ToHashSet();
+
+        var newArticleDtos = articlesFromAPI.Where(a => !existingUrls.Contains(a.Url)).ToList();
+
+        if (newArticleDtos.Any())
         {
-            Id = id;
-            UserId = userId;
-            Title = title;
-            PublishDate = publishDate;
-            Tags = tags;
-            Comments = comments;
-            Reports = reports;
+            articleService.BulkInsert(newArticleDtos);
+            return articleService.GetArticlesByUrls(urls);
         }
 
-        public Article() { }
+        return existingArticles;
+    }
 
-        public List<Article> Read()
-        {
-            DBservices db = new DBservices();
-            return db.GetAllArticles();
-        }
+    public static List<Article> GetRecentByCategory(string categoryName, int count)
+    {
+        var articleService = new ArticleService();
+        return articleService.FetchRecentByCategory(categoryName, count);
+    }
 
+    public static List<Article> GetRecentByCategoryPaged(string categoryName, int page, int pageSize)
+    {
+        var articleService = new ArticleService();
+        return articleService.FetchRecentByCategoryPaged(categoryName, page, pageSize);
+    }
+
+    public static List<Article> Search(string searchTerm, int page, int pageSize)
+    {
+        var articleService = new ArticleService();
+        return articleService.SearchArticles(searchTerm, page, pageSize);
     }
 }

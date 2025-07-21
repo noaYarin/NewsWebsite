@@ -1,0 +1,46 @@
+:root {
+  /* Color Palette */
+  --c-primary: #ffcc00;
+  --c-primary-light: #ffe44c;
+  --c-dark: #000000;
+  --c-dark-light: #444444;
+  --c-light: #ffffff;
+  --c-light-hover: #f8f8f8;
+  --c-text-muted: #666666;
+  --c-text-subtle: #999999;
+  --c-text-footer: #aaaaaa;
+  --c-border-light: #eeeeee;
+  --c-border-medium: #cccccc;
+  --c-border-dark: #252525;
+  --c-placeholder: #888888;
+  --c-input-bg: #f8f9fa;
+  --c-input-border: #e9ecef;
+  --c-red: #dc3545;
+  --c-yellow: #ffc107;
+  --c-green: #28a745;
+  --c-primary-rgb: 255, 204, 0;
+
+  /* Typography */
+  --font-primary: "GeographWeb", sans-serif;
+  --webkit-line-clamp: 3;
+
+  /* Layout & Spacing */
+  --navbar-height-desktop: 65px;
+  --footer-height-desktop: 70px;
+  --navbar-height-mobile: 60px;
+  --footer-height-mobile: 110px;
+  --container-max-width: 1080px;
+  --keyboard-inset: 0px;
+
+  /* Z-Index Scale */
+  --z-overlay-content: 100;
+  --z-footer: 999;
+  --z-fixed-element: 1000;
+  --z-dropdown: 1050;
+  --z-modal: 1100;
+
+  /* Transitions */
+  --transition-fast: 0.3s ease;
+  --transition-medium: 0.4s ease;
+  --transition-slow: 0.5s ease;
+}

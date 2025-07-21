@@ -1,26 +1,68 @@
 ﻿namespace Horizon.BL
 {
+    using Horizon.DAL;
+    using Horizon.DTOs;
+
     public class Comment
     {
         public int Id { get; set; }
-        public int ArticleId { get; set; }
-        public int UserId { get; set; }
         public string Content { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; } //need to add update func dont we ?
-        public List<Report> Reports { get; set; }
-
-        public Comment(int id, int articleId, int userId, string content, DateTime createdAt, DateTime updatedAt, List<Report> reports)
-        {
-            Id = id;
-            ArticleId = articleId;
-            UserId = userId;
-            Content = content;
-            CreatedAt = createdAt;
-            UpdatedAt = updatedAt;
-            Reports = reports;
-        }
+        public int AuthorId { get; set; }
+        public int ArticleId { get; set; }
 
         public Comment() { }
+
+        public Comment(int id, string content, int authorId, int articleId)
+        {
+            Id = id;
+            Content = content;
+            AuthorId = authorId;
+            ArticleId = articleId;
+        }
+
+        public bool Add()
+        {
+            var commentService = new CommentService();
+            int newCommentId = commentService.AddComment(this);
+            return newCommentId > 0;
+        }
+
+        public static List<CommentResponseDto> GetByArticleId(int articleId, int? requestingUserId)
+        {
+            var commentService = new CommentService();
+            return commentService.GetCommentsByArticleId(articleId, requestingUserId);
+        }
+
+        public static bool Update(int commentId, int requestingUserId, string content)
+        {
+            var commentService = new CommentService();
+            return commentService.UpdateComment(commentId, requestingUserId, content);
+        }
+
+        public static bool Delete(int commentId, int requestingUserId)
+        {
+            var commentService = new CommentService();
+            return commentService.DeleteComment(commentId, requestingUserId);
+        }
+
+        public static bool ToggleLike(int commentId, int userId)
+        {
+            var commentService = new CommentService();
+            (bool isLiked, int commentAuthorId) = commentService.ToggleCommentLike(commentId, userId);
+
+            if (isLiked && userId != commentAuthorId)
+            {
+                var notificationService = new NotificationService();
+                notificationService.InsertNotification(
+                    recipientId: commentAuthorId,
+                    senderId: userId,
+                    notificationType: NotificationType.CommentLike,
+                    relatedEntityId: commentId,
+                    message: null
+                );
+            }
+
+            return isLiked;
+        }
     }
 }

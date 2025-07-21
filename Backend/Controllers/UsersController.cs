@@ -1,148 +1,159 @@
 ﻿using Horizon.BL;
+using Horizon.DTOs;
+using Horizon.Validators;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+namespace Horizon.Controllers;
 
-namespace Horizon.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class UsersController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    [HttpGet]
+    public IActionResult GetUsers([FromQuery] string? searchTerm)
     {
-        // GET: api/<UsersController>
-        [HttpGet]
-        public IEnumerable<User> Get()
+        try
         {
-            User user = new User();
-            return user.Read();
-        }
-
-
-        // register
-        [HttpPost("register")]
-        public bool Post([FromBody] User user)
-        {
-            return user.Register();
-        }
-
-        // login
-        [HttpPost("logIn")]
-        public User? Post([FromBody] JsonElement data)
-        {
-            string email = data.GetProperty("email").GetString();
-            string password = data.GetProperty("hashedPassword").GetString();
-            User user = new User();
-            return user.LogIn(email,password);
-        }
-
-        // Add user tags
-        [HttpPost("userTags")]
-        public int InsertUserTags([FromBody] JsonElement data)
-        {
-            int userId = data.GetProperty("UserId").GetInt32();
-
-            Tag tag = new Tag
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                Name = data.GetProperty("Name").GetString()
-            };
+                var searchedUsers = Horizon.BL.User.SearchByEmail(searchTerm);
+                return Ok(searchedUsers);
+            }
 
-            User user = new User();
-            return user.AddUserTags(userId, tag);
+            var allUsers = Horizon.BL.User.GetAll();
+            return Ok(allUsers);
         }
-
-        //Add user articles
-
-        [HttpPost("userArticles")]
-        public int InsertUserSavedArticles([FromBody] JsonElement data)
+        catch (Exception ex)
         {
-            int userId = data.GetProperty("UserId").GetInt32();
-
-            Article article = new Article
-            {
-                UserId = userId,
-                Title = data.GetProperty("Title").GetString(),
-                Tags = new List<Tag>(),
-                Comments = new List<Comment>(),
-                Reports = new List<Report>()
-            };
-
-            User user = new User();
-            return user.SavedUserArticles(userId, article);
+            return StatusCode(500, "An error occurred while retrieving users.");
         }
+    }
 
-        // Add blocked user 
-        [HttpPost("blockedUsers")]
-        public int InsertBlockedUser([FromBody] JsonElement data)
+    [HttpGet("exists/{email}")]
+    public IActionResult UserExists(string email)
+    {
+        bool exists = Horizon.BL.User.UserExists(email);
+        return Ok(exists);
+    }
+
+    [HttpPost("register")]
+    public IActionResult Register([FromBody] RegisterRequestDto request)
+    {
+        List<string> validationErrors = RequestValidator.ValidateRegistrationRequest(request);
+        if (validationErrors.Any())
         {
-            int userId = data.GetProperty("UserId").GetInt32();
-
-            User blockedUser = new User
-            {
-
-                Id = userId,
-                Email = data.GetProperty("Email").GetString(),
-                FirstName = data.GetProperty("FirstName").GetString(),
-                LastName = data.GetProperty("LastName").GetString(),
-                BirthDate = data.GetProperty("BirthDate").GetString(),
-                ImgUrl = data.GetProperty("ImgUrl").GetString(),
-                IsAdmin = data.GetProperty("IsAdmin").GetBoolean(),
-                IsLocked = data.GetProperty("IsLocked").GetBoolean(),
-                HashedPassword = data.GetProperty("HashedPassword").GetString(),
-                Tags = new List<Tag>(),
-                BlockedUsers = new List<User>(),
-                SavedArticles = new List<Article>()
-            };
-
-            User user = new User();
-            return user.AddBlockedUser(userId, blockedUser);
+            return BadRequest(new { errors = validationErrors });
         }
 
-
-        // GET api/<UsersController>/5
-        [HttpGet("{id}")]
-        public User Get(int id)
+        var user = new User
         {
-            User user = new User();
-            return user.GetUserById(id);
-        }
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            BirthDate = request.BirthDate,
+        };
 
-        // PUT api/<UsersController>/5
-        [HttpPut("{id}")]
-        public bool Put(int id, [FromBody] User updatedUser)
+        List<string> tagNames = request.Tags.Select(t => t.Name).ToList();
+        string result = user.Register(request.Password, tagNames);
+
+        return result switch
         {
-            User user = new User();
-            return user.UpdateUser(id, updatedUser);
-        }
+            "SUCCESS" => Ok(new { message = "User registered successfully." }),
+            "USER_EXISTS" => Conflict("This email address is already in use."),
+            "INVALID_TAGS" => BadRequest("One or more selected interests are invalid."),
+            _ => StatusCode(500, "Registration failed due to an unknown error.")
+        };
+    }
 
-        // DELETE api/<UsersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] LoginRequestDto request)
+    {
+        User? loggedInUser = Horizon.BL.User.Login(request.Email, request.Password, out List<string> userTags);
+
+        if (loggedInUser == null)
         {
+            return Unauthorized("Invalid email or password.");
         }
 
-        // Delete saved Article
-        [HttpDelete("deleteSavedArticle/{userId}/{articleId}")]
-        public int DeleteSavedArticle(int userId, int articleId)
+        if (loggedInUser.IsLocked)
         {
-            User user = new User();
-            return user.DeleteSavedArticle(userId,articleId);
+            return StatusCode(403, "Your account is locked. Please contact support.");
         }
 
-        // Delete user tag
-        [HttpDelete("deleteUserTag/{userId}/{tagId}")]
-        public int DeleteUserTag(int userId, int tagId)
+        var response = new UserResponseDto
         {
-            User user = new User();
-            return user.DeleteUserTag(userId, tagId);
+            Id = loggedInUser.Id.Value,
+            Email = loggedInUser.Email,
+            FirstName = loggedInUser.FirstName,
+            LastName = loggedInUser.LastName,
+            ImageUrl = loggedInUser.ImageUrl,
+            Interests = userTags,
+            IsAdmin = loggedInUser.IsAdmin,
+            IsLocked = loggedInUser.IsLocked
+        };
+        return Ok(response);
+    }
+
+    [HttpGet("profile/{id}")]
+    public IActionResult GetProfile(int id)
+    {
+        var profileDto = Horizon.BL.User.GetUserProfile(id);
+        if (profileDto == null) return NotFound();
+
+        return Ok(profileDto);
+    }
+
+    [HttpPut("profile/{id}")]
+    public IActionResult UpdateProfile(int id, [FromBody] UpdateProfileRequestDto request)
+    {
+        List<string> validationErrors = RequestValidator.ValidateProfileUpdateRequest(request);
+        if (validationErrors.Any())
+        {
+            return BadRequest(new { errors = validationErrors });
         }
 
-
-        // Delete blocked User
-        [HttpDelete("deleteBlockedUser/{userId}/{blockedUserId}")]
-        public int DeleteBlockedUser(int userId,int blockedUserId)
-        {   User user = new User();
-            return user.DeleteBlockedUser(userId, blockedUserId);
+        try
+        {
+            UserResponseDto? response = Horizon.BL.User.UpdateUserProfile(id, request);
+            return Ok(response);
         }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while updating the profile.");
+        }
+    }
+
+    [HttpPost("{userId}/toggle-block/{userToBlockId}")]
+    public IActionResult ToggleBlock(int userId, int userToBlockId)
+    {
+        try
+        {
+            bool isNowBlocked = Horizon.BL.User.ToggleBlock(userId, userToBlockId);
+            string message = isNowBlocked ? "User blocked successfully." : "User unblocked successfully.";
+            return Ok(new { message = message, isBlocked = isNowBlocked });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "An error occurred while changing the block status.");
+        }
+    }
+
+    [HttpPut("{id}/toggle-status")]
+    public IActionResult ToggleUserStatus(int id, [FromBody] ToggleStatusRequestDto request)
+    {
+        if (request.Attribute != "IsAdmin" && request.Attribute != "IsLocked")
+        {
+            return BadRequest(new { message = "Invalid attribute specified. Use 'IsAdmin' or 'IsLocked'." });
+        }
+
+        var success = Horizon.BL.User.ToggleUserStatus(id, request.Attribute);
+
+        if (!success)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var updatedProfile = Horizon.BL.User.GetUserProfile(id);
+        return Ok(updatedProfile);
     }
 }

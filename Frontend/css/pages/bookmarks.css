@@ -1,0 +1,35 @@
+.bookmarks-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.bookmarks-title {
+  position: relative;
+  z-index: 1;
+  font-size: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 0 20px 20px;
+  letter-spacing: 3.5px;
+  color: var(--c-dark);
+  text-align: center;
+}
+
+.bookmarks-title::after {
+  display: block;
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 4px;
+  background-color: var(--c-primary);
+  margin-bottom: 40px;
+}
+
+#bookmarks-list {
+  margin-top: 30px;
+}

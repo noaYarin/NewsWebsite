@@ -1,122 +1,151 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Collections.Generic;
+using BCrypt.Net;
+using Horizon.DAL;
+using Horizon.DTOs;
 
-namespace Horizon.BL
+namespace Horizon.BL;
+
+public class User
 {
-    public class User
+    public int? Id { get; set; }
+    public string Email { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string BirthDate { get; set; }
+    public string? ImageUrl { get; set; }
+    public bool IsAdmin { get; set; }
+    public bool IsLocked { get; set; }
+    public string HashedPassword { get; set; }
+
+    public User() { }
+
+    public User(int? id, string email, string firstName, string lastName, string birthDate,
+                string? imageUrl, bool isAdmin, bool isLocked, string hashedPassword)
     {
-        public int ?Id { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string BirthDate { get; set; }
-        public string ImgUrl { get; set; }
-        public bool IsAdmin { get; set; }
-        public bool IsLocked { get; set; }
-        public string HashedPassword { get; set; }
-        public List<User> ?BlockedUsers { get; set; }
-        public List<Tag> ?Tags { get; set; }
-        public List<Article> ?SavedArticles { get; set; }
+        Id = id;
+        Email = email;
+        FirstName = firstName;
+        LastName = lastName;
+        BirthDate = birthDate;
+        ImageUrl = imageUrl;
+        IsAdmin = isAdmin;
+        IsLocked = isLocked;
+        HashedPassword = hashedPassword;
+    }
 
-        public User() { }
+    public static List<UserSummaryDto> GetAll()
+    {
+        var userService = new UserService();
+        return userService.GetAllUsers();
+    }
 
-        public List<User> Read()
+    public static List<UserSummaryDto> SearchByEmail(string emailTerm)
+    {
+        var userService = new UserService();
+        return userService.SearchUsersByEmail(emailTerm);
+    }
+
+    public string Register(string plainTextPassword, List<string> tagNames)
+    {
+        UserService userService = new();
+        TagService tagService = new();
+
+        if (userService.GetUserByEmail(this.Email, out _) != null)
         {
-            DBservices db = new DBservices();
-            return db.GetAllUsers();
+            return "USER_EXISTS";
         }
-      
-       public bool Register()
-       {
-            DBservices db = new DBservices();
-            if (!db.IsUserExists(this.Email,"",false))
-            {
-                this.HashedPassword = HashPassword(this.HashedPassword);
-                db.InsertUser(this);
-                return true;
-            }
-          
+
+        if (!tagService.TagsExist(tagNames))
+        {
+            return "INVALID_TAGS";
+        }
+
+        this.HashedPassword = BCrypt.Net.BCrypt.HashPassword(plainTextPassword);
+        int newId = userService.InsertUserAndTags(this, tagNames);
+        return newId > 0 ? "SUCCESS" : "GENERIC_FAILURE";
+    }
+
+    public static User? Login(string email, string password, out List<string> tags)
+    {
+        UserService userService = new UserService();
+        User? userFromDb = userService.GetUserByEmail(email, out tags);
+
+        if (userFromDb != null && BCrypt.Net.BCrypt.Verify(password, userFromDb.HashedPassword))
+        {
+            return userFromDb;
+        }
+
+        tags = new List<string>();
+        return null;
+    }
+
+    public static bool UserExists(string email)
+    {
+        var userService = new UserService();
+        return userService.GetUserByEmail(email, out _) != null;
+    }
+
+    public static UserProfileResponseDto? GetUserProfile(int id)
+    {
+        var userService = new UserService();
+        var user = userService.GetUserById(id);
+        if (user == null) return null;
+
+        var interests = userService.GetUserTags(id);
+        var blockedUsers = userService.GetBlockedUsers(id);
+
+        return new UserProfileResponseDto
+        {
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            BirthDate = user.BirthDate,
+            ImageUrl = user.ImageUrl,
+            Interests = interests,
+            BlockedUsers = blockedUsers,
+            IsAdmin = user.IsAdmin,
+            IsLocked = user.IsLocked
+        };
+    }
+
+    public static UserResponseDto? UpdateUserProfile(int id, UpdateProfileRequestDto request)
+    {
+        var userService = new UserService();
+        User updatedUser = userService.UpdateProfile(id, request);
+        if (updatedUser == null) return null;
+
+        var interests = userService.GetUserTags(id);
+        return new UserResponseDto
+        {
+            Id = updatedUser.Id.Value,
+            Email = updatedUser.Email,
+            FirstName = updatedUser.FirstName,
+            LastName = updatedUser.LastName,
+            ImageUrl = updatedUser.ImageUrl,
+            Interests = interests,
+            IsAdmin = updatedUser.IsAdmin,
+            IsLocked = updatedUser.IsLocked
+        };
+    }
+
+    public static bool ToggleUserStatus(int userId, string attribute)
+    {
+        var userService = new UserService();
+        var user = userService.GetUserById(userId);
+        if (user == null)
+        {
             return false;
         }
 
+        userService.ToggleUserStatus(userId, attribute);
+        return true;
+    }
 
-        public static string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                Byte[] inputBytes = Encoding.UTF8.GetBytes(password);
-                Byte[] hashBytes = sha256.ComputeHash(inputBytes);
+    public static bool ToggleBlock(int userId, int userToBlockId)
+    {
+        var userService = new UserService();
+        if (userId == userToBlockId) return false;
 
-                string hashedPassword = Convert.ToBase64String(hashBytes);
-                return hashedPassword;
-            }
-
-        }
-      public User LogIn(string email, string password)
-      {
-            DBservices db = new DBservices();
-            string hashedPassword = HashPassword(password);
-
-            if (db.IsUserExists(email, hashedPassword, true))
-            {
-                return db.GetUserByEmail(email);
-            }
-
-            return null;
-      }
-
-        public int AddBlockedUser(int userId, User blockedUser)
-        {
-            DBservices db = new DBservices();
-            return db.InsertBlockedUser(userId, blockedUser);
-        }
-
-        public int AddUserTags(int UserId, Tag tag)
-        {
-            DBservices db = new DBservices();
-            return db.InsertUserTags(UserId, tag);
-        }
-
-        public int SavedUserArticles(int UserId, Article article)
-        {
-            DBservices db = new DBservices();
-            return db.InsertUserSavedArticles(UserId, article);
-        }
-
-        public int DeleteSavedArticle(int userId, int articleId)
-        {
-            DBservices db = new DBservices();
-            return db.DeleteSavedArticle(userId, articleId);
-        }
-
-        public int DeleteUserTag(int userId, int articleId)
-        {
-            DBservices db = new DBservices();
-            return db.DeleteUserTag(userId, articleId);
-        }
-
-        public int DeleteBlockedUser(int userId, int blockedUserId)
-        {
-            DBservices db = new DBservices();
-            return db.DeleteBlockedUser(userId, blockedUserId);
-        }
-
-        public User GetUserById(int id)
-        {
-            DBservices db = new DBservices();
-            return db.GetUserById(id);
-        }
-
-        public bool UpdateUser(int id, User updatedUser)
-        {
-            DBservices db = new DBservices();
-            if (!db.IsUserExists(updatedUser.Email, updatedUser.HashedPassword, false))
-            {
-                updatedUser.HashedPassword = HashPassword(updatedUser.HashedPassword);
-                db.UpdateUser(id, updatedUser);
-                return true;
-            }
-            return false;
-        }
+        return userService.ToggleBlockStatus(userId, userToBlockId);
     }
 }

@@ -5,26 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HORIZON / Home</title>
     <link rel="icon" type="image/x-icon" href="../sources/logo.png" />
-
-    <link rel="preload" href="../sources/fonts/geographweb-regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="../sources/fonts/geographweb-bold.woff2" as="font" type="font/woff2" crossorigin />
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/app.css" />
-    <link rel="stylesheet" href="../css/components.css" />
-    <link rel="stylesheet" href="../css/responsive.css" />
-    <link rel="stylesheet" href="../css/news.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../scripts/components.js"></script>
-    <script src="../scripts/news.js"></script>
+    <script type="module" src="../scripts/core/script-loader.js"></script>
+    <script>
+      $(() => loadPageScripts());
+    </script>
   </head>
-  <body>
+  <body class="home-page">
     <nav id="navbar"></nav>
     <nav id="mobileMenu"></nav>
+    <div id="profileMenu" class="nav-profile-menu"></div>
 
     <main>
-      <!-- Main Content Container -->
       <section id="container">
         <div class="titles text-center">
           <h1>LATEST NEWS</h1>
@@ -36,254 +31,131 @@
 
         <div class="container-fluid px-4">
           <div class="row">
-            <!-- Today's Picks Sidebar -->
             <div class="col-lg-4 col-md-4">
               <div class="today-picks-sidebar">
-                <h2>TODAY'S PICKS</h2>
-
-                <!-- Pick Item 1 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="0"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <h2>TODAY'S NEWS</h2>
+                <div class="pick-item mb-4" data-article-index="0">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
                       <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
+                        <img src="" alt="Article image" class="pick-item-image" data-image-target />
                       </div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Lorem ipsum dolor sit amet consectetur adipiscing elit</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Pick Item 2 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="1"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="1">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
                       <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
+                        <img src="" alt="Article image" class="pick-item-image" data-image-target />
                       </div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Sed do eiusmod tempor incididunt ut labore et dolore</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Pick Item 3 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="2"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="2">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
                       <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
+                        <img src="" alt="Article image" class="pick-item-image" data-image-target />
                       </div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Ut enim ad minim veniam quis nostrud exercitation</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Pick Item 4 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="3"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="3">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
                       <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
+                        <img src="" alt="Article image" class="pick-item-image" data-image-target />
                       </div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Duis aute irure dolor in reprehenderit in voluptate</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Pick Item 5 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="4"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="4">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
                       <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
+                        <img src="" alt="Article image" class="pick-item-image" data-image-target />
                       </div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Excepteur sint occaecat cupidatat non proident</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Pick Item 6 -->
-                <div
-                  class="pick-item mb-2"
-                  data-article-index="5"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-2" data-article-index="5">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
                       <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
+                        <img src="" alt="Article image" class="pick-item-image" data-image-target />
                       </div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Sunt in culpa qui officia deserunt mollit anim</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
                 <div class="mt-4">
-                  <a href="#"><span class="highlight">SEE MORE</span></a>
+                  <a href="#" id="see-more-latest"><span class="highlight">SEE MORE</span></a>
                 </div>
               </div>
             </div>
 
-            <!-- Featured Articles -->
             <div class="col-lg-8 col-md-8">
-              <!-- Main Featured Article -->
-              <div
-                class="featured-article position-relative mb-4"
-                data-article-index="6"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
+              <div class="featured-article position-relative mb-4" data-article-index="6">
+                <a href="../html/article.html" class="website-link">
                   <div class="card bg-dark text-white border-0">
-                    <img src="../sources/images/test.avif" class="card-img" alt="Featured article background" data-image-target />
+                    <img src="" class="card-img" alt="Featured article background" data-image-target />
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                       <div class="row">
                         <div>
-                          <span class="category-tag" data-source-target>LOREM</span>
-                          <h2 class="card-title mb-3 mt-2" data-title-target>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod?</h2>
-                          <span class="explore-button">
-                            <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                            EXPLORE
-                          </span>
+                          <span class="category-tag" data-source-target></span>
+                          <h2 class="card-title mb-3 mt-2" data-title-target></h2>
+                          <span class="explore-button"> <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" /> EXPLORE </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </a>
               </div>
-
               <div class="row">
-                <!-- Article Card 1 -->
                 <div class="col-md-6 mb-4">
-                  <div
-                    class="card article-card"
-                    data-article-index="7"
-                    data-article-url=""
-                    data-article-title=""
-                    data-article-description=""
-                    data-article-image=""
-                    data-article-source=""
-                    data-article-author=""
-                    data-article-published=""
-                  >
-                    <a href="#" class="website-link" data-url-target>
-                      <div class="image-container">
-                        <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                      </div>
+                  <div class="card article-card" data-article-index="7">
+                    <a href="../html/article.html" class="website-link">
+                      <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                       <div class="card-body">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h5 class="card-title" data-title-target>Tempor incididunt ut labore et dolore magna aliqua enim</h5>
-                        <span class="explore-button">
-                          <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                          READ
-                        </span>
+                        <span class="category-tag" data-source-target></span>
+                        <h5 class="card-title" data-title-target></h5>
+                        <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                       </div>
                     </a>
                   </div>
                 </div>
-
-                <!-- Article Card 2 -->
                 <div class="col-md-6 mb-4">
-                  <div
-                    class="card article-card"
-                    data-article-index="8"
-                    data-article-url=""
-                    data-article-title=""
-                    data-article-description=""
-                    data-article-image=""
-                    data-article-source=""
-                    data-article-author=""
-                    data-article-published=""
-                  >
-                    <a href="#" class="website-link" data-url-target>
-                      <div class="image-container">
-                        <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                      </div>
+                  <div class="card article-card" data-article-index="8">
+                    <a href="../html/article.html" class="website-link">
+                      <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                       <div class="card-body">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h5 class="card-title" data-title-target>Veniam quis nostrud exercitation ullamco laboris nisi</h5>
-                        <span class="explore-button">
-                          <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                          READ
-                        </span>
+                        <span class="category-tag" data-source-target></span>
+                        <h5 class="card-title" data-title-target></h5>
+                        <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                       </div>
                     </a>
                   </div>
@@ -294,7 +166,6 @@
         </div>
       </section>
 
-      <!-- Video Background Section -->
       <div class="video-background">
         <video autoplay muted loop class="bg-video">
           <source src="../sources/videos/sports.mp4" type="video/mp4" />
@@ -303,295 +174,157 @@
           <h1 class="video-title">The Great Outdoors</h1>
           <p class="video-description">
             Escape the everyday and answer the call of the wild: discover hidden bike paths that trace rugged coastlines, secret mountain trails that reward every uphill push with
-            breathtaking vistas, and sleepy forest clearings perfect for a picnic at sunset. Whether you're planning a day-trip adventure or mapping out an epic weekend getaway,
-            "The Great Outdoors" will guide you to the roads less traveled and inspire your next journey beneath open skies.
+            breathtaking vistas, and sleepy forest clearings perfect for a picnic at sunset.
           </p>
           <a href="#"><span class="highlight">Start Your Adventure</span></a>
           <div class="discover-more">
             <div class="discover-titles">
               <h4>DISCOVER MORE ON TRAVEL</h4>
-              <a href="#"><span class="highlight">SEE ARTICLES</span></a>
+              <a href="#" id="see-articles-travel"><span class="highlight">SEE ARTICLES</span></a>
             </div>
             <div class="discover-articles-section">
-              <a href="#" class="discover-item" data-article-index="travel-1" data-article-url="" data-article-image="">
-                <img src="../sources/images/test.avif" alt="Article title" data-image-target />
+              <a href="../html/article.html" class="discover-item website-link" data-article-index="travel-1">
+                <img src="" alt="Article title" data-image-target />
               </a>
-              <a href="#" class="discover-item" data-article-index="travel-2" data-article-url="" data-article-image="">
-                <img src="../sources/images/test.avif" alt="Article title" data-image-target />
+              <a href="../html/article.html" class="discover-item website-link" data-article-index="travel-2">
+                <img src="" alt="Article title" data-image-target />
               </a>
-              <a href="#" class="discover-item" data-article-index="travel-3" data-article-url="" data-article-image="">
-                <img src="../sources/images/test.avif" alt="Article title" data-image-target />
+              <a href="../html/article.html" class="discover-item website-link" data-article-index="travel-3">
+                <img src="" alt="Article title" data-image-target />
               </a>
-              <a href="#" class="discover-item" data-article-index="travel-4" data-article-url="" data-article-image="">
-                <img src="../sources/images/test.avif" alt="Article title" data-image-target />
+              <a href="../html/article.html" class="discover-item website-link" data-article-index="travel-4">
+                <img src="" alt="Article title" data-image-target />
               </a>
-              <a href="#" class="discover-item" data-article-index="travel-5" data-article-url="" data-article-image="">
-                <img src="../sources/images/test.avif" alt="Article title" data-image-target />
+              <a href="../html/article.html" class="discover-item website-link" data-article-index="travel-5">
+                <img src="" alt="Article title" data-image-target />
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Secondary Content Container -->
       <section id="secondary-container">
         <div class="titles text-center">
-          <h1 id="month-title">MONTH YEAR NEWS</h1>
+          <h1 id="month-title"></h1>
           <span class="highlight-container"> </span>
         </div>
-
         <div class="container-fluid px-4">
           <div class="row">
             <div class="col-lg-8 col-md-8">
-              <!-- Featured Article June -->
-              <div
-                class="featured-article position-relative mb-4"
-                data-article-index="9"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
+              <div class="featured-article position-relative mb-4" data-article-index="9">
+                <a href="../html/article.html" class="website-link">
                   <div class="card bg-dark text-white border-0">
-                    <img src="../sources/images/test.avif" class="card-img" alt="Featured article background" data-image-target />
+                    <img src="" class="card-img" alt="Featured article background" data-image-target />
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                       <div class="row">
                         <div>
-                          <span class="category-tag" data-source-target>LIFESTYLE</span>
-                          <h2 class="card-title mb-3 mt-2" data-title-target>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod?</h2>
-                          <span class="explore-button">
-                            <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                            EXPLORE
-                          </span>
+                          <span class="category-tag" data-source-target></span>
+                          <h2 class="card-title mb-3 mt-2" data-title-target></h2>
+                          <span class="explore-button"> <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" /> EXPLORE </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </a>
               </div>
-
               <div class="row">
-                <!-- June Article 1 -->
                 <div class="col-md-6 mb-4">
-                  <div
-                    class="card article-card"
-                    data-article-index="10"
-                    data-article-url=""
-                    data-article-title=""
-                    data-article-description=""
-                    data-article-image=""
-                    data-article-source=""
-                    data-article-author=""
-                    data-article-published=""
-                  >
-                    <a href="#" class="website-link" data-url-target>
-                      <div class="image-container">
-                        <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                      </div>
+                  <div class="card article-card" data-article-index="10">
+                    <a href="../html/article.html" class="website-link">
+                      <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                       <div class="card-body">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h5 class="card-title" data-title-target>Tempor incididunt ut labore et dolore magna aliqua enim</h5>
-                        <span class="explore-button">
-                          <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                          READ
-                        </span>
+                        <span class="category-tag" data-source-target></span>
+                        <h5 class="card-title" data-title-target></h5>
+                        <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                       </div>
                     </a>
                   </div>
                 </div>
-
-                <!-- June Article 2 -->
                 <div class="col-md-6 mb-4">
-                  <div
-                    class="card article-card"
-                    data-article-index="11"
-                    data-article-url=""
-                    data-article-title=""
-                    data-article-description=""
-                    data-article-image=""
-                    data-article-source=""
-                    data-article-author=""
-                    data-article-published=""
-                  >
-                    <a href="#" class="website-link" data-url-target>
-                      <div class="image-container">
-                        <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                      </div>
+                  <div class="card article-card" data-article-index="11">
+                    <a href="../html/article.html" class="website-link">
+                      <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                       <div class="card-body">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h5 class="card-title" data-title-target>Veniam quis nostrud exercitation ullamco laboris nisi</h5>
-                        <span class="explore-button">
-                          <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                          READ
-                        </span>
+                        <span class="category-tag" data-source-target></span>
+                        <h5 class="card-title" data-title-target></h5>
+                        <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                       </div>
                     </a>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- This Month Sidebar -->
             <div class="col-lg-4 col-md-4">
               <div class="today-picks-sidebar">
                 <h2>THIS MONTH</h2>
-
-                <!-- Month Pick 1 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="12"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="12">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
-                      <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
-                      </div>
+                      <div class="col-4"><img src="" alt="Article image" class="pick-item-image" data-image-target /></div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Lorem ipsum dolor sit amet consectetur adipiscing elit</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Month Pick 2 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="13"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="13">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
-                      <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
-                      </div>
+                      <div class="col-4"><img src="" alt="Article image" class="pick-item-image" data-image-target /></div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Sed do eiusmod tempor incididunt ut labore et dolore</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Month Pick 3 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="14"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="14">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
-                      <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
-                      </div>
+                      <div class="col-4"><img src="" alt="Article image" class="pick-item-image" data-image-target /></div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Ut enim ad minim veniam quis nostrud exercitation</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Month Pick 4 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="15"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="15">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
-                      <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
-                      </div>
+                      <div class="col-4"><img src="" alt="Article image" class="pick-item-image" data-image-target /></div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Duis aute irure dolor in reprehenderit in voluptate</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Month Pick 5 -->
-                <div
-                  class="pick-item mb-4"
-                  data-article-index="16"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-4" data-article-index="16">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
-                      <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
-                      </div>
+                      <div class="col-4"><img src="" alt="Article image" class="pick-item-image" data-image-target /></div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Excepteur sint occaecat cupidatat non proident</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
-                <!-- Month Pick 6 -->
-                <div
-                  class="pick-item mb-2"
-                  data-article-index="17"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
+                <div class="pick-item mb-2" data-article-index="17">
+                  <a href="../html/article.html" class="website-link">
                     <div class="row">
-                      <div class="col-4">
-                        <img src="../sources/images/test.avif" alt="Article image" class="pick-item-image" data-image-target />
-                      </div>
+                      <div class="col-4"><img src="" alt="Article image" class="pick-item-image" data-image-target /></div>
                       <div class="col-8">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <h6 data-title-target>Sunt in culpa qui officia deserunt mollit anim</h6>
+                        <span class="category-tag" data-source-target></span>
+                        <h6 data-title-target></h6>
                       </div>
                     </div>
                   </a>
                 </div>
-
                 <div class="mt-4">
-                  <a href="#"><span class="highlight">SEE MORE</span></a>
+                  <a href="#" id="see-more-interest1"><span class="highlight">SEE MORE</span></a>
                 </div>
               </div>
             </div>
@@ -599,7 +332,6 @@
         </div>
       </section>
 
-      <!-- Our Picks Section -->
       <div class="our-picks">
         <div class="our-picks-titles">
           <h1>The Horizon Series</h1>
@@ -608,101 +340,50 @@
             <a href="#" class="highlight text-muted">LEARN MORE</a>
           </p>
         </div>
-
         <div class="our-picks-cards">
           <div class="container-fluid px-4">
             <div class="row">
-              <!-- Horizon Pick 1 -->
               <div class="col-md-4 mb-4">
-                <div
-                  class="card our-picks-card"
-                  data-article-index="18"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
-                    <div class="image-container">
-                      <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                    </div>
+                <div class="card our-picks-card" data-article-index="18">
+                  <a href="../html/article.html" class="website-link">
+                    <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                     <div class="card-body">
                       <div class="card-small-title">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <span class="author text-muted" data-author-target>John Doe</span>
+                        <span class="category-tag" data-source-target></span>
+                        <span class="author text-muted" data-author-target></span>
                       </div>
-                      <h5 class="card-title" data-title-target>Lorem ipsum dolor sit amet consectetur adipiscing elit</h5>
-                      <span class="explore-button">
-                        <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                        READ
-                      </span>
+                      <h5 class="card-title" data-title-target></h5>
+                      <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                     </div>
                   </a>
                 </div>
               </div>
-
-              <!-- Horizon Pick 2 -->
               <div class="col-md-4 mb-4">
-                <div
-                  class="card our-picks-card"
-                  data-article-index="19"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
-                    <div class="image-container">
-                      <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                    </div>
+                <div class="card our-picks-card" data-article-index="19">
+                  <a href="../html/article.html" class="website-link">
+                    <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                     <div class="card-body">
                       <div class="card-small-title">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <span class="author text-muted" data-author-target>John Doe</span>
+                        <span class="category-tag" data-source-target></span>
+                        <span class="author text-muted" data-author-target></span>
                       </div>
-                      <h5 class="card-title" data-title-target>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</h5>
-                      <span class="explore-button">
-                        <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                        READ
-                      </span>
+                      <h5 class="card-title" data-title-target></h5>
+                      <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                     </div>
                   </a>
                 </div>
               </div>
-
-              <!-- Horizon Pick 3 -->
               <div class="col-md-4 mb-4">
-                <div
-                  class="card our-picks-card"
-                  data-article-index="20"
-                  data-article-url=""
-                  data-article-title=""
-                  data-article-description=""
-                  data-article-image=""
-                  data-article-source=""
-                  data-article-author=""
-                  data-article-published=""
-                >
-                  <a href="#" class="website-link" data-url-target>
-                    <div class="image-container">
-                      <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                    </div>
+                <div class="card our-picks-card" data-article-index="20">
+                  <a href="../html/article.html" class="website-link">
+                    <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                     <div class="card-body">
                       <div class="card-small-title">
-                        <span class="category-tag" data-source-target>LOREM</span>
-                        <span class="author text-muted" data-author-target>John Doe</span>
+                        <span class="category-tag" data-source-target></span>
+                        <span class="author text-muted" data-author-target></span>
                       </div>
-                      <h5 class="card-title" data-title-target>Ut enim ad minim veniam quis nostrud exercitation</h5>
-                      <span class="explore-button">
-                        <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                        READ
-                      </span>
+                      <h5 class="card-title" data-title-target></h5>
+                      <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                     </div>
                   </a>
                 </div>
@@ -712,7 +393,6 @@
         </div>
       </div>
 
-      <!-- Third Container -->
       <section id="third-container">
         <div class="titles text-center">
           <h1>BEYOND THE HEADLINES</h1>
@@ -720,125 +400,58 @@
         </div>
         <div class="container-fluid px-4">
           <div class="row">
-            <!-- Large Featured Article -->
             <div class="col-12 mb-5">
-              <div
-                class="featured-article featured-article-large position-relative"
-                data-article-index="21"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
+              <div class="featured-article featured-article-large position-relative" data-article-index="21">
+                <a href="../html/article.html" class="website-link">
                   <div class="card bg-dark text-white border-0">
-                    <img src="../sources/images/test.avif" class="card-img" alt="Featured deep dive" data-image-target />
+                    <img src="" class="card-img" alt="Featured deep dive" data-image-target />
                     <div class="card-img-overlay d-flex flex-column justify-content-center align-items-center text-center">
                       <div class="d-flex flex-column justify-content-center align-items-center text-center">
-                        <span class="category-tag mb-3 d-block" data-source-target>LOREM</span>
-                        <h2 class="card-title mb-4 featured-large-title" data-title-target>Lorem ipsum dolor sit amet, consectetur adipiscing elit</h2>
-                        <p class="mb-4 featured-large-description" data-description-target>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </p>
-                        <span class="explore-button">
-                          <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                          READ MORE
-                        </span>
+                        <span class="category-tag mb-3 d-block" data-source-target></span>
+                        <h2 class="card-title mb-4 featured-large-title" data-title-target></h2>
+                        <p class="mb-4 featured-large-description" data-description-target></p>
+                        <span class="explore-button"> <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ MORE </span>
                       </div>
                     </div>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Beyond Headlines Article 1 -->
             <div class="col-lg-4 col-md-4 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="22"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="22">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>LOREM</span>
-                    <h5 class="card-title" data-title-target>Lorem ipsum dolor sit amet</h5>
-                    <p class="card-text" data-description-target>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Beyond Headlines Article 2 -->
             <div class="col-lg-4 col-md-4 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="23"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="23">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>LOREM</span>
-                    <h5 class="card-title" data-title-target>Lorem ipsum dolor sit amet</h5>
-                    <p class="card-text" data-description-target>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Beyond Headlines Article 3 -->
             <div class="col-lg-4 col-md-4 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="24"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="24">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>LOREM</span>
-                    <h5 class="card-title" data-title-target>Lorem ipsum dolor sit amet</h5>
-                    <p class="card-text" data-description-target>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
@@ -847,7 +460,6 @@
         </div>
       </section>
 
-      <!-- Newsletter Section -->
       <section class="newsletter-signup">
         <div class="container">
           <h1 class="fw-bold display-5 mb-3">THE BEST ON THE HORIZON DELIVERED TO YOUR INBOX</h1>
@@ -860,43 +472,25 @@
         </div>
       </section>
 
-      <!-- Additional News Section -->
       <section id="fourth-container">
         <div class="titles text-center">
           <h1>TRENDING NOW</h1>
           <span class="highlight-container"> Stay updated with the most talked-about news shaping our world today. </span>
         </div>
-
         <div class="container-fluid px-4">
           <div class="row">
-            <!-- Main trending article -->
             <div class="col-12 mb-5">
-              <div
-                class="featured-article position-relative"
-                data-article-index="25"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
+              <div class="featured-article position-relative" data-article-index="25">
+                <a href="../html/article.html" class="website-link">
                   <div class="card bg-dark text-white border-0">
-                    <img src="../sources/images/test.avif" class="card-img" alt="Trending article" data-image-target />
+                    <img src="" class="card-img" alt="Trending article" data-image-target />
                     <div class="card-img-overlay d-flex flex-column justify-content-end">
                       <div class="row">
                         <div class="col-lg-8">
-                          <span class="category-tag" data-source-target>LOREM</span>
-                          <h2 class="card-title mb-3 mt-2" data-title-target>Lorem ipsum dolor sit amet, consectetur adipiscing elit</h2>
-                          <p class="mb-4" data-description-target>
-                            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-                          </p>
-                          <span class="explore-button">
-                            <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                            READ FULL ARTICLE
-                          </span>
+                          <span class="category-tag" data-source-target></span>
+                          <h2 class="card-title mb-3 mt-2" data-title-target></h2>
+                          <p class="mb-4" data-description-target></p>
+                          <span class="explore-button"> <img src="../sources/icons/pointer-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ FULL ARTICLE </span>
                         </div>
                       </div>
                     </div>
@@ -904,168 +498,79 @@
                 </a>
               </div>
             </div>
-
-            <!-- Grid of trending articles -->
-            <!-- Trending Article 1 -->
             <div class="col-lg-6 col-md-6 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="26"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="26">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>LOREM</span>
-                    <h5 class="card-title" data-title-target>Ut enim ad minim veniam quis nostrud exercitation</h5>
-                    <p class="card-text" data-description-target>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Trending Article 2 -->
             <div class="col-lg-6 col-md-6 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="27"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="27">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>IPSUM</span>
-                    <h5 class="card-title" data-title-target>Excepteur sint occaecat cupidatat non proident</h5>
-                    <p class="card-text" data-description-target>Sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Trending Article 3 -->
             <div class="col-lg-4 col-md-4 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="28"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="28">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>DOLOR</span>
-                    <h5 class="card-title" data-title-target>Velit esse cillum dolore eu fugiat nulla pariatur</h5>
-                    <p class="card-text" data-description-target>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Trending Article 4 -->
             <div class="col-lg-4 col-md-4 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="29"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="29">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>SIT</span>
-                    <h5 class="card-title" data-title-target>Cupidatat non proident sunt in culpa</h5>
-                    <p class="card-text" data-description-target>Ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
-
-            <!-- Trending Article 5 -->
             <div class="col-lg-4 col-md-4 mb-4">
-              <div
-                class="card article-card h-100"
-                data-article-index="30"
-                data-article-url=""
-                data-article-title=""
-                data-article-description=""
-                data-article-image=""
-                data-article-source=""
-                data-article-author=""
-                data-article-published=""
-              >
-                <a href="#" class="website-link" data-url-target>
-                  <div class="image-container">
-                    <img src="../sources/images/test.avif" class="card-img-top" alt="Article image" data-image-target />
-                  </div>
+              <div class="card article-card h-100" data-article-index="30">
+                <a href="../html/article.html" class="website-link">
+                  <div class="image-container"><img src="" class="card-img-top" alt="Article image" data-image-target /></div>
                   <div class="card-body">
-                    <span class="category-tag" data-source-target>AMET</span>
-                    <h5 class="card-title" data-title-target>Reprehenderit in voluptate velit esse cillum</h5>
-                    <p class="card-text" data-description-target>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
-                    <span class="explore-button">
-                      <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" />
-                      READ
-                    </span>
+                    <span class="category-tag" data-source-target></span>
+                    <h5 class="card-title" data-title-target></h5>
+                    <p class="card-text" data-description-target></p>
+                    <span class="explore-button"> <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Explore icon" class="me-2" /> READ </span>
                   </div>
                 </a>
               </div>
             </div>
           </div>
-
-          <!-- Call to action for more trending content -->
           <div class="text-center mt-5 mb-2">
-            <a href="#"><span class="highlight">VIEW ALL NEWS</span></a>
+            <a href="#" id="view-all-trending"><span class="highlight">VIEW ALL NEWS</span></a>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- Back to Top Button -->
     <button id="backToTop" class="back-to-top" aria-label="Back to top">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
         <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" />

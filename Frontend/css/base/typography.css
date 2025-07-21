@@ -1,0 +1,54 @@
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../../sources/fonts/geographweb-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../../sources/fonts/geographeditweb-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../../sources/fonts/geographweb-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GeographWeb";
+  src: url("../../sources/fonts/geographeditweb-regularitalic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  color: var(--c-light);
+  background-color: var(--c-light);
+}
+
+::selection {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+}
+
+::-moz-selection {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+}
+
+/*
+button:focus,
+a:focus,
+input:focus {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+}
+*/

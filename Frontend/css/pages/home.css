@@ -1,0 +1,273 @@
+.home-page {
+  background-color: var(--c-dark);
+}
+
+.titles {
+  padding: 80px 0 100px;
+}
+
+#secondary-container .titles {
+  padding: 80px 0 120px;
+}
+
+#third-container .titles {
+  padding: 80px 0 60px;
+}
+
+.titles h1 {
+  font-size: 54px;
+  letter-spacing: 3px;
+  line-height: 1.5;
+  font-weight: bold;
+  margin: 0;
+}
+
+.titles span {
+  font-weight: 500;
+}
+
+.highlight-container {
+  line-height: 1.4;
+}
+
+.highlight-container::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background-color: var(--c-primary);
+  margin: 20px auto 0;
+}
+
+.today-picks-sidebar h2 {
+  position: relative;
+  font-weight: bold;
+  margin-bottom: 30px;
+  padding-left: 30px;
+  letter-spacing: 3px;
+}
+
+.today-picks-sidebar h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 25px;
+  background-color: var(--c-primary);
+}
+
+.pick-item .col-8 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pick-item h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: var(--webkit-line-clamp);
+  line-clamp: var(--webkit-line-clamp);
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
+.pick-item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.explore-button {
+  display: flex;
+  text-decoration: none;
+  color: var(--c-light);
+  font-weight: 500;
+  letter-spacing: 4px;
+  font-size: 12px;
+}
+
+.card-body .explore-button {
+  color: var(--c-dark);
+}
+
+.explore-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.video-background {
+  position: relative;
+  width: 100%;
+  height: 900px;
+  overflow: hidden;
+}
+
+.bg-video {
+  width: 100%;
+  height: 750px;
+  object-fit: cover;
+}
+
+.video-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 750px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 1));
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--c-light);
+  padding-top: 200px;
+}
+
+.video-title {
+  text-align: center;
+  font-size: 54px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.video-description {
+  text-align: center;
+  font-size: 18px;
+  margin: 20px 0;
+  width: 90%;
+  max-width: 800px;
+}
+
+.discover-more {
+  width: var(--container-max-width);
+  max-width: 90%;
+  padding: 0 24px;
+}
+
+.discover-titles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 80px;
+  width: 100%;
+}
+
+.discover-more h4 {
+  letter-spacing: 2px;
+}
+
+.discover-articles-section {
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.discover-item {
+  overflow: hidden;
+}
+
+.discover-item img {
+  width: 180px;
+  height: 270px;
+  object-fit: cover;
+  transition: transform var(--transition-fast);
+}
+
+.discover-item:hover img {
+  transform: scale(1.05);
+}
+
+.our-picks {
+  background-color: var(--c-light);
+  color: var(--c-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.our-picks-titles {
+  width: var(--container-max-width);
+  max-width: 90%;
+  text-align: center;
+}
+
+.our-picks h1 {
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  font-size: 42px;
+  margin-bottom: 30px;
+}
+
+.our-picks p {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 60px;
+}
+
+.our-picks-cards {
+  width: var(--container-max-width);
+  max-width: 90%;
+}
+
+.our-picks-card {
+  border: 1px solid var(--c-border-light);
+  height: 400px;
+}
+
+.our-picks-card .card-body {
+  min-height: 200px;
+}
+
+.our-picks-card .card-small-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.our-picks-card .author {
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.newsletter-signup {
+  width: 100%;
+  min-height: 300px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../sources/images/wp3396925-newspaper-wallpaperbackground.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.newsletter-signup .container {
+  max-width: var(--container-max-width);
+}
+
+.newsletter-signup h1 {
+  font-size: 36px;
+}
+
+.newsletter-signup p {
+  font-size: 18px;
+}
+
+.newsletter-signup .styled-button {
+  padding: 18px 180px;
+  font-size: 16px;
+}

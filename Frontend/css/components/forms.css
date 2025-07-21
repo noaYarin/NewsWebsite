@@ -1,0 +1,265 @@
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 14px;
+  display: block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="date"],
+input[type="password"] {
+  padding: 10px;
+  border: 2px solid var(--c-input-border);
+  border-radius: 10px;
+  font-size: 16px;
+  background: var(--c-input-bg);
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  background: white;
+}
+
+input::placeholder {
+  color: var(--c-placeholder);
+}
+
+/* Validation States */
+.input-error {
+  border-color: var(--c-red) !important;
+  background: #fff5f5 !important;
+}
+
+.error-message {
+  color: var(--c-red);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-align: left;
+}
+
+/* Date Input */
+input[type="date"] {
+  color: var(--c-placeholder);
+}
+
+input[type="date"].has-value {
+  color: var(--c-dark);
+}
+
+input[type="date"]:focus {
+  background: var(--c-light);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(67.5%) sepia(100%) saturate(700%) hue-rotate(0deg) brightness(1.1);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px;
+  transition: background-color var(--transition-fast), filter var(--transition-fast);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: none;
+  background-color: var(--c-primary);
+}
+
+/* Password Input */
+.password-input-group {
+  position: relative;
+}
+
+.password-input-group input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  z-index: 10;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.password-toggle-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Password Criteria */
+.password-criteria {
+  background: var(--c-input-bg);
+  border: 2px solid var(--c-input-border);
+  border-radius: 10px;
+  padding: 0 16px;
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: all 0.35s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.password-criteria.show {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 200px;
+  padding: 16px;
+  pointer-events: auto;
+}
+
+.password-requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  transition: color var(--transition-fast);
+}
+
+.password-requirement:last-child {
+  margin-bottom: 0;
+}
+
+.password-requirement .icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  transition: all var(--transition-fast);
+}
+
+.password-requirement.invalid {
+  color: var(--c-placeholder);
+}
+.password-requirement.invalid .icon {
+  border: 2px solid var(--c-placeholder);
+}
+
+.password-requirement.valid {
+  color: var(--c-green);
+}
+.password-requirement.valid .icon {
+  border: 2px solid var(--c-green);
+  color: var(--c-green);
+}
+.password-requirement.valid .icon::before {
+  content: "✓";
+}
+
+/* Progress Bar */
+.password-progress {
+  margin-bottom: 16px;
+}
+
+.password-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--c-input-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.password-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  background-color: var(--c-red);
+}
+.password-progress-fill.weak {
+  width: 33.33%;
+  background-color: var(--c-red);
+}
+.password-progress-fill.medium {
+  width: 66.66%;
+  background-color: var(--c-yellow);
+}
+.password-progress-fill.strong {
+  width: 100%;
+  background-color: var(--c-green);
+}
+
+/* Interests Selection */
+.interests-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 16px;
+  background-color: var(--c-input-bg);
+}
+
+.interest-item {
+  position: relative;
+  overflow: hidden;
+  padding: 12px 16px;
+  color: var(--c-dark);
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.interest-item:hover {
+  background-color: var(--c-border-light);
+}
+
+.interest-item.selected {
+  background-color: var(--c-primary);
+  color: var(--c-dark);
+  font-weight: 600;
+}
+
+.interest-item.selected::before {
+  content: "✔";
+  font-family: sans-serif;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-dark);
+  font-size: 18px;
+}

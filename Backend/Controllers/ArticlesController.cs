@@ -1,47 +1,95 @@
 ﻿using Horizon.BL;
+using Horizon.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+namespace Horizon.Controllers;
 
-namespace Horizon.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class ArticlesController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ArticlesController : ControllerBase
+    [HttpGet("search")]
+    public IActionResult SearchArticles([FromQuery] string term, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-      
-        //Get all articles
-
-        [HttpGet]
-        public IEnumerable<Article> Get()
+        if (string.IsNullOrWhiteSpace(term))
         {
-            Article article = new Article();
-            return article.Read();
+            return BadRequest("Search term cannot be empty.");
+        }
+        try
+        {
+            var articles = Article.Search(term, page, pageSize);
+            return Ok(articles);
+        }
+        catch (System.Exception)
+        {
+            return StatusCode(500, "An error occurred while searching articles.");
+        }
+    }
+
+
+    [HttpGet("{id}")]
+    public IActionResult GetArticle(int id)
+    {
+        try
+        {
+            var article = Article.GetById(id);
+
+            if (article == null)
+            {
+                return NotFound(new { message = "Article not found." });
+            }
+            return Ok(article);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while retrieving the article.");
+        }
+    }
+
+    [HttpPost("sync")]
+    public IActionResult SyncArticles([FromBody] List<ArticleSyncDto> articlesFromApi)
+    {
+        if (articlesFromApi == null || !articlesFromApi.Any())
+        {
+            return Ok(new List<Article>());
         }
 
-        // GET api/<ArticlesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        try
         {
-            return "value";
+            var syncedArticles = Article.Sync(articlesFromApi);
+            return Ok(syncedArticles);
         }
-
-        // POST api/<ArticlesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        catch (System.Exception ex)
         {
+            return StatusCode(500, "An error occurred while synchronizing articles.");
         }
+    }
 
-        // PUT api/<ArticlesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+    [HttpGet("category/{categoryName}")]
+    public IActionResult GetArticlesByCategory(string categoryName, [FromQuery] int count = 10)
+    {
+        try
         {
+            var articles = Article.GetRecentByCategory(categoryName, count);
+            return Ok(articles);
         }
-
-        // DELETE api/<ArticlesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        catch (System.Exception ex)
         {
+            return StatusCode(500, "Could not retrieve articles.");
+        }
+    }
+
+    [HttpGet("category/{categoryName}/paged")]
+    public IActionResult GetArticlesByCategoryPaged(string categoryName, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        try
+        {
+            var pagedArticles = Article.GetRecentByCategoryPaged(categoryName, page, pageSize);
+            return Ok(pagedArticles);
+        }
+        catch (System.Exception ex)
+        {
+            return StatusCode(500, "Could not retrieve paged articles.");
         }
     }
 }

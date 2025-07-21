@@ -66,6 +66,13 @@ artifacts/
 Backend/appsettings.json
 Backend/appsettings.Development.json
 
+# dot env environment variable files
+API/.env
+API/.env.development.local
+API/.env.test.local
+API/.env.production.local
+API/.env.local
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 

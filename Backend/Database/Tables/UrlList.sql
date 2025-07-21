@@ -1,0 +1,5 @@
+CREATE TYPE dbo.UrlList AS TABLE
+(
+    Url NVARCHAR(MAX) NOT NULL
+);
+GO
