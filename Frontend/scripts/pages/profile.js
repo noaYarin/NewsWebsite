@@ -224,7 +224,7 @@ function showAddFriendDialog() {
         <p class="dialog-message">Add Friend</p>
         <div class="add-friend-form">
           <div class="search-input-row">
-            <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
+            <input type="text" id="friendEmailInput" placeholder="Enter email or name..." />
             <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
           </div>
         </div>
@@ -295,14 +295,6 @@ function handleUserSearch(e) {
     return;
   }
 
-  const emailValidation = ValidationManager.validateEmail(email);
-  if (!emailValidation.valid) {
-    resultsSection.removeClass("show");
-    emailInput.addClass("error");
-    setTimeout(() => emailInput.removeClass("error"), 2000);
-    return;
-  }
-
   lastSearchedEmail = email;
 
   if (resultsSection.hasClass("show")) {
@@ -335,7 +327,7 @@ function displaySearchResults(users) {
   const resultsSection = $("#searchResultsSection");
 
   let resultsHtml;
-  const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
+  const filteredUsers = users.filter((user) => user.id !== currentUser.id);
 
   if (filteredUsers.length === 0) {
     resultsHtml = '<p class="empty-search-message">No users found.</p>';
@@ -343,7 +335,7 @@ function displaySearchResults(users) {
     const userItems = filteredUsers
       .map((user) => {
         const hasPendingRequest = outgoingFriendRequests.has(user.id);
-        const buttonText = hasPendingRequest ? "Cancel" : "Send Request";
+        const buttonText = hasPendingRequest ? "Unsend" : "Send Request";
         const buttonClass = hasPendingRequest ? "cancel-friend-request-btn success-btn" : "send-friend-request-btn";
 
         return `
@@ -407,10 +399,6 @@ function updateFriendsListWithPendingRequests(incomingRequests) {
   friendsList.prepend(pendingRequestsHtml);
 }
 
-function isAlreadyFriend(userId) {
-  return outgoingFriendRequests.has(userId);
-}
-
 function handleSendFriendRequest(e) {
   const button = $(e.currentTarget);
   const userId = button.data("user-id");
@@ -429,7 +417,7 @@ function handleSendFriendRequest(e) {
     () => {
       UIManager.showPopup(`Friend request sent to ${userName}!`, true);
       outgoingFriendRequests.add(userId);
-      button.text("Cancel").prop("disabled", false).removeClass("send-friend-request-btn").addClass("cancel-friend-request-btn success-btn");
+      button.text("Cancel Request").prop("disabled", false).removeClass("send-friend-request-btn").addClass("cancel-friend-request-btn success-btn");
       button.off("click").on("click", handleCancelFriendRequest);
     },
     () => {
@@ -445,7 +433,7 @@ function handleCancelFriendRequest(e) {
   const userName = button.data("user-name");
 
   const originalText = button.text();
-  button.text("Canceling...").prop("disabled", true);
+  button.text("Unsending...").prop("disabled", true);
 
   const requestData = {
     SenderId: currentUser.id,
@@ -455,14 +443,14 @@ function handleCancelFriendRequest(e) {
   cancelFriendRequest(
     requestData,
     () => {
-      UIManager.showPopup(`Friend request to ${userName} canceled.`, true);
+      UIManager.showPopup(`Friend request to ${userName} unsent.`, true);
       outgoingFriendRequests.delete(userId);
       button.text("Send Request").prop("disabled", false).removeClass("cancel-friend-request-btn success-btn").addClass("send-friend-request-btn");
       button.off("click").on("click", handleSendFriendRequest);
     },
     () => {
       button.text(originalText).prop("disabled", false);
-      UIManager.showPopup("Failed to cancel friend request. Please try again.", false);
+      UIManager.showPopup("Failed to unsend friend request. Please try again.", false);
     }
   );
 }
