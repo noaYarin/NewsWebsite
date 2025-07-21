@@ -1,9 +1,11 @@
+// pages/notifications.js - Simplified Version
 const NotificationsPage = {
   currentUser: null,
   currentPage: 1,
-  pageSize: 10,
+  pageSize: 40,
   activeTab: "all",
   isLoading: false,
+  hasMorePages: true,
 
   init() {
     this.currentUser = Utils.getCurrentUser();
@@ -15,256 +17,214 @@ const NotificationsPage = {
     this.setupEventListeners();
     this.loadNotifications();
     this.loadUnreadCount();
-    this.updateTabIndicator();
+
+    // Update tab indicator after DOM is settled
+    setTimeout(() => {
+      this.updateTabIndicator();
+    }, 0);
   },
 
   setupEventListeners() {
-    $(document).on("click", "#notificationTabs .nav-link", (e) => {
+    // Tab switching
+    $("#notificationTabs .nav-link").on("click", (e) => {
       e.preventDefault();
+      const $link = $(e.currentTarget);
+      const targetTab = $link.attr("data-bs-target");
 
+      // Update active states
       $("#notificationTabs .nav-link").removeClass("active");
+      $link.addClass("active");
+
       $(".tab-pane").removeClass("show active");
+      $(targetTab).addClass("show active");
 
-      $(e.target).addClass("active");
-
-      const target = $(e.target).attr("data-bs-target");
-      $(target).addClass("show active");
-
-      this.activeTab = target.replace("#", "");
-      this.currentPage = 1;
-
+      // Update tab indicator
       this.updateTabIndicator();
+
+      // Reset and load new tab
+      this.activeTab = targetTab.replace("#", "");
+      this.currentPage = 1;
+      this.hasMorePages = true;
       this.loadNotifications();
     });
 
-    $(window).on("resize", () => {
-      this.updateTabIndicator();
+    // Scroll for more
+    $(window).on("scroll", () => {
+      if (this.isLoading || !this.hasMorePages) return;
+
+      const scrollBottom = $(window).scrollTop() + $(window).height();
+      const documentHeight = $(document).height();
+
+      if (scrollBottom > documentHeight - 200) {
+        this.currentPage++;
+        this.loadNotifications(true);
+      }
     });
 
-    $("#markAllReadBtn").on("click", () => this.markAllAsRead());
-    $("#refreshBtn").on("click", () => this.refreshNotifications());
-    $("#retryBtn").on("click", () => this.loadNotifications());
-
+    // Mark as read
     $(document).on("click", ".mark-read-btn", (e) => {
       e.stopPropagation();
-      const notificationId = $(e.target).closest(".notification-item").attr("data-notification-id");
-      if (notificationId) {
-        this.markAsRead(notificationId);
-      }
+      const notificationId = $(e.currentTarget).closest(".notification-item").data("notification-id");
+      this.markAsRead(notificationId);
     });
 
-    $(document).on("click", ".notification-item", (e) => {
-      if ($(e.target).closest(".mark-read-btn").length) return;
+    // Mark all as read
+    $("#markAllReadBtn").on("click", () => this.markAllAsRead());
 
-      const $item = $(e.currentTarget);
-      const notificationId = $item.attr("data-notification-id");
-      const $articleLink = $item.find(".notification-article-link");
-
-      if ($articleLink.length && $articleLink.attr("href") !== "#") {
-        this.markAsRead(notificationId);
-      }
+    // Refresh
+    $("#refreshBtn").on("click", () => {
+      this.currentPage = 1;
+      this.hasMorePages = true;
+      this.loadNotifications();
+      this.loadUnreadCount();
     });
 
-    $(document).on("click", ".page-link", (e) => {
-      e.preventDefault();
-      const page = parseInt($(e.target).data("page"));
-      const totalPages = $("#notificationsPagination").data("total-pages") || 1;
-
-      if (page && page !== this.currentPage && page >= 1 && page <= totalPages) {
-        this.currentPage = page;
-        this.loadNotifications();
-      }
+    // Window resize
+    $(window).on("resize", () => {
+      this.updateTabIndicator();
     });
   },
 
   updateTabIndicator() {
     const $activeTab = $("#notificationTabs .nav-link.active");
-    const $navTabs = $("#notificationTabs");
+    if (!$activeTab.length) return;
 
-    if ($activeTab.length) {
-      const $activeLi = $activeTab.closest(".nav-item");
-      const liWidth = $activeLi.outerWidth();
-      const liPosition = $activeLi.position().left;
+    const $navTabs = $("#notificationTabs");
+    const $activeLi = $activeTab.closest(".nav-item");
+
+    if ($activeLi.length && $activeLi.position()) {
+      const width = $activeLi.outerWidth();
+      const left = $activeLi.position().left;
 
       $navTabs.css({
-        "--indicator-width": liWidth + "px",
-        "--indicator-position": liPosition + "px"
+        "--indicator-width": width + "px",
+        "--indicator-position": left + "px"
       });
-
-      $navTabs[0].style.setProperty("--indicator-width", liWidth + "px");
-      $navTabs[0].style.setProperty("--indicator-position", liPosition + "px");
     }
   },
 
-  loadNotifications() {
+  loadNotifications(append = false) {
     if (this.isLoading) return;
-    this.setLoadingState(true);
-    if (this.activeTab === "unread") {
-      this.loadUnreadNotifications();
-    } else {
-      this.loadAllNotifications();
-    }
-  },
+    this.isLoading = true;
 
-  loadAllNotifications() {
+    if (!append) {
+      $("#notificationsLoading").show();
+    }
+
     getNotifications(
       this.currentUser.id,
       this.currentPage,
       this.pageSize,
       (data) => {
         const notifications = data.notifications || data || [];
-        this.renderNotifications("#all .notifications-list", notifications);
-        this.updatePagination(data.totalPages || 1);
-        this.setLoadingState(false);
+        const containerSelector = this.activeTab === "unread" ? "#unread .notifications-list" : "#all .notifications-list";
+
+        // Filter for unread if needed
+        const displayNotifications = this.activeTab === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
+
+        this.displayNotifications(containerSelector, displayNotifications, append);
+
+        // Update pagination state
+        this.hasMorePages = notifications.length === this.pageSize;
+
+        this.isLoading = false;
+        $("#notificationsLoading").hide();
       },
       (error) => {
-        console.error("Error loading notifications:", error);
-        this.showError("Failed to load notifications. Please try again.");
-        this.setLoadingState(false);
+        this.showError("Failed to load notifications.");
+        this.isLoading = false;
+        $("#notificationsLoading").hide();
       }
     );
   },
 
-  loadUnreadNotifications() {
-    getRecentNotifications(
-      this.currentUser.id,
-      (data) => {
-        const notifications = data.notifications || data || [];
-        const unreadNotifications = notifications.filter((n) => !n.isRead);
-        this.renderNotifications("#unread .notifications-list", unreadNotifications);
-        this.updatePagination(1);
-        this.setLoadingState(false);
-      },
-      (error) => {
-        console.error("Error loading unread notifications:", error);
-        this.showError("Failed to load notifications. Please try again.");
-        this.setLoadingState(false);
-      }
-    );
-  },
-
-  loadUnreadCount() {
-    getUnreadNotificationCount(
-      this.currentUser.id,
-      (count) => this.updateUnreadCount(count),
-      (error) => {
-        console.error("Error loading unread count:", error);
-        this.updateUnreadCount(0);
-      }
-    );
-  },
-
-  renderNotifications(containerSelector, notifications) {
+  displayNotifications(containerSelector, notifications, append) {
     const $container = $(containerSelector);
-    $container.empty();
 
-    if (!notifications || notifications.length === 0) {
-      this.showEmptyState($container);
+    if (!append) {
+      $container.empty();
+    }
+
+    if (notifications.length === 0 && !append) {
+      $container.html(`
+        <div class="empty-state text-center py-5">
+          <h3 class="text-muted">No notifications</h3>
+          <p class="text-muted">You're all caught up!</p>
+        </div>
+      `);
       return;
     }
 
     notifications.forEach((notification) => {
-      const notificationHtml = this.createNotificationElement(notification);
-      $container.append(notificationHtml);
+      const html = this.createNotificationHtml(notification);
+      $container.append(html);
     });
   },
 
-  createNotificationElement(notification) {
-    const $template = $("#notificationTemplate").contents().clone();
-    let $item = $template.filter(".notification-item");
+  createNotificationHtml(notification) {
+    const isUnread = !notification.isRead;
+    const timeAgo = this.formatTimeAgo(notification.createdAt);
+    const avatar = notification.senderAvatar || "../sources/images/no-image.png";
 
-    if ($item.length === 0) {
-      $item = $template.find(".notification-item");
-    }
-
-    $item.attr("data-notification-id", notification.id);
-
-    if (!notification.isRead) {
-      $item.addClass("unread");
-    }
-
-    const avatarSrc = notification.senderAvatar || "../sources/images/no-image.png";
-    $template.find(".notification-avatar-img").attr("src", avatarSrc);
-    $template.find(".notification-sender").text(notification.senderName || "System");
-    $template.find(".notification-type-badge").text(this.getTypeBadge(notification.notificationType));
-    $template.find(".notification-time").text(this.formatTimeAgo(notification.createdAt));
-
-    const message = notification.message || "No message available.";
-    $template.find(".notification-message").text(message);
-
-    if (notification.articleTitle) {
-      $template.find(".notification-article").show();
-      $template.find(".notification-article-link").attr("href", "article.html?id=" + (notification.articleId || "#"));
-      $template.find(".notification-article-title").text(notification.articleTitle);
-    }
-
-    if (notification.isRead) {
-      $template.find(".mark-read-btn").hide();
-    }
-
-    return $template;
-  },
-
-  getTypeBadge(type) {
-    const NotificationType = {
-      FriendRequest: "FriendRequest",
-      FriendRequestAccepted: "FriendRequestAccepted",
-      ArticleShare: "ArticleShare",
-      CommentLike: "CommentLike"
-    };
-
-    switch (type) {
-      case NotificationType.FriendRequest:
-        return "Friend Request";
-      case NotificationType.FriendRequestAccepted:
-        return "Request Accepted";
-      case NotificationType.ArticleShare:
-        return "Article Shared";
-      case NotificationType.CommentLike:
-        return "Comment Liked";
-      default:
-        return "Notification";
-    }
-  },
-
-  formatTimeAgo(dateString) {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diff = Math.floor((now - date) / 1000);
-
-    if (diff < 60) return "Just now";
-    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
-    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
-    if (diff < 604800) return Math.floor(diff / 86400) + "d ago";
-
-    return date.toLocaleDateString();
+    return `
+      <div class="notification-item ${isUnread ? "unread" : ""}" data-notification-id="${notification.id}">
+        <div class="notification-content">
+          <div class="notification-avatar">
+            <img src="${avatar}" alt="User avatar" class="notification-avatar-img" />
+          </div>
+          <div class="notification-body">
+            <div class="notification-header">
+              <span class="notification-sender">${notification.senderName || "System"}</span>
+              <span class="notification-type-badge">${this.getTypeBadge(notification.notificationType)}</span>
+              <span class="notification-time">${timeAgo}</span>
+            </div>
+            <div class="notification-message">${notification.message || "No message"}</div>
+            ${
+              notification.articleTitle
+                ? `
+              <div class="notification-article">
+                <a href="article.html?id=${notification.articleId || "#"}" class="notification-article-link">
+                  <strong class="notification-article-title">${notification.articleTitle}</strong>
+                </a>
+              </div>
+            `
+                : ""
+            }
+          </div>
+          <div class="notification-actions">
+            ${
+              isUnread
+                ? `
+              <button class="mark-read-btn" title="Mark as read">
+                <img src="../sources/icons/checkmark-svgrepo-com.svg" alt="Mark as read" />
+              </button>
+            `
+                : ""
+            }
+          </div>
+        </div>
+      </div>
+    `;
   },
 
   markAsRead(notificationId) {
-    if (!notificationId) return;
-
     markNotificationAsRead(
       notificationId,
       this.currentUser.id,
       () => {
-        const $item = $(`.notification-item[data-notification-id="${notificationId}"]`);
-        $item.removeClass("unread");
-        $item.find(".mark-read-btn").hide();
+        $(`.notification-item[data-notification-id="${notificationId}"]`).removeClass("unread").find(".mark-read-btn").remove();
         this.loadUnreadCount();
       },
-      (error) => {
-        console.error("Error marking notification as read:", error);
+      () => {
         UIManager.showPopup("Failed to mark notification as read", false);
       }
     );
   },
 
   markAllAsRead() {
-    if (this.isLoading) return;
-
     const unreadCount = $(".notification-item.unread").length;
     if (unreadCount === 0) {
-      UIManager.showPopup("No unread notifications to mark", "muted");
+      UIManager.showPopup("No unread notifications", "muted");
       return;
     }
 
@@ -272,94 +232,58 @@ const NotificationsPage = {
       this.currentUser.id,
       () => {
         $(".notification-item.unread").removeClass("unread");
-        $(".mark-read-btn").hide();
-        this.updateUnreadCount(0);
+        $(".mark-read-btn").remove();
+        $("#unreadCount").hide();
         UIManager.showPopup("All notifications marked as read", true);
       },
-      (error) => {
-        console.error("Error marking all notifications as read:", error);
-        UIManager.showPopup("Failed to mark all notifications as read", false);
+      () => {
+        UIManager.showPopup("Failed to mark all as read", false);
       }
     );
   },
 
-  refreshNotifications() {
-    this.currentPage = 1;
-    this.loadNotifications();
-    this.loadUnreadCount();
-    UIManager.showPopup("Notifications refreshed", true);
+  loadUnreadCount() {
+    getUnreadNotificationCount(
+      this.currentUser.id,
+      (count) => {
+        if (count > 0) {
+          $("#unreadCount").text(count).show();
+        } else {
+          $("#unreadCount").hide();
+        }
+      },
+      () => {
+        $("#unreadCount").hide();
+      }
+    );
   },
 
-  setLoadingState(loading) {
-    this.isLoading = loading;
-    if (loading) {
-      $("#notificationsLoading")
-        .html(
-          `
-        <div class="loader-container">
-          <div class="spinner"></div>
-        </div>
-        <p class="mt-2">Loading notifications...</p>
-      `
-        )
-        .show();
-    } else {
-      $("#notificationsLoading").hide();
-    }
-    $("#errorState").hide();
+  formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return "Just now";
+    if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
+    if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
+    if (seconds < 604800) return Math.floor(seconds / 86400) + "d ago";
+
+    return date.toLocaleDateString();
+  },
+
+  getTypeBadge(type) {
+    const badges = {
+      FriendRequest: "Friend Request",
+      FriendRequestAccepted: "Request Accepted",
+      ArticleShare: "Article Shared",
+      CommentLike: "Comment Liked"
+    };
+    return badges[type] || "Notification";
   },
 
   showError(message) {
     $("#errorMessage").text(message);
     $("#errorState").show();
-  },
-
-  showEmptyState($container) {
-    $container.html(`
-      <div class="empty-state text-center py-5">
-        <h3 class="text-muted">No notifications</h3>
-        <p class="text-muted">You're all caught up! Check back later for new notifications.</p>
-      </div>
-    `);
-  },
-
-  updateUnreadCount(count) {
-    const $badge = $("#unreadCount");
-    if (count > 0) {
-      $badge.text(count).show();
-    } else {
-      $badge.hide();
-    }
-  },
-
-  updatePagination(totalPages) {
-    const $pagination = $("#notificationsPagination");
-    $pagination.empty().data("total-pages", totalPages);
-
-    if (totalPages <= 1) {
-      $("#paginationContainer").hide();
-      return;
-    }
-
-    $("#paginationContainer").show();
-
-    let html = "";
-
-    html += `<li class="page-item ${this.currentPage <= 1 ? "disabled" : ""}">
-               <a class="page-link" href="#" data-page="${this.currentPage - 1}">Previous</a>
-             </li>`;
-
-    for (let i = 1; i <= totalPages; i++) {
-      html += `<li class="page-item ${i === this.currentPage ? "active" : ""}">
-                 <a class="page-link" href="#" data-page="${i}">${i}</a>
-               </li>`;
-    }
-
-    html += `<li class="page-item ${this.currentPage >= totalPages ? "disabled" : ""}">
-               <a class="page-link" href="#" data-page="${this.currentPage + 1}">Next</a>
-             </li>`;
-
-    $pagination.html(html);
   }
 };
 

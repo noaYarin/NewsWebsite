@@ -107,6 +107,10 @@
   position: relative;
 }
 
+.notification-item:first-child {
+  border-top: none;
+}
+
 .notification-item:hover {
   background-color: var(--c-light-hover);
 }
