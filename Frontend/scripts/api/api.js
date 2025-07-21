@@ -150,6 +150,10 @@ function cancelFriendRequest(data, successCallback, errorCallback) {
   ajaxCall("DELETE", `${friendsEndpoint}/cancel`, JSON.stringify(data), successCallback, errorCallback);
 }
 
+function removeFriend(data, successCallback, errorCallback) {
+  ajaxCall("DELETE", `${friendsEndpoint}/remove`, JSON.stringify(data), successCallback, errorCallback);
+}
+
 function getFriends(userId, successCallback, errorCallback) {
   ajaxCall("GET", `${friendsEndpoint}/${userId}`, null, successCallback, errorCallback);
 }

@@ -81,6 +81,7 @@ function populateForm(userProfile) {
   ValidationManager.updateInterestSubtitle(selectedInterests.length);
 
   populateBlockedUsersList(userProfile.blockedUsers);
+  loadAndPopulateFriendsList();
 
   captureOriginalFormState();
   updateSubmitButtonState();
@@ -105,6 +106,102 @@ function populateBlockedUsersList(users) {
     `;
     listContainer.append(userHtml);
   });
+}
+
+function loadAndPopulateFriendsList() {
+  $("#friendsLoading").show();
+  $("#friendsList").hide();
+  $(".friends-count").text("Loading friends...");
+
+  getFriends(
+    currentUser.id,
+    (friends) => {
+      populateFriendsList(friends);
+      $("#friendsLoading").hide();
+      $("#friendsList").show();
+    },
+    (error) => {
+      console.error("Failed to load friends:", error);
+      $("#friendsList").html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Failed to load friends list.</div>');
+      $("#friendsLoading").hide();
+      $("#friendsList").show();
+    }
+  );
+}
+
+function populateFriendsList(friends) {
+  const listContainer = $("#friendsList");
+  listContainer.empty();
+
+  // Update friends count
+  $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
+
+  if (friends.length === 0) {
+    listContainer.html('<div class="empty-state text-center py-4"><h5 class="text-muted">No friends yet</h5><p class="text-muted">Start connecting with people!</p></div>');
+    return;
+  }
+
+  friends.forEach((friend) => {
+    const friendHtml = `
+      <div class="friend-item" data-friend-id="${friend.id}">
+        <div class="friend-avatar">
+          <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="friend-avatar-img" />
+        </div>
+        <div class="friend-info">
+          <span class="friend-name">${friend.fullName}</span>
+        </div>
+        <div class="friend-actions">
+          <button class="btn btn-outline-danger btn-sm remove-friend-btn" 
+                  data-friend-id="${friend.id}" 
+                  data-friend-name="${friend.fullName}"
+                  title="Remove Friend">
+            <i class="bi bi-person-dash"></i> Remove
+          </button>
+        </div>
+      </div>
+    `;
+    listContainer.append(friendHtml);
+  });
+}
+
+function handleRemoveFriend(e) {
+  const friendId = $(e.currentTarget).data("friend-id");
+  const friendName = $(e.currentTarget).data("friend-name");
+
+  const confirmed = confirm(`Are you sure you want to remove ${friendName} from your friends list?`);
+
+  if (!confirmed) return;
+
+  const data = {
+    userId: currentUser.id,
+    friendId: friendId
+  };
+
+  removeFriend(
+    data,
+    (response) => {
+      UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
+
+      // Remove from UI
+      $(`.friend-item[data-friend-id="${friendId}"]`).fadeOut(300, function () {
+        $(this).remove();
+
+        const remainingFriends = $("#friendsList .friend-item").length;
+        $(".friends-count").text(`${remainingFriends} friend${remainingFriends !== 1 ? "s" : ""}`);
+
+        // Show empty state if no friends left
+        if (remainingFriends === 0) {
+          $("#friendsList").html(
+            '<div class="empty-state text-center py-4"><h5 class="text-muted">No friends yet</h5><p class="text-muted">Start connecting with people!</p></div>'
+          );
+        }
+      });
+    },
+    (error) => {
+      console.error("Failed to remove friend:", error);
+      UIManager.showPopup("Failed to remove friend. Please try again.", false);
+    }
+  );
 }
 
 function handleInterestListItemSelection(e) {
@@ -326,6 +423,8 @@ $(document).ready(function () {
   $(document)
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
+    .on("click", ".remove-friend-btn", handleRemoveFriend)
+    .on("click", "#addFriendsBtn", loadAndPopulateFriendsList) // TODO: Change to addFriendsBtn
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("click", ".password-toggle-btn", handlePasswordToggle)

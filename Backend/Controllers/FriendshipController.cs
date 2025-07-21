@@ -41,6 +41,17 @@ namespace Horizon.Controllers
             return BadRequest("Failed to cancel friend request. You may not be the sender or the request does not exist.");
         }
 
+        [HttpDelete("remove")]
+        public IActionResult RemoveFriend([FromBody] RemoveFriendDto request)
+        {
+            var success = Friendship.RemoveFriend(request.UserId, request.FriendId);
+            if (success)
+            {
+                return Ok(new { message = "Friend removed successfully." });
+            }
+            return BadRequest("Failed to remove friend. You may not be friends or the friendship does not exist.");
+        }
+
         [HttpGet("{userId}")]
         public IActionResult GetFriends(int userId)
         {

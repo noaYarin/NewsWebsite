@@ -125,6 +125,121 @@
   border-radius: 8px;
 }
 
+/* Friends Management Styles */
+.friends-section {
+  margin-bottom: 2rem;
+}
+
+.friends-header {
+  border-bottom: 1px solid var(--c-border-light);
+  padding-bottom: 0.5rem;
+}
+
+.friends-count {
+  font-weight: 500;
+  color: var(--c-text-muted);
+}
+
+#addFriendsBtn {
+  color: var(--c-dark);
+}
+
+.friends-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  background: var(--c-bg);
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--c-border-light);
+  transition: background-color 0.2s ease;
+}
+
+.friend-item:last-child {
+  border-bottom: none;
+}
+
+.friend-item:hover {
+  background-color: var(--c-input-bg);
+}
+
+.friend-avatar {
+  margin-right: 1rem;
+}
+
+.friend-avatar-img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--c-border-light);
+}
+
+.friend-info {
+  flex-grow: 1;
+}
+
+.friend-name {
+  font-weight: 500;
+  color: var(--c-text);
+  font-size: 1rem;
+}
+
+.friend-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.remove-friend-btn {
+  border-color: var(--c-danger);
+  color: var(--c-danger);
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.remove-friend-btn:hover {
+  background-color: var(--c-danger);
+  border-color: var(--c-danger);
+  color: white;
+}
+
+.remove-friend-btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Empty state for friends list */
+.friends-list-container .empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--c-text-muted);
+}
+
+.friends-list-container .empty-state h5 {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.friends-list-container .empty-state p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+/* Loading states */
+#friendsLoading {
+  color: var(--c-text-muted);
+}
+
+#friendsLoading .spinner-border {
+  width: 1rem;
+  height: 1rem;
+}
+
 .no-changes {
   color: var(--c-text-muted);
   background-color: var(--c-border-light);

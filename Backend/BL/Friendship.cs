@@ -1,6 +1,6 @@
-﻿using Horizon.DAL;
+﻿using System.Collections.Generic;
+using Horizon.DAL;
 using Horizon.DTOs;
-using System.Collections.Generic;
 
 namespace Horizon.BL
 {
@@ -39,6 +39,12 @@ namespace Horizon.BL
         {
             var friendshipService = new FriendshipService();
             return friendshipService.CancelRequest(senderId, recipientId);
+        }
+
+        public static bool RemoveFriend(int userId, int friendId)
+        {
+            var friendshipService = new FriendshipService();
+            return friendshipService.RemoveFriend(userId, friendId);
         }
 
 

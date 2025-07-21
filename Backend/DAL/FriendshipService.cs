@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
-using Horizon.DTOs;
 using Horizon.BL;
+using Horizon.DTOs;
 
 namespace Horizon.DAL
 {
@@ -55,6 +55,24 @@ namespace Horizon.DAL
                     { "@RecipientId", recipientId }
                 };
                 SqlCommand cmd = CreateCommand("SP_CancelFriendRequest", con, parameters);
+                int rowsAffected = (int)cmd.ExecuteScalar();
+                return rowsAffected > 0;
+            }
+            finally { con?.Close(); }
+        }
+
+        public bool RemoveFriend(int userId, int friendId)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = Connect();
+                var parameters = new Dictionary<string, object>
+                {
+                    { "@UserId", userId },
+                    { "@FriendId", friendId }
+                };
+                SqlCommand cmd = CreateCommand("SP_RemoveFriend", con, parameters);
                 int rowsAffected = (int)cmd.ExecuteScalar();
                 return rowsAffected > 0;
             }
