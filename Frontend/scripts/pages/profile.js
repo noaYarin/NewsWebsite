@@ -133,7 +133,6 @@ function populateFriendsList(friends) {
   const listContainer = $("#friendsList");
   listContainer.empty();
 
-  // Update friends count
   $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
 
   if (friends.length === 0) {
@@ -205,6 +204,177 @@ function handleInterestListItemSelection(e) {
   }
   ValidationManager.updateInterestSubtitle(selectedInterests.length);
   updateSubmitButtonState();
+}
+
+function handleAddFriend() {
+  showAddFriendPopup();
+}
+
+function showAddFriendPopup() {
+  $("#addFriendPopup").remove();
+
+  const popupHtml = `
+    <div id="addFriendPopup" class="custom-popup">
+      <div class="popup-content">
+        <div class="popup-header">
+          <h3>Add Friend</h3>
+          <button type="button" class="close-popup">&times;</button>
+        </div>
+        <div class="popup-body">
+          <div class="form-group">
+            <label for="friendEmail">Search by Email:</label>
+            <input type="email" id="friendEmail" class="form-control" placeholder="Enter email address..." />
+          </div>
+          <div id="searchResults" class="search-results" style="display: none;">
+            <h4>Search Results:</h4>
+            <div id="userSearchList"></div>
+          </div>
+        </div>
+        <div class="popup-footer">
+          <button type="button" id="searchUserBtn" class="auth-button">Search</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  $("body").append(popupHtml);
+
+  setTimeout(() => {
+    $("#addFriendPopup").addClass("show");
+  }, 10);
+
+  $("#friendEmail").focus();
+
+  $("#friendEmail").on("keypress", function (e) {
+    if (e.which === 13) {
+      handleUserSearch();
+    }
+  });
+
+  $("#searchUserBtn").on("click", handleUserSearch);
+
+  $(".close-popup").on("click", function () {
+    closeAddFriendPopup();
+  });
+
+  $("#addFriendPopup").on("click", function (e) {
+    if (e.target === this) {
+      closeAddFriendPopup();
+    }
+  });
+}
+
+function closeAddFriendPopup() {
+  $("#addFriendPopup").removeClass("show");
+  setTimeout(() => {
+    $("#addFriendPopup").remove();
+  }, 300);
+}
+
+function handleUserSearch() {
+  const email = $("#friendEmail").val().trim();
+
+  if (!email) {
+    UIManager.showPopup("Please enter an email address.", false);
+    return;
+  }
+
+  const emailValidation = ValidationManager.validateEmail(email);
+  if (!emailValidation.valid) {
+    UIManager.showPopup(emailValidation.message, false);
+    return;
+  }
+
+  const searchBtn = $("#searchUserBtn");
+  const originalText = searchBtn.text();
+  searchBtn.text("Searching...").prop("disabled", true);
+
+  searchUsers(
+    email,
+    (users) => {
+      searchBtn.text(originalText).prop("disabled", false);
+      displaySearchResults(users, email);
+    },
+    (error) => {
+      searchBtn.text(originalText).prop("disabled", false);
+      console.error("Search error:", error);
+      UIManager.showPopup("Failed to search for users. Please try again.", false);
+    }
+  );
+}
+
+function displaySearchResults(users, searchedEmail) {
+  const resultsContainer = $("#searchResults");
+  const userList = $("#userSearchList");
+
+  userList.empty();
+
+  if (users.length === 0) {
+    userList.html(`<p class="empty-list-message">No users found with email containing "${searchedEmail}".</p>`);
+  } else {
+    const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
+
+    if (filteredUsers.length === 0) {
+      userList.html(`<p class="empty-list-message">No new users found. They might already be your friends or blocked.</p>`);
+    } else {
+      filteredUsers.forEach((user) => {
+        const userHtml = `
+          <div class="user-search-item" data-user-id="${user.id}">
+            <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
+            <div class="user-info">
+              <span class="user-list-name">${user.fullName}</span>
+              <span class="user-email">${user.email}</span>
+            </div>
+            <button type="button" class="send-friend-request-btn auth-button" data-user-id="${user.id}" data-user-name="${user.fullName}">
+              Send Request
+            </button>
+          </div>
+        `;
+        userList.append(userHtml);
+      });
+
+      $(".send-friend-request-btn").on("click", handleSendFriendRequest);
+    }
+  }
+
+  resultsContainer.show();
+}
+
+function isAlreadyFriend(userId) {
+  // This would need to check against the current friends list
+  // For now, we'll assume we need to implement this check
+  return false; // Placeholder - implement based on your friends data structure
+}
+
+function handleSendFriendRequest(e) {
+  const button = $(e.currentTarget);
+  const userId = button.data("user-id");
+  const userName = button.data("user-name");
+
+  UIManager.showDialog(`Send friend request to ${userName}?`).then((confirmed) => {
+    if (!confirmed) return;
+
+    const originalText = button.text();
+    button.text("Sending...").prop("disabled", true);
+
+    const requestData = {
+      senderId: currentUser.id,
+      receiverId: userId
+    };
+
+    sendFriendRequest(
+      requestData,
+      () => {
+        UIManager.showPopup(`Friend request sent to ${userName}!`, true);
+        button.text("Sent").prop("disabled", true).removeClass("auth-button").addClass("success-btn");
+      },
+      (error) => {
+        console.error("Friend request error:", error);
+        button.text(originalText).prop("disabled", false);
+        UIManager.showPopup("Failed to send friend request. Please try again.", false);
+      }
+    );
+  });
 }
 
 function handleUnblockUser(e) {
@@ -418,7 +588,7 @@ $(document).ready(function () {
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
     .on("click", ".remove-friend-btn", handleRemoveFriend)
-    .on("click", "#addFriendsBtn", loadAndPopulateFriendsList)
+    .on("click", "#addFriendsBtn", handleAddFriend)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("click", ".password-toggle-btn", handlePasswordToggle)
