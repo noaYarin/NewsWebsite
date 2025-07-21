@@ -2,6 +2,6 @@
 {
     public class SummarizeRequest
     {
-        public string ArticleText { get; set; }
+        public string ArticleUrl { get; set; }
     }
 }

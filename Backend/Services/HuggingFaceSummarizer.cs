@@ -43,5 +43,27 @@ namespace Horizon.Services
 
             return jsonDoc.RootElement[0].GetProperty("summary_text").GetString();
         }
+
+        public async Task<string> SummarizeFromUrlAsync(string url)
+        {
+            using var client = new HttpClient();
+            string html = await client.GetStringAsync(url);
+
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(html);
+
+            var paragraphs = doc.DocumentNode
+                                .SelectNodes("//p")
+                                ?.Select(p => p.InnerText.Trim())
+                                .Where(p => !string.IsNullOrWhiteSpace(p))
+                                .ToList();
+
+            if (paragraphs == null || paragraphs.Count == 0)
+                throw new Exception("No text found in the provided URL.");
+
+            string articleUrl = string.Join(" ", paragraphs);
+
+            return await SummarizeAsync(articleUrl);
+        }
     }
 }
