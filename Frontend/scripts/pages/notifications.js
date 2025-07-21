@@ -15,13 +15,10 @@ const NotificationsPage = {
     this.setupEventListeners();
     this.loadNotifications();
     this.loadUnreadCount();
-
-    // Initialize the sliding indicator position
     this.updateTabIndicator();
   },
 
   setupEventListeners() {
-    // Enhanced tab switching with dynamic sliding indicator
     $(document).on("click", "#notificationTabs .nav-link", (e) => {
       e.preventDefault();
 
@@ -36,18 +33,14 @@ const NotificationsPage = {
       this.activeTab = target.replace("#", "");
       this.currentPage = 1;
 
-      // Update the sliding indicator position
       this.updateTabIndicator();
-
       this.loadNotifications();
     });
 
-    // Window resize handler to recalculate indicator position
     $(window).on("resize", () => {
       this.updateTabIndicator();
     });
 
-    // Rest of your existing event listeners...
     $("#markAllReadBtn").on("click", () => this.markAllAsRead());
     $("#refreshBtn").on("click", () => this.refreshNotifications());
     $("#retryBtn").on("click", () => this.loadNotifications());
@@ -93,19 +86,16 @@ const NotificationsPage = {
       const liWidth = $activeLi.outerWidth();
       const liPosition = $activeLi.position().left;
 
-      // Update the ::after pseudo-element using CSS custom properties
       $navTabs.css({
         "--indicator-width": liWidth + "px",
         "--indicator-position": liPosition + "px"
       });
 
-      // Apply the styles to the ::after element
       $navTabs[0].style.setProperty("--indicator-width", liWidth + "px");
       $navTabs[0].style.setProperty("--indicator-position", liPosition + "px");
     }
   },
 
-  // Rest of your existing methods remain the same...
   loadNotifications() {
     if (this.isLoading) return;
     this.setLoadingState(true);
@@ -199,7 +189,7 @@ const NotificationsPage = {
     $template.find(".notification-type-badge").text(this.getTypeBadge(notification.notificationType));
     $template.find(".notification-time").text(this.formatTimeAgo(notification.createdAt));
 
-    const message = notification.message || notification.content || notification.text || notification.description || "No message available";
+    const message = notification.message || "No message available.";
     $template.find(".notification-message").text(message);
 
     if (notification.articleTitle) {
