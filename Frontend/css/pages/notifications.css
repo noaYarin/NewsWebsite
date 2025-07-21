@@ -1,21 +1,28 @@
 /* Notifications Page Styles */
-.notifications-page {
-  background-color: var(--c-light);
-  min-height: 100vh;
-}
-
 .notifications-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--c-primary);
   padding-bottom: 1rem;
 }
 
 .notifications-header .page-title {
+  position: relative;
   color: var(--c-dark);
   font-weight: 700;
   margin: 0;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.page-title::after {
+  display: block;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 120px;
+  height: 4px;
+  background-color: var(--c-primary);
 }
 
 .notifications-actions {
@@ -23,8 +30,10 @@
   gap: 0.5rem;
 }
 
+/* Enhanced Tab Navigation with Sliding Indicator */
 .notifications-filters .nav-tabs {
   border-bottom: 2px solid #dee2e6;
+  position: relative;
 }
 
 .notifications-filters .nav-link {
@@ -32,7 +41,8 @@
   border: none;
   padding: 0.75rem 1.5rem;
   font-weight: 500;
-  transition: var(--transition-fast);
+  transition: color 0.3s ease;
+  position: relative;
 }
 
 .notifications-filters .nav-link:hover {
@@ -40,17 +50,38 @@
   color: var(--c-primary);
 }
 
+/* Remove the original active border and use sliding indicator instead */
 .notifications-filters .nav-link.active {
   color: var(--c-primary);
   background-color: transparent;
-  border-color: transparent transparent var(--c-primary) transparent;
-  border-bottom-width: 3px;
+  border-color: transparent;
+  border-bottom: none;
+}
+
+/* Create sliding indicator */
+.notifications-filters .nav-tabs::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 3px;
+  background: var(--c-primary);
+  border-radius: 2px 2px 0 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  /* Use CSS custom properties for dynamic sizing */
+  width: var(--indicator-width, 0px);
+  transform: translateX(var(--indicator-position, 0px));
+}
+
+/* Position for "Unread" tab when active */
+.notifications-filters .nav-tabs.unread-active::after {
+  transform: translateX(100%);
 }
 
 /* Notification Items */
 .notifications-list {
   max-height: 70vh;
-  overflow-y: auto;
 }
 
 .notification-item {
@@ -265,6 +296,11 @@
   .notifications-header .page-title {
     font-size: 1.5rem;
   }
+
+  /* Adjust indicator width for smaller screens */
+  .notifications-filters .nav-tabs::after {
+    width: calc(50% - 0.5px);
+  }
 }
 
 /* Loading and Transitions */
@@ -285,22 +321,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Scrollbar Styling */
-.notifications-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.notifications-list::-webkit-scrollbar-track {
-  background: var(--c-light);
-}
-
-.notifications-list::-webkit-scrollbar-thumb {
-  background: var(--c-border-medium);
-  border-radius: 3px;
-}
-
-.notifications-list::-webkit-scrollbar-thumb:hover {
-  background: var(--c-primary);
 }

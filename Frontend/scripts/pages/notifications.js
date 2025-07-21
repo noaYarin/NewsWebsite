@@ -15,10 +15,13 @@ const NotificationsPage = {
     this.setupEventListeners();
     this.loadNotifications();
     this.loadUnreadCount();
+
+    // Initialize the sliding indicator position
+    this.updateTabIndicator();
   },
 
   setupEventListeners() {
-    // Tab switching
+    // Enhanced tab switching with dynamic sliding indicator
     $(document).on("click", "#notificationTabs .nav-link", (e) => {
       e.preventDefault();
 
@@ -32,15 +35,23 @@ const NotificationsPage = {
 
       this.activeTab = target.replace("#", "");
       this.currentPage = 1;
+
+      // Update the sliding indicator position
+      this.updateTabIndicator();
+
       this.loadNotifications();
     });
 
-    // Action buttons
+    // Window resize handler to recalculate indicator position
+    $(window).on("resize", () => {
+      this.updateTabIndicator();
+    });
+
+    // Rest of your existing event listeners...
     $("#markAllReadBtn").on("click", () => this.markAllAsRead());
     $("#refreshBtn").on("click", () => this.refreshNotifications());
     $("#retryBtn").on("click", () => this.loadNotifications());
 
-    // Mark as read buttons
     $(document).on("click", ".mark-read-btn", (e) => {
       e.stopPropagation();
       const notificationId = $(e.target).closest(".notification-item").attr("data-notification-id");
@@ -49,7 +60,6 @@ const NotificationsPage = {
       }
     });
 
-    // Notification click handler
     $(document).on("click", ".notification-item", (e) => {
       if ($(e.target).closest(".mark-read-btn").length) return;
 
@@ -62,7 +72,6 @@ const NotificationsPage = {
       }
     });
 
-    // Pagination click handler
     $(document).on("click", ".page-link", (e) => {
       e.preventDefault();
       const page = parseInt($(e.target).data("page"));
@@ -75,11 +84,31 @@ const NotificationsPage = {
     });
   },
 
+  updateTabIndicator() {
+    const $activeTab = $("#notificationTabs .nav-link.active");
+    const $navTabs = $("#notificationTabs");
+
+    if ($activeTab.length) {
+      const $activeLi = $activeTab.closest(".nav-item");
+      const liWidth = $activeLi.outerWidth();
+      const liPosition = $activeLi.position().left;
+
+      // Update the ::after pseudo-element using CSS custom properties
+      $navTabs.css({
+        "--indicator-width": liWidth + "px",
+        "--indicator-position": liPosition + "px"
+      });
+
+      // Apply the styles to the ::after element
+      $navTabs[0].style.setProperty("--indicator-width", liWidth + "px");
+      $navTabs[0].style.setProperty("--indicator-position", liPosition + "px");
+    }
+  },
+
+  // Rest of your existing methods remain the same...
   loadNotifications() {
     if (this.isLoading) return;
-
     this.setLoadingState(true);
-
     if (this.activeTab === "unread") {
       this.loadUnreadNotifications();
     } else {
@@ -164,7 +193,6 @@ const NotificationsPage = {
       $item.addClass("unread");
     }
 
-    // Populate notification data
     const avatarSrc = notification.senderAvatar || "../sources/images/no-image.png";
     $template.find(".notification-avatar-img").attr("src", avatarSrc);
     $template.find(".notification-sender").text(notification.senderName || "System");
@@ -174,14 +202,12 @@ const NotificationsPage = {
     const message = notification.message || notification.content || notification.text || notification.description || "No message available";
     $template.find(".notification-message").text(message);
 
-    // Handle article link
     if (notification.articleTitle) {
       $template.find(".notification-article").show();
       $template.find(".notification-article-link").attr("href", "article.html?id=" + (notification.articleId || "#"));
       $template.find(".notification-article-title").text(notification.articleTitle);
     }
 
-    // Hide mark as read button for read notifications
     if (notification.isRead) {
       $template.find(".mark-read-btn").hide();
     }
@@ -190,14 +216,25 @@ const NotificationsPage = {
   },
 
   getTypeBadge(type) {
-    const types = {
-      share: "Shared",
-      comment: "Comment",
-      like: "Like",
-      friend_request: "Friend Request",
-      system: "System"
+    const NotificationType = {
+      FriendRequest: "FriendRequest",
+      FriendRequestAccepted: "FriendRequestAccepted",
+      ArticleShare: "ArticleShare",
+      CommentLike: "CommentLike"
     };
-    return types[type] || "Notification";
+
+    switch (type) {
+      case NotificationType.FriendRequest:
+        return "Friend Request";
+      case NotificationType.FriendRequestAccepted:
+        return "Request Accepted";
+      case NotificationType.ArticleShare:
+        return "Article Shared";
+      case NotificationType.CommentLike:
+        return "Comment Liked";
+      default:
+        return "Notification";
+    }
   },
 
   formatTimeAgo(dateString) {
@@ -318,19 +355,16 @@ const NotificationsPage = {
 
     let html = "";
 
-    // Previous button
     html += `<li class="page-item ${this.currentPage <= 1 ? "disabled" : ""}">
                <a class="page-link" href="#" data-page="${this.currentPage - 1}">Previous</a>
              </li>`;
 
-    // Page numbers
     for (let i = 1; i <= totalPages; i++) {
       html += `<li class="page-item ${i === this.currentPage ? "active" : ""}">
                  <a class="page-link" href="#" data-page="${i}">${i}</a>
                </li>`;
     }
 
-    // Next button
     html += `<li class="page-item ${this.currentPage >= totalPages ? "disabled" : ""}">
                <a class="page-link" href="#" data-page="${this.currentPage + 1}">Next</a>
              </li>`;
