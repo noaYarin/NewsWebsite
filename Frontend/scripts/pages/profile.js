@@ -1,6 +1,7 @@
 let currentUser = null;
 let selectedInterests = [];
 let originalFormState = null;
+let lastSearchedEmail = null;
 
 const validationMap = {
   firstName: (val) => ValidationManager.validateName(val, "First name"),
@@ -133,7 +134,6 @@ function populateFriendsList(friends) {
   const listContainer = $("#friendsList");
   listContainer.empty();
 
-  // Update friends count
   $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
 
   if (friends.length === 0) {
@@ -205,6 +205,192 @@ function handleInterestListItemSelection(e) {
   }
   ValidationManager.updateInterestSubtitle(selectedInterests.length);
   updateSubmitButtonState();
+}
+
+function handleAddFriend() {
+  showAddFriendDialog();
+}
+
+function showAddFriendDialog() {
+  if ($("#add-friend-dialog").length > 0) {
+    return;
+  }
+
+  const dialogHtml = `
+    <div id="add-friend-dialog" class="dialog-popup add-friend-dialog">
+      <div class="dialog-content-wrapper">
+        <p class="dialog-message">Add Friend</p>
+        <div class="add-friend-form">
+          <div class="search-input-row">
+            <input type="email" id="friendEmailInput" placeholder="Enter email address..." />
+            <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
+          </div>
+        </div>
+        <div id="searchResultsSection" class="search-results-section"></div>
+      </div>
+    </div>
+  `;
+
+  $("body").append(dialogHtml);
+  $("#friendEmailInput").focus();
+
+  setTimeout(() => {
+    $("#add-friend-dialog").addClass("show");
+  }, 10);
+
+  $(document).on("click.addFriend", function (e) {
+    if (!$(e.target).closest("#add-friend-dialog").length) {
+      closeAddFriendDialog();
+    }
+  });
+
+  $("#searchUserButton").on("click", handleUserSearch);
+  $("#friendEmailInput").on("keypress", function (e) {
+    if (e.which === 13) {
+      e.preventDefault();
+      handleUserSearch(e);
+    }
+  });
+  $("#friendEmailInput").on("input", function () {
+    $(this).removeClass("error");
+  });
+}
+
+function closeAddFriendDialog() {
+  $("#add-friend-dialog").removeClass("show");
+  setTimeout(() => {
+    $("#add-friend-dialog").remove();
+    $(document).off("click.addFriend");
+    lastSearchedEmail = null;
+  }, 400);
+}
+
+function handleUserSearch(e) {
+  if (e) {
+    e.stopPropagation();
+  }
+  const email = $("#friendEmailInput").val().trim();
+  const emailInput = $("#friendEmailInput");
+  const resultsSection = $("#searchResultsSection");
+
+  if (email === lastSearchedEmail) {
+    return;
+  }
+
+  emailInput.removeClass("error");
+
+  if (!email) {
+    resultsSection.removeClass("show");
+    emailInput.addClass("error");
+    setTimeout(() => emailInput.removeClass("error"), 2000);
+    return;
+  }
+
+  const emailValidation = ValidationManager.validateEmail(email);
+  if (!emailValidation.valid) {
+    resultsSection.removeClass("show");
+    emailInput.addClass("error");
+    setTimeout(() => emailInput.removeClass("error"), 2000);
+    return;
+  }
+
+  lastSearchedEmail = email;
+
+  if (resultsSection.hasClass("show")) {
+    resultsSection.removeClass("show");
+    setTimeout(() => {
+      performSearch(email, resultsSection);
+    }, 500);
+  } else {
+    performSearch(email, resultsSection);
+  }
+}
+
+function performSearch(email, resultsSection) {
+  resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
+
+  searchUsers(
+    email,
+    (users) => {
+      displaySearchResults(users);
+    },
+    (error) => {
+      console.error("Search error:", error);
+      resultsSection.html('<p class="empty-search-message">Error searching for users.</p>');
+      UIManager.showPopup("Error searching for users.", false);
+      $("#friendEmailInput").addClass("error");
+    }
+  );
+}
+
+function displaySearchResults(users) {
+  const resultsSection = $("#searchResultsSection");
+
+  let resultsHtml;
+  const filteredUsers = users.filter((user) => user.id !== currentUser.id && !isAlreadyFriend(user.id));
+
+  if (filteredUsers.length === 0) {
+    resultsHtml = '<p class="empty-search-message">No new users found.</p>';
+  } else {
+    const userItems = filteredUsers
+      .map((user) => {
+        return `
+        <div class="user-search-item" data-user-id="${user.id}">
+          <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
+          <div class="user-info">
+            <span class="user-list-name">${user.fullName}</span>
+            <span class="user-email">${user.email}</span>
+          </div>
+          <button type="button" class="send-friend-request-btn" data-user-id="${user.id}" data-user-name="${user.fullName}">
+            Send Request
+          </button>
+        </div>
+      `;
+      })
+      .join("");
+    resultsHtml = `<div class="user-search-results">${userItems}</div>`;
+  }
+
+  resultsSection.html(resultsHtml);
+
+  $(".send-friend-request-btn").on("click", handleSendFriendRequest);
+}
+
+function isAlreadyFriend(userId) {
+  // This would need to check against the current friends list
+  // For now, we'll assume we need to implement this check
+  return false; // Placeholder - implement based on your friends data structure
+}
+
+function handleSendFriendRequest(e) {
+  const button = $(e.currentTarget);
+  const userId = button.data("user-id");
+  const userName = button.data("user-name");
+
+  UIManager.showDialog(`Send friend request to ${userName}?`).then((confirmed) => {
+    if (!confirmed) return;
+
+    const originalText = button.text();
+    button.text("Sending...").prop("disabled", true);
+
+    const requestData = {
+      senderId: currentUser.id,
+      receiverId: userId
+    };
+
+    sendFriendRequest(
+      requestData,
+      () => {
+        UIManager.showPopup(`Friend request sent to ${userName}!`, true);
+        button.text("Sent").prop("disabled", true).removeClass("auth-button").addClass("success-btn");
+      },
+      (error) => {
+        console.error("Friend request error:", error);
+        button.text(originalText).prop("disabled", false);
+        UIManager.showPopup("Failed to send friend request. Please try again.", false);
+      }
+    );
+  });
 }
 
 function handleUnblockUser(e) {
@@ -418,7 +604,7 @@ $(document).ready(function () {
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
     .on("click", ".remove-friend-btn", handleRemoveFriend)
-    .on("click", "#addFriendsBtn", loadAndPopulateFriendsList)
+    .on("click", "#addFriendsBtn", handleAddFriend)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("click", ".password-toggle-btn", handlePasswordToggle)

@@ -30,6 +30,7 @@ public class UserService : DBService
             Id = Convert.ToInt32(reader["Id"]),
             Email = reader["Email"].ToString(),
             FullName = $"{reader["FirstName"]} {reader["LastName"]}",
+            ImageUrl = reader["ImgUrl"] == DBNull.Value ? null : reader["ImgUrl"].ToString(),
             IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
             IsLocked = Convert.ToBoolean(reader["IsLocked"])
         };

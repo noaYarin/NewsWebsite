@@ -142,6 +142,11 @@ function toggleUserStatus(userId, attributeName, successCallback, errorCallback)
   ajaxCall("PUT", `${usersEndpoint}/${userId}/toggle-status`, JSON.stringify(data), successCallback, errorCallback);
 }
 
+function searchUsers(searchTerm, successCallback, errorCallback) {
+  const url = `${usersEndpoint}?searchTerm=${encodeURIComponent(searchTerm)}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
 // --- Friendship Functions ---
 function sendFriendRequest(data, successCallback, errorCallback) {
   ajaxCall("POST", `${friendsEndpoint}/request`, JSON.stringify(data), successCallback, errorCallback);
