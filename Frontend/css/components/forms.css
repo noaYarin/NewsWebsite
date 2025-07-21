@@ -148,7 +148,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 8px;
   margin-bottom: 8px;
   font-size: 12px;
-  transition: color 0.3s ease;
+  transition: color var(--transition-fast);
 }
 
 .password-requirement:last-child {
@@ -164,7 +164,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   justify-content: center;
   font-size: 10px;
   font-weight: bold;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
 }
 
 .password-requirement.invalid {
@@ -203,7 +203,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   height: 100%;
   width: 0%;
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
   background-color: var(--c-red);
 }
 .password-progress-fill.weak {

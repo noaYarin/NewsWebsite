@@ -151,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
   text-align: left;
 }
 
@@ -162,7 +162,7 @@
 .report-dialog .dropdown-arrow {
   width: 1em;
   height: 1em;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-fast);
   opacity: 0.7;
 }
 
@@ -186,7 +186,7 @@
   opacity: 0;
   transform: translateY(10px);
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
 }
 
 .report-dialog .dropdown-options.show {

@@ -176,7 +176,7 @@
   width: 180px;
   height: 270px;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-fast);
 }
 
 .discover-item:hover img {

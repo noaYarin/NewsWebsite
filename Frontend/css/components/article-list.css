@@ -11,7 +11,7 @@
   border: 1px solid var(--c-border-light);
   text-decoration: none;
   color: var(--c-dark);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
   overflow: hidden;
   max-height: 180px;
 }

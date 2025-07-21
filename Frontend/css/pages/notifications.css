@@ -45,8 +45,8 @@
 #refreshBtn {
   background-color: var(--c-primary);
   padding: 5px;
-  border-radius: 50px;
-  transition: background-color 0.3s ease;
+  border-radius: 50%;
+  transition: background-color var(--transition-fast);
 }
 
 #refreshBtn:hover {
@@ -58,9 +58,8 @@
   height: 18px;
 }
 
-/* Enhanced Tab Navigation with Sliding Indicator */
 .notifications-filters .nav-tabs {
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--c-border-light);
   position: relative;
 }
 
@@ -69,24 +68,19 @@
   border: none;
   padding: 0.75rem 1.5rem;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: color var(--transition-fast);
   position: relative;
 }
 
 .notifications-filters .nav-link:hover {
-  border-color: transparent;
   color: var(--c-primary);
 }
 
-/* Remove the original active border and use sliding indicator instead */
 .notifications-filters .nav-link.active {
   color: var(--c-primary);
-  background-color: transparent;
-  border-color: transparent;
-  border-bottom: none;
 }
 
-/* Create sliding indicator */
+/* Sliding indicator */
 .notifications-filters .nav-tabs::after {
   content: "";
   position: absolute;
@@ -94,41 +88,36 @@
   left: 0;
   height: 3px;
   background: var(--c-primary);
-  border-radius: 2px 2px 0 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
-  /* Use CSS custom properties for dynamic sizing */
   width: var(--indicator-width, 0px);
   transform: translateX(var(--indicator-position, 0px));
 }
 
-/* Position for "Unread" tab when active */
 .notifications-filters .nav-tabs.unread-active::after {
   transform: translateX(100%);
 }
 
 /* Notification Items */
-.notifications-list {
-  max-height: 70vh;
-}
-
 .notification-item {
   background: var(--c-light);
-  border: 1px solid var(--c-border-light);
-  margin-bottom: 1rem;
+  border-top: 1px solid var(--c-border-light);
   padding: 1.25rem;
   transition: var(--transition-fast);
   position: relative;
 }
 
 .notification-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: var(--c-light-hover);
 }
 
 .notification-item.unread {
   border-left: 4px solid var(--c-primary);
-  background: linear-gradient(135deg, rgba(255, 204, 0, 0.05) 0%, rgba(255, 204, 0, 0.02) 100%);
+  background-color: #ffcc000d;
+}
+
+.notification-item.unread:hover {
+  background-color: #ffcc001a;
 }
 
 .notification-content {
@@ -183,8 +172,6 @@
 
 .notification-message {
   color: var(--c-dark);
-  line-height: 1.5;
-  margin-bottom: 0.5rem;
 }
 
 .notification-article {
@@ -216,8 +203,15 @@
 }
 
 .mark-read-btn {
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  background-color: var(--c-primary);
+  padding: 10px;
+  border-radius: 50%;
+  transition: background-color var(--transition-fast);
+}
+
+.mark-read-btn:hover {
+  background-color: var(--c-primary-light);
+  cursor: pointer;
 }
 
 .mark-read-btn img {
@@ -261,10 +255,27 @@
   color: var(--c-dark);
 }
 
-/* Responsive Design */
+.notifications-list {
+  position: relative;
+}
+
+.notification-item {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .notification-content {
-    flex-direction: column;
     gap: 0.75rem;
   }
 
@@ -287,25 +298,5 @@
   .notifications-filters .nav-link {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
-  }
-}
-
-/* Loading and Transitions */
-.notifications-list {
-  position: relative;
-}
-
-.notification-item {
-  animation: slideInUp 0.3s ease-out;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

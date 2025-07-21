@@ -27,12 +27,12 @@ const BackToTop = {
         if (footerOverlap > 0) {
           $backToTop.css({
             bottom: 30 + footerOverlap + "px",
-            transition: "bottom 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease"
+            transition: "bottom var(--transition-fast), opacity var(--transition-fast), visibility var(--transition-fast), transform var(--transition-fast)"
           });
         } else {
           $backToTop.css({
             bottom: "30px",
-            transition: "all 0.3s ease"
+            transition: "all var(--transition-fast)"
           });
         }
       }
