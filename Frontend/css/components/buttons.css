@@ -197,9 +197,11 @@
 #bookmark-btn .icon-bookmark-filled {
   display: none;
 }
+
 #bookmark-btn.bookmarked .icon-bookmark-outline {
   display: none;
 }
+
 #bookmark-btn.bookmarked .icon-bookmark-filled {
   display: inline-block;
 }
@@ -227,13 +229,16 @@
 .mobile-close-search {
   line-height: 0;
 }
+
 .close-btn,
 .close-search {
   padding: 8px;
 }
+
 .mobile-close-search {
   padding: 4px;
 }
+
 .close-btn img,
 .close-search img,
 .mobile-close-search img {

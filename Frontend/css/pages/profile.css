@@ -85,26 +85,26 @@
   margin-bottom: 0;
 }
 
-.blocked-users-container {
+.user-list-container {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.blocked-user-item {
+.user-list-item {
   display: flex;
   align-items: center;
   padding: 10px;
   background-color: var(--c-input-bg);
   border-radius: 8px;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-fast);
 }
 
-.blocked-user-item:hover {
+.user-list-item:hover {
   background-color: var(--c-border-light);
 }
 
-.blocked-user-avatar {
+.user-list-avatar {
   width: 45px;
   height: 45px;
   border-radius: 50%;
@@ -112,7 +112,7 @@
   margin-right: 15px;
 }
 
-.blocked-user-name {
+.user-list-name {
   font-weight: 500;
   flex-grow: 1;
 }
