@@ -22,6 +22,7 @@
 @import url("./components/search.css");
 @import url("./components/comments.css");
 @import url("./components/article-list.css");
+@import url("./components/loader.css");
 
 /* === PAGE-SPECIFIC STYLES === */
 @import url("./pages/home.css");
@@ -30,6 +31,7 @@
 @import url("./pages/profile.css");
 @import url("./pages/category.css");
 @import url("./pages/bookmarks.css");
+@import url("./pages/notifications.css");
 
 /* === RESPONSIVE STYLES === */
 @import url("./utils/responsive.css");

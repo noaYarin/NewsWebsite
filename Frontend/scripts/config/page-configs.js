@@ -34,5 +34,11 @@ export const PAGE_CONFIGS = {
     bundles: ["core", "ui"],
     modules: ["validation"],
     page: "./pages/profile.js"
+  },
+
+  "notifications.html": {
+    bundles: ["core", "ui"],
+    modules: [],
+    page: "./pages/notifications.js"
   }
 };
