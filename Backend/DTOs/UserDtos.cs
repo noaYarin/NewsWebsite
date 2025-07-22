@@ -77,3 +77,12 @@ public class UserSummaryDto
     public bool IsAdmin { get; set; }
     public bool IsLocked { get; set; }
 }
+
+public class PaginatedUsersResponseDto
+{
+    public List<UserSummaryDto> Users { get; set; }
+    public int TotalCount { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public bool HasNextPage { get; set; }
+}

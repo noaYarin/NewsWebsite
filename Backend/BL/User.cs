@@ -45,6 +45,12 @@ public class User
         return userService.SearchUsersByEmail(emailTerm);
     }
 
+    public static PaginatedUsersResponseDto GetUsersPaginated(string? searchTerm, int page, int pageSize)
+    {
+        var userService = new UserService();
+        return userService.GetUsersPaginated(searchTerm, page, pageSize);
+    }
+
     public string Register(string plainTextPassword, List<string> tagNames)
     {
         UserService userService = new();

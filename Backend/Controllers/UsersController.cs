@@ -29,6 +29,24 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpGet("paginated")]
+    public IActionResult GetUsersPaginated([FromQuery] string? searchTerm, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        try
+        {
+            if (page < 1) page = 1;
+            if (pageSize < 1 || pageSize > 50) pageSize = 10;
+
+            var result = Horizon.BL.User.GetUsersPaginated(searchTerm, page, pageSize);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while retrieving users: {ex.Message}");
+        }
+    }
+
     [HttpGet("exists/{email}")]
     public IActionResult UserExists(string email)
     {

@@ -5,6 +5,14 @@ let lastSearchedEmail = null;
 let pendingFriendRequests = new Set();
 let outgoingFriendRequests = new Set();
 
+let searchPagination = {
+  currentPage: 1,
+  pageSize: 10,
+  hasNextPage: false,
+  isLoading: false,
+  lastSearchTerm: ""
+};
+
 const validationMap = {
   firstName: (val) => ValidationManager.validateName(val, "First name"),
   lastName: (val) => ValidationManager.validateName(val, "Last name"),
@@ -307,15 +315,28 @@ function handleUserSearch(e) {
   }
 }
 
-function performSearch(email, resultsSection) {
-  resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
+function performSearch(searchTerm, resultsSection) {
+  if (searchPagination.lastSearchTerm !== searchTerm) {
+    searchPagination.currentPage = 1;
+    searchPagination.hasNextPage = false;
+    searchPagination.lastSearchTerm = searchTerm;
+  }
 
-  searchUsers(
-    email,
-    (users) => {
-      displaySearchResults(users);
+  resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
+  searchPagination.isLoading = true;
+
+  searchUsersPaginated(
+    searchTerm,
+    searchPagination.currentPage,
+    searchPagination.pageSize,
+    (response) => {
+      searchPagination.isLoading = false;
+      searchPagination.hasNextPage = response.hasNextPage;
+      displaySearchResults(response.users, searchPagination.currentPage === 1);
+      setupInfiniteScroll(resultsSection, searchTerm);
     },
     () => {
+      searchPagination.isLoading = false;
       resultsSection.html('<p class="empty-search-message">Error searching for users.</p>');
       UIManager.showPopup("Error searching for users.", false);
       $("#friendEmailInput").addClass("error");
@@ -323,22 +344,25 @@ function performSearch(email, resultsSection) {
   );
 }
 
-function displaySearchResults(users) {
+function displaySearchResults(users, isNewSearch = true) {
   const resultsSection = $("#searchResultsSection");
 
   let resultsHtml;
   const filteredUsers = users.filter((user) => user.id !== currentUser.id);
 
-  if (filteredUsers.length === 0) {
+  if (isNewSearch && filteredUsers.length === 0) {
     resultsHtml = '<p class="empty-search-message">No users found.</p>';
-  } else {
-    const userItems = filteredUsers
-      .map((user) => {
-        const hasPendingRequest = outgoingFriendRequests.has(user.id);
-        const buttonText = hasPendingRequest ? "Unsend" : "Send Request";
-        const buttonClass = hasPendingRequest ? "cancel-friend-request-btn success-btn" : "send-friend-request-btn";
+    resultsSection.html(resultsHtml);
+    return;
+  }
 
-        return `
+  const userItems = filteredUsers
+    .map((user) => {
+      const hasPendingRequest = outgoingFriendRequests.has(user.id);
+      const buttonText = hasPendingRequest ? "Unsend" : "Send Request";
+      const buttonClass = hasPendingRequest ? "cancel-friend-request-btn success-btn" : "send-friend-request-btn";
+
+      return `
         <div class="user-search-item" data-user-id="${user.id}">
           <img src="${user.imageUrl || user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
           <div class="user-info">
@@ -350,15 +374,79 @@ function displaySearchResults(users) {
           </button>
         </div>
       `;
-      })
-      .join("");
-    resultsHtml = `<div class="user-search-results">${userItems}</div>`;
-  }
+    })
+    .join("");
 
-  resultsSection.html(resultsHtml);
+  if (isNewSearch) {
+    resultsHtml = `<div class="user-search-results">${userItems}</div>`;
+    resultsSection.html(resultsHtml);
+  } else {
+    const existingResults = resultsSection.find(".user-search-results");
+    if (existingResults.length > 0) {
+      existingResults.append(userItems);
+    } else {
+      resultsHtml = `<div class="user-search-results">${userItems}</div>`;
+      resultsSection.html(resultsHtml);
+    }
+  }
 
   $(".send-friend-request-btn").on("click", handleSendFriendRequest);
   $(".cancel-friend-request-btn").on("click", handleCancelFriendRequest);
+}
+
+function setupInfiniteScroll(resultsSection, searchTerm) {
+  resultsSection.off("scroll.infiniteSearch");
+
+  if (!searchPagination.hasNextPage) {
+    return;
+  }
+
+  resultsSection.on("scroll.infiniteSearch", function () {
+    const scrollTop = $(this).scrollTop();
+    const scrollHeight = $(this)[0].scrollHeight;
+    const clientHeight = $(this).height();
+
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+      loadMoreUsers(searchTerm, resultsSection);
+    }
+  });
+}
+
+function loadMoreUsers(searchTerm, resultsSection) {
+  if (searchPagination.isLoading || !searchPagination.hasNextPage) {
+    return;
+  }
+
+  searchPagination.isLoading = true;
+  searchPagination.currentPage++;
+
+  const loadingHtml = '<div class="loading-more">Loading more users...</div>';
+  resultsSection.find(".user-search-results").append(loadingHtml);
+
+  searchUsersPaginated(
+    searchTerm,
+    searchPagination.currentPage,
+    searchPagination.pageSize,
+    (response) => {
+      searchPagination.isLoading = false;
+      searchPagination.hasNextPage = response.hasNextPage;
+
+      resultsSection.find(".loading-more").remove();
+
+      displaySearchResults(response.users, false);
+
+      if (searchPagination.hasNextPage) {
+        setupInfiniteScroll(resultsSection, searchTerm);
+      }
+    },
+    () => {
+      searchPagination.isLoading = false;
+      searchPagination.currentPage--;
+
+      resultsSection.find(".loading-more").remove();
+      resultsSection.find(".user-search-results").append('<div class="load-error">Error loading more users. Try again.</div>');
+    }
+  );
 }
 
 function updateFriendsListWithPendingRequests(incomingRequests) {

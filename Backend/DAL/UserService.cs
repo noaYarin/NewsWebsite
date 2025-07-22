@@ -77,6 +77,46 @@ public class UserService : DBService
         finally { con?.Close(); }
     }
 
+    public PaginatedUsersResponseDto GetUsersPaginated(string? searchTerm, int page, int pageSize)
+    {
+        var result = new PaginatedUsersResponseDto
+        {
+            Users = new List<UserSummaryDto>(),
+            Page = page,
+            PageSize = pageSize
+        };
+
+        SqlConnection con = null;
+        try
+        {
+            con = Connect();
+            var parameters = new Dictionary<string, object>
+            {
+                { "@SearchTerm", searchTerm ?? (object)DBNull.Value },
+                { "@Page", page },
+                { "@PageSize", pageSize }
+            };
+
+            SqlCommand cmd = CreateCommand("SP_GetUsersPaginated", con, parameters);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    result.Users.Add(MapReaderToUserSummary(reader));
+                }
+
+                if (reader.NextResult() && reader.Read())
+                {
+                    result.TotalCount = Convert.ToInt32(reader["TotalCount"]);
+                }
+            }
+
+            result.HasNextPage = (page * pageSize) < result.TotalCount;
+            return result;
+        }
+        finally { con?.Close(); }
+    }
+
     public int InsertUserAndTags(User user, List<string> tagNames)
     {
         SqlConnection con = null;

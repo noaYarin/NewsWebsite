@@ -147,6 +147,11 @@ function searchUsers(searchTerm, successCallback, errorCallback) {
   ajaxCall("GET", url, null, successCallback, errorCallback);
 }
 
+function searchUsersPaginated(searchTerm, page = 1, pageSize = 10, successCallback, errorCallback) {
+  const url = `${usersEndpoint}/paginated?searchTerm=${encodeURIComponent(searchTerm)}&page=${page}&pageSize=${pageSize}`;
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
 // --- Friendship Functions ---
 function sendFriendRequest(data, successCallback, errorCallback) {
   ajaxCall("POST", `${friendsEndpoint}/request`, JSON.stringify(data), successCallback, errorCallback);
