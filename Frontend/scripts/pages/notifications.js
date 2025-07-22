@@ -164,7 +164,7 @@ const NotificationsPage = {
               <span class="notification-type-badge">${this.getTypeBadge(notification.notificationType)}</span>
               <span class="notification-time">${timeAgo}</span>
             </div>
-            <div class="notification-message">${notification.message || "No message"}</div>
+            <div class="notification-message">${notification.message || "No message."}</div>
             ${
               notification.articleTitle
                 ? `

@@ -1,6 +1,6 @@
-﻿using Horizon.DAL;
+﻿using System.Collections.Generic;
+using Horizon.DAL;
 using Horizon.DTOs;
-using System.Collections.Generic;
 
 namespace Horizon.BL
 {
@@ -24,7 +24,7 @@ namespace Horizon.BL
         public static List<NotificationDto> GetRecentNotifications(int userId)
         {
             var notificationService = new NotificationService();
-            return notificationService.GetRecentNotificationsForUser(userId, 5); // Default to 5 recent
+            return notificationService.GetRecentNotificationsForUser(userId, 5);
         }
 
         public static int GetUnreadCount(int userId)

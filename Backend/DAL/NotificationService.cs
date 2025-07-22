@@ -1,7 +1,7 @@
-﻿using System.Data.SqlClient;
+﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using Horizon.BL;
 using Horizon.DTOs;
-using System.Collections.Generic;
 
 namespace Horizon.DAL
 {
@@ -9,6 +9,11 @@ namespace Horizon.DAL
     {
         public bool InsertNotification(int recipientId, int senderId, NotificationType notificationType, int? relatedEntityId, string message)
         {
+            if (string.IsNullOrEmpty(message))
+            {
+                message = GetDefaultMessage(notificationType);
+            }
+
             SqlConnection con = null;
             try
             {
@@ -25,6 +30,18 @@ namespace Horizon.DAL
                 return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
             }
             finally { con?.Close(); }
+        }
+
+        private string GetDefaultMessage(NotificationType notificationType)
+        {
+            return notificationType switch
+            {
+                NotificationType.FriendRequest => "sent you a friend request.",
+                NotificationType.FriendRequestAccepted => "has accepted your friend request.",
+                NotificationType.CommentLike => "has liked your comment.",
+                NotificationType.ArticleShare => "shared an article with you.",
+                _ => "sent you a system notification."
+            };
         }
 
         public List<NotificationDto> GetNotificationsForUser(int userId, int page, int pageSize)
