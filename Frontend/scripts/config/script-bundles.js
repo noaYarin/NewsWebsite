@@ -11,7 +11,9 @@ export const SCRIPT_BUNDLES = {
     bookmarks: "./modules/bookmark-manager.js",
     articleReporter: "./modules/article-reporter.js",
     backToTop: "./components/back-to-top.js",
-    reportDialog: "./components/report-dialog.js"
+    reportDialog: "./components/report-dialog.js",
+    profileFormManager: "./modules/profile-form-manager.js",
+    profileFriendsManager: "./modules/friends-manager.js"
   },
 
   news: ["./modules/news-section-manager.js", "./modules/news-api-manager.js", "./modules/news-link-manager.js"],

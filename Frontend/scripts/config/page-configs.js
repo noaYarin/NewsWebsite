@@ -32,7 +32,7 @@ export const PAGE_CONFIGS = {
 
   "profile.html": {
     bundles: ["core", "ui"],
-    modules: ["validation"],
+    modules: ["validation", "profileFormManager", "profileFriendsManager"],
     page: "./pages/profile.js"
   },
 
