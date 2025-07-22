@@ -314,6 +314,34 @@
   background-color: var(--c-red-light);
 }
 
+.user-search-item .primary-btn {
+  background-color: var(--c-green);
+  color: var(--c-light);
+  border-color: rgba(var(--c-primary-rgb), 0.5) !important;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.user-search-item .primary-btn:hover {
+  background-color: var(--c-green-light);
+}
+
+.user-search-item .friends-btn {
+  background-color: var(--c-success);
+  color: var(--c-light);
+  border-color: rgba(var(--c-success-rgb), 0.5) !important;
+  cursor: default;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
 .dialog-content-wrapper {
   display: flex;
   flex-direction: column;
