@@ -289,8 +289,8 @@
   background-color: rgba(var(--c-primary-rgb), 0.75);
   backdrop-filter: blur(10px);
   color: var(--c-dark);
-  border-radius: 20px;
-  transition: all 0.2s ease;
+  border-radius: 50px;
+  transition: all var(--transition-fast);
   font-weight: 500;
 }
 
