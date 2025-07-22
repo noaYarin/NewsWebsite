@@ -153,7 +153,7 @@ const CategoryPage = {
     const categoryName = this.currentCategory.charAt(0).toUpperCase() + this.currentCategory.slice(1);
     container.html(`
       <div class="empty-state">
-        <img src="../sources/icons/search-svgrepo-com.svg" alt="No articles" class="empty-state-icon" />
+        <img src="../sources/images/not-found.png" alt="No articles" class="empty-state-icon" />
         <h3>No articles found</h3>
         <p>No articles found in the ${categoryName} category.</p>
         <a href="../html/index.html" class="highlight">Browse All Articles</a>
@@ -166,7 +166,7 @@ const CategoryPage = {
     const $listContainer = $("#category-articles-list");
     $listContainer.html(`
       <div class="error-state">
-        <img src="../sources/icons/alert-circle-svgrepo-com.svg" alt="Error" class="error-state-icon" />
+        <img src="../sources/icons/not-found.png" alt="Error" class="error-state-icon" />
         <h3>Oops! Something went wrong</h3>
         <p>${message}</p>
         <button onclick="CategoryPage.retry()" class="retry-btn">Try Again</button>

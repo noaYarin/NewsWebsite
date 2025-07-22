@@ -44,7 +44,7 @@ const BookmarksPage = {
   showEmptyState(container) {
     container.html(`
       <div class="empty-state">
-        <img src="../sources/icons/bookmarks-svgrepo-com.svg" alt="No bookmarks" class="empty-state-icon" />
+        <img src="../sources/images/not-found.png" alt="No bookmarks" class="empty-state-icon" />
         <h3>No saved articles yet</h3>
         <p>Articles you bookmark will appear here for easy access later.</p>
         <a href="../html/index.html" class="highlight">Browse Articles</a>
