@@ -136,6 +136,7 @@ const SigninHandler = {
         if (userData && userData.id) {
           localStorage.setItem("currentUser", JSON.stringify(userData));
           window.location.href = "index.html";
+          StatisticsManager.incrementUsersCount();
         } else {
           UIManager.showPopup("Invalid email or password.", false);
           button.text("Sign In").prop("disabled", false);
