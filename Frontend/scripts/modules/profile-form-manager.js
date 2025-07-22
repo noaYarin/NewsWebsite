@@ -269,6 +269,7 @@ const ProfileFormManager = {
         $("#newPassword").val("");
         $("#confirmPassword").val("");
         $(".confirm-password-container").removeClass("show");
+        $(".password-criteria").removeClass("show");
 
         this.captureOriginalFormState();
         this.updateSubmitButtonState();
