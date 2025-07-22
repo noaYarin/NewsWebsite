@@ -1,10 +1,66 @@
 const CommentManager = {
   currentUser: null,
   currentArticle: null,
+  currentFriends: new Set(),
+  outgoingFriendRequests: new Set(),
+  pendingFriendRequests: new Set(),
+  lastCommentsData: null,
 
   init(user, article) {
     this.currentUser = user;
     this.currentArticle = article;
+    if (this.currentUser) {
+      this.loadFriendshipData().then(() => {
+        if (this.lastCommentsData) {
+          this.display(this.lastCommentsData);
+        }
+      });
+    }
+  },
+
+  loadFriendshipData() {
+    if (!this.currentUser || !this.currentUser.id) return Promise.resolve();
+
+    const promises = [];
+
+    const friendsPromise = new Promise((resolve) => {
+      getFriends(
+        this.currentUser.id,
+        (friends) => {
+          this.currentFriends.clear();
+          friends.forEach((friend) => this.currentFriends.add(friend.id));
+          resolve();
+        },
+        () => resolve()
+      );
+    });
+
+    const pendingPromise = new Promise((resolve) => {
+      getPendingFriendRequests(
+        this.currentUser.id,
+        (incomingRequests) => {
+          this.pendingFriendRequests.clear();
+          incomingRequests.forEach((request) => this.pendingFriendRequests.add(request.id));
+          resolve();
+        },
+        () => resolve()
+      );
+    });
+
+    const outgoingPromise = new Promise((resolve) => {
+      getOutgoingFriendRequests(
+        this.currentUser.id,
+        (outgoingRequests) => {
+          this.outgoingFriendRequests.clear();
+          outgoingRequests.forEach((request) => this.outgoingFriendRequests.add(request.id));
+          resolve();
+        },
+        () => resolve()
+      );
+    });
+
+    promises.push(friendsPromise, pendingPromise, outgoingPromise);
+    return Promise.all(promises);
   },
 
   setup() {
@@ -34,7 +90,20 @@ const CommentManager = {
     getComments(
       this.currentArticle.id,
       this.currentUser ? this.currentUser.id : null,
-      (comments) => this.display(comments),
+      (comments) => {
+        this.lastCommentsData = comments;
+
+        if (this.currentUser) {
+          const friendshipPromise = this.loadFriendshipData();
+          const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3000));
+
+          Promise.race([friendshipPromise, timeoutPromise]).then(() => {
+            this.display(comments);
+          });
+        } else {
+          this.display(comments);
+        }
+      },
       () => $("#comments-list").html('<p class="comment-prompt">Could not load comments.</p>')
     );
   },
@@ -63,6 +132,10 @@ const CommentManager = {
     const isAuthor = this.currentUser && this.currentUser.id == comment.authorId;
     const isAdmin = this.currentUser && this.currentUser.isAdmin;
 
+    const isAlreadyFriend = this.currentFriends.has(comment.authorId);
+    const hasPendingOutgoing = this.outgoingFriendRequests.has(comment.authorId);
+    const hasPendingIncoming = this.pendingFriendRequests.has(comment.authorId);
+
     let actionsHtml = "";
     if (!isAuthor) {
       actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment"><img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" /></button>`;
@@ -70,6 +143,16 @@ const CommentManager = {
         actionsHtml += `<button class="unblock-user-btn action-icon-btn" title="Unblock User"><img src="../sources/icons/unblock-svgrepo-com.svg" alt="Unblock" /></button>`;
       } else {
         actionsHtml += `<button class="block-user-btn action-icon-btn" title="Block User"><img src="../sources/icons/block-2-svgrepo-com.svg" alt="Block" /></button>`;
+
+        if (isAlreadyFriend) {
+          actionsHtml += `<button class="unfriend-user-btn action-icon-btn" title="Unfriend User" data-user-id="${comment.authorId}" data-user-name="${comment.authorName}"><img src="../sources/icons/user-remove-svgrepo-com.svg" alt="Unfriend" /></button>`;
+        } else if (hasPendingOutgoing) {
+          actionsHtml += `<button class="cancel-friend-request-btn action-icon-btn" title="Cancel Friend Request" data-user-id="${comment.authorId}" data-user-name="${comment.authorName}"><img src="../sources/icons/user-unsend-svgrepo-com.svg" alt="Pending" /></button>`;
+        } else if (hasPendingIncoming) {
+          actionsHtml += `<button class="accept-friend-request-btn action-icon-btn" title="Accept Friend Request" data-user-id="${comment.authorId}" data-user-name="${comment.authorName}"><img src="../sources/icons/user-accept-svgrepo-com.svg" alt="Accept" /></button>`;
+        } else {
+          actionsHtml += `<button class="send-friend-request-btn action-icon-btn" title="Send Friend Request" data-user-id="${comment.authorId}" data-user-name="${comment.authorName}"><img src="../sources/icons/add-friend-svgrepo-com.svg" alt="Add Friend" /></button>`;
+        }
       }
     }
     if (isAuthor) {
@@ -125,7 +208,6 @@ const CommentManager = {
   },
 
   setupEventHandlers() {
-    // Show blocked comment
     $(document)
       .off("click", ".show-comment-btn")
       .on("click", ".show-comment-btn", (e) => {
@@ -134,12 +216,10 @@ const CommentManager = {
         button.closest(".comment-item").replaceWith(fullCommentHtml);
       });
 
-    // Comment form submission
     $("#comment-form")
       .off("submit")
       .on("submit", (e) => this.handleSubmit(e));
 
-    // Comment actions
     $(document)
       .on("click", ".edit-comment-btn", (e) => this.handleEdit(e))
       .on("click", ".cancel-edit-btn", (e) => this.handleCancelEdit(e))
@@ -148,7 +228,11 @@ const CommentManager = {
       .on("click", ".like-comment-btn", (e) => this.handleLike(e))
       .on("click", ".report-comment-btn", (e) => this.handleReport(e))
       .on("click", ".block-user-btn", (e) => this.handleBlock(e))
-      .on("click", ".unblock-user-btn", (e) => this.handleUnblock(e));
+      .on("click", ".unblock-user-btn", (e) => this.handleUnblock(e))
+      .on("click", ".send-friend-request-btn", (e) => this.handleSendFriendRequest(e))
+      .on("click", ".unfriend-user-btn", (e) => this.handleUnfriend(e))
+      .on("click", ".cancel-friend-request-btn", (e) => this.handleCancelFriendRequest(e))
+      .on("click", ".accept-friend-request-btn", (e) => this.handleAcceptFriendRequest(e));
   },
 
   handleSubmit(e) {
@@ -400,6 +484,128 @@ const CommentManager = {
       });
       setTimeout(() => particle.remove(), 1000);
     }
+  },
+
+  handleSendFriendRequest(e) {
+    if (!this.currentUser) {
+      UIManager.showPopup("Please log in to send friend requests.", false);
+      return;
+    }
+
+    const button = $(e.target).closest(".send-friend-request-btn");
+    const userId = button.data("user-id");
+    const userName = button.data("user-name");
+
+    UIManager.showDialog(`Send friend request to ${userName}?`).then((confirmed) => {
+      if (!confirmed) return;
+
+      const requestData = {
+        SenderId: this.currentUser.id,
+        RecipientId: userId
+      };
+
+      sendFriendRequest(
+        requestData,
+        () => {
+          this.outgoingFriendRequests.add(userId);
+          UIManager.showPopup(`Friend request sent to ${userName}.`, true);
+          this.display(this.lastCommentsData || []);
+        },
+        () => UIManager.showPopup("Failed to send friend request. Please try again.", false)
+      );
+    });
+  },
+
+  handleUnfriend(e) {
+    if (!this.currentUser) {
+      UIManager.showPopup("Please log in.", false);
+      return;
+    }
+
+    const button = $(e.target).closest(".unfriend-user-btn");
+    const userId = button.data("user-id");
+    const userName = button.data("user-name");
+
+    UIManager.showDialog(`Remove ${userName} from your friends list?`).then((confirmed) => {
+      if (!confirmed) return;
+
+      const requestData = {
+        userId: this.currentUser.id,
+        friendId: userId
+      };
+
+      removeFriend(
+        requestData,
+        () => {
+          this.currentFriends.delete(userId);
+          UIManager.showPopup(`${userName} has been removed from your friends list.`, true);
+          this.display(this.lastCommentsData || []);
+        },
+        () => UIManager.showPopup("Failed to remove friend. Please try again.", false)
+      );
+    });
+  },
+
+  handleCancelFriendRequest(e) {
+    if (!this.currentUser) {
+      UIManager.showPopup("Please log in.", false);
+      return;
+    }
+
+    const button = $(e.target).closest(".cancel-friend-request-btn");
+    const userId = button.data("user-id");
+    const userName = button.data("user-name");
+
+    UIManager.showDialog(`Cancel friend request to ${userName}?`).then((confirmed) => {
+      if (!confirmed) return;
+
+      const requestData = {
+        SenderId: this.currentUser.id,
+        RecipientId: userId
+      };
+
+      cancelFriendRequest(
+        requestData,
+        () => {
+          this.outgoingFriendRequests.delete(userId);
+          UIManager.showPopup(`Friend request to ${userName} has been cancelled.`, true);
+          this.display(this.lastCommentsData || []);
+        },
+        () => UIManager.showPopup("Failed to cancel friend request. Please try again.", false)
+      );
+    });
+  },
+
+  handleAcceptFriendRequest(e) {
+    if (!this.currentUser) {
+      UIManager.showPopup("Please log in.", false);
+      return;
+    }
+
+    const button = $(e.target).closest(".accept-friend-request-btn");
+    const userId = button.data("user-id");
+    const userName = button.data("user-name");
+
+    UIManager.showDialog(`Accept friend request from ${userName}?`).then((confirmed) => {
+      if (!confirmed) return;
+
+      const requestData = {
+        RequesterId: userId,
+        ResponderId: this.currentUser.id,
+        Response: 1
+      };
+
+      respondToFriendRequest(
+        requestData,
+        () => {
+          this.pendingFriendRequests.delete(userId);
+          this.currentFriends.add(userId);
+          UIManager.showPopup(`You are now friends with ${userName}!`, true);
+          this.display(this.lastCommentsData || []);
+        },
+        () => UIManager.showPopup("Failed to accept friend request. Please try again.", false)
+      );
+    });
   }
 };
 
