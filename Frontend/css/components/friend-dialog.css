@@ -60,6 +60,31 @@
   overflow-y: auto;
 }
 
+/* Custom scrollbar for search results */
+.search-results-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-results-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-results-section::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+  transition: background var(--transition-fast);
+}
+
+.search-results-section::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Firefox scrollbar */
+.search-results-section {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.6) transparent;
+}
+
 .user-search-results {
   display: flex;
   flex-direction: column;
@@ -73,7 +98,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   gap: 12px;
 }
 
@@ -203,7 +228,7 @@
   border: 2px solid rgba(255, 255, 255, 0.5);
   background-color: transparent;
   border-radius: 50px;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
   display: flex;
@@ -290,7 +315,6 @@
   transform: none;
 }
 
-/* Mobile responsive styles */
 @media (max-width: 768px) {
   .user-search-item .send-friend-request-btn {
     font-size: 12px;
