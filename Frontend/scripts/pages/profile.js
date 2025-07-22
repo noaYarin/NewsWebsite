@@ -19,16 +19,11 @@ const validationMap = {
   lastName: (val) => ValidationManager.validateName(val, "Last name"),
   birthdate: ValidationManager.validateBirthdate,
   imageUrl: ValidationManager.validateImageUrl,
-  newPassword: (val) => {
-    return val ? ValidationManager.validatePassword(val) : { valid: true };
-  },
+  newPassword: (val) => (val ? ValidationManager.validatePassword(val) : { valid: true }),
   confirmPassword: () => {
     const newPassword = $("#newPassword").val();
     const confirmPassword = $("#confirmPassword").val();
-    if (newPassword !== confirmPassword) {
-      return { valid: false, message: "Passwords do not match." };
-    }
-    return { valid: true };
+    return newPassword !== confirmPassword ? { valid: false, message: "Passwords do not match." } : { valid: true };
   }
 };
 
@@ -55,13 +50,8 @@ function hasFormChanged() {
     newPassword: $("#newPassword").val()
   };
 
-  return (
-    currentState.firstName !== originalFormState.firstName ||
-    currentState.lastName !== originalFormState.lastName ||
-    currentState.birthdate !== originalFormState.birthdate ||
-    currentState.imageUrl !== originalFormState.imageUrl ||
-    currentState.newPassword !== originalFormState.newPassword ||
-    JSON.stringify(currentState.interests.sort()) !== JSON.stringify(originalFormState.interests.sort())
+  return Object.keys(currentState).some((key) =>
+    key === "interests" ? JSON.stringify(currentState.interests.sort()) !== JSON.stringify(originalFormState.interests.sort()) : currentState[key] !== originalFormState[key]
   );
 }
 
@@ -70,11 +60,7 @@ function updateSubmitButtonState() {
   const hasChanges = hasFormChanged();
 
   submitButton.prop("disabled", !hasChanges);
-  if (hasChanges) {
-    submitButton.text("Save Changes").removeClass("no-changes");
-  } else {
-    submitButton.text("No Changes").addClass("no-changes");
-  }
+  submitButton.text(hasChanges ? "Save Changes" : "No Changes").toggleClass("no-changes", !hasChanges);
 }
 
 function populateForm(userProfile) {
@@ -87,9 +73,7 @@ function populateForm(userProfile) {
 
   selectedInterests = [...userProfile.interests];
   $(".interest-item").removeClass("selected");
-  selectedInterests.forEach((interest) => {
-    $(`.interest-item[data-interest="${interest}"]`).addClass("selected");
-  });
+  selectedInterests.forEach((interest) => $(`.interest-item[data-interest="${interest}"]`).addClass("selected"));
   ValidationManager.updateInterestSubtitle(selectedInterests.length);
 
   populateBlockedUsersList(userProfile.blockedUsers);
@@ -109,19 +93,17 @@ function populateBlockedUsersList(users) {
   }
 
   users.forEach((user) => {
-    const userHtml = `
+    listContainer.append(`
       <div class="user-list-item" data-user-id="${user.id}">
         <img src="${user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.name}" class="user-list-avatar" />
         <span class="user-list-name">${user.name}</span>
         <button type="button" class="unblock-btn">Unblock</button>
       </div>
-    `;
-    listContainer.append(userHtml);
+    `);
   });
 }
 
 function loadAndPopulateFriendsList() {
-  $("#friendsLoading").show();
   $("#friendsList").hide();
   $(".friends-count").text("Loading friends...");
 
@@ -129,18 +111,12 @@ function loadAndPopulateFriendsList() {
     currentUser.id,
     (friends) => {
       populateFriendsList(friends);
-      $("#friendsLoading").hide();
       $("#friendsList").show();
-
       loadPendingFriendRequests();
-
-      // Refresh search results if there's an active search
       refreshCurrentSearchResults();
     },
-    (error) => {
-      $("#friendsList").html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Failed to load friends list.</div>');
-      $("#friendsLoading").hide();
-      $("#friendsList").show();
+    () => {
+      $("#friendsList").html('<div class="alert alert-danger">Failed to load friends list.</div>').show();
     }
   );
 }
@@ -149,11 +125,8 @@ function populateFriendsList(friends) {
   const listContainer = $("#friendsList");
   listContainer.empty();
 
-  // Update the currentFriends Set
   currentFriends.clear();
-  friends.forEach((friend) => {
-    currentFriends.add(friend.id);
-  });
+  friends.forEach((friend) => currentFriends.add(friend.id));
 
   $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
 
@@ -163,7 +136,7 @@ function populateFriendsList(friends) {
   }
 
   friends.forEach((friend) => {
-    const friendHtml = `
+    listContainer.append(`
       <div class="user-list-item" data-friend-id="${friend.id}">
         <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="user-list-avatar" />
         <span class="user-list-name">${friend.fullName}</span>
@@ -172,33 +145,24 @@ function populateFriendsList(friends) {
                 data-friend-name="${friend.fullName}"
                 title="Remove Friend">Remove</button>
       </div>
-    `;
-    listContainer.append(friendHtml);
+    `);
   });
 }
 
 function handleRemoveFriend(e) {
-  const item = $(e.currentTarget).closest(".user-list-item");
   const friendId = $(e.currentTarget).data("friend-id");
   const friendName = $(e.currentTarget).data("friend-name");
 
   UIManager.showDialog(`Are you sure you want to remove ${friendName} from your friends list?`).then((confirmed) => {
     if (!confirmed) return;
 
-    const data = {
-      userId: currentUser.id,
-      friendId: friendId
-    };
-
     removeFriend(
-      data,
+      { userId: currentUser.id, friendId },
       () => {
         UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
         loadAndPopulateFriendsList();
       },
-      () => {
-        UIManager.showPopup("Failed to remove friend. Please try again.", false);
-      }
+      () => UIManager.showPopup("Failed to remove friend. Please try again.", false)
     );
   });
 }
@@ -217,14 +181,8 @@ function handleInterestListItemSelection(e) {
   updateSubmitButtonState();
 }
 
-function handleAddFriend() {
-  showAddFriendDialog();
-}
-
 function showAddFriendDialog() {
-  if ($("#add-friend-dialog").length > 0) {
-    return;
-  }
+  if ($("#add-friend-dialog").length > 0) return;
 
   const dialogHtml = `
     <div id="add-friend-dialog" class="dialog-popup add-friend-dialog">
@@ -244,33 +202,29 @@ function showAddFriendDialog() {
   $("body").append(dialogHtml);
   $("#friendEmailInput").focus();
 
-  setTimeout(() => {
-    $("#add-friend-dialog").addClass("show");
-  }, 10);
+  setTimeout(() => $("#add-friend-dialog").addClass("show"), 10);
 
-  $(document).on("click.addFriend", function (e) {
+  $(document).on("click.addFriend", (e) => {
     if (!$(e.target).closest("#add-friend-dialog").length) {
       closeAddFriendDialog();
     }
   });
 
   $("#searchUserButton").on("click", handleUserSearch);
-  $("#friendEmailInput").on("keypress", function (e) {
-    if (e.which === 13) {
-      e.preventDefault();
-      handleUserSearch(e);
-    }
-  });
-  $("#friendEmailInput").on("input", function () {
-    $(this).removeClass("error");
-    const email = $(this).val().trim();
-    const resultsSection = $("#searchResultsSection");
-
-    if (!email) {
-      resultsSection.removeClass("show");
-      lastSearchedEmail = null;
-    }
-  });
+  $("#friendEmailInput")
+    .on("keypress", (e) => {
+      if (e.which === 13) {
+        e.preventDefault();
+        handleUserSearch(e);
+      }
+    })
+    .on("input", function () {
+      $(this).removeClass("error");
+      if (!$(this).val().trim()) {
+        $("#searchResultsSection").removeClass("show");
+        lastSearchedEmail = null;
+      }
+    });
 }
 
 function closeAddFriendDialog() {
@@ -283,16 +237,13 @@ function closeAddFriendDialog() {
 }
 
 function handleUserSearch(e) {
-  if (e) {
-    e.stopPropagation();
-  }
+  if (e) e.stopPropagation();
+
   const email = $("#friendEmailInput").val().trim();
   const emailInput = $("#friendEmailInput");
   const resultsSection = $("#searchResultsSection");
 
-  if (email === lastSearchedEmail) {
-    return;
-  }
+  if (email === lastSearchedEmail) return;
 
   emailInput.removeClass("error");
 
@@ -307,9 +258,7 @@ function handleUserSearch(e) {
 
   if (resultsSection.hasClass("show")) {
     resultsSection.removeClass("show");
-    setTimeout(() => {
-      performSearch(email, resultsSection);
-    }, 500);
+    setTimeout(() => performSearch(email, resultsSection), 500);
   } else {
     performSearch(email, resultsSection);
   }
@@ -322,7 +271,7 @@ function performSearch(searchTerm, resultsSection) {
     searchPagination.lastSearchTerm = searchTerm;
   }
 
-  resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
+  resultsSection.html('<div class="loader-container"><div class="spinner"></div></div>').addClass("show");
   searchPagination.isLoading = true;
 
   searchUsersPaginated(
@@ -346,13 +295,10 @@ function performSearch(searchTerm, resultsSection) {
 
 function displaySearchResults(users, isNewSearch = true) {
   const resultsSection = $("#searchResultsSection");
-
-  let resultsHtml;
   const filteredUsers = users.filter((user) => user.id !== currentUser.id);
 
   if (isNewSearch && filteredUsers.length === 0) {
-    resultsHtml = '<p class="empty-search-message">No users found.</p>';
-    resultsSection.html(resultsHtml);
+    resultsSection.html('<p class="empty-search-message">No users found.</p>');
     return;
   }
 
@@ -365,48 +311,38 @@ function displaySearchResults(users, isNewSearch = true) {
       let buttonText, buttonClass;
 
       if (isAlreadyFriend) {
-        // Already friends with this user
         buttonText = "Unfriend";
         buttonClass = "unfriend-btn danger-btn";
       } else if (hasPendingOutgoing) {
-        // Current user sent a request to this user
         buttonText = "Unsend";
         buttonClass = "cancel-friend-request-btn success-btn";
       } else if (hasPendingIncoming) {
-        // This user sent a request to current user
         buttonText = "Accept";
         buttonClass = "accept-friend-request-btn primary-btn";
       } else {
-        // No pending requests between them
         buttonText = "Send Request";
         buttonClass = "send-friend-request-btn";
       }
+
       return `
-        <div class="user-search-item" data-user-id="${user.id}">
-          <img src="${user.imageUrl || user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
-          <div class="user-info">
-            <span class="user-list-name">${user.fullName}</span>
-            <span class="user-email">${user.email}</span>
-          </div>
-          <button type="button" class="${buttonClass}" data-user-id="${user.id}" data-user-name="${user.fullName}">
-            ${buttonText}
-          </button>
+      <div class="user-search-item" data-user-id="${user.id}">
+        <img src="${user.imageUrl || user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
+        <div class="user-info">
+          <span class="user-list-name">${user.fullName}</span>
+          <span class="user-email">${user.email}</span>
         </div>
-      `;
+        <button type="button" class="${buttonClass}" data-user-id="${user.id}" data-user-name="${user.fullName}">
+          ${buttonText}
+        </button>
+      </div>
+    `;
     })
     .join("");
 
   if (isNewSearch) {
-    resultsHtml = `<div class="user-search-results">${userItems}</div>`;
-    resultsSection.html(resultsHtml);
+    resultsSection.html(`<div class="user-search-results">${userItems}</div>`);
   } else {
-    const existingResults = resultsSection.find(".user-search-results");
-    if (existingResults.length > 0) {
-      existingResults.append(userItems);
-    } else {
-      resultsHtml = `<div class="user-search-results">${userItems}</div>`;
-      resultsSection.html(resultsHtml);
-    }
+    resultsSection.find(".user-search-results").append(userItems);
   }
 
   $(".send-friend-request-btn").on("click", handleSendFriendRequest);
@@ -418,9 +354,7 @@ function displaySearchResults(users, isNewSearch = true) {
 function setupInfiniteScroll(resultsSection, searchTerm) {
   resultsSection.off("scroll.infiniteSearch");
 
-  if (!searchPagination.hasNextPage) {
-    return;
-  }
+  if (!searchPagination.hasNextPage) return;
 
   resultsSection.on("scroll.infiniteSearch", function () {
     const scrollTop = $(this).scrollTop();
@@ -434,15 +368,12 @@ function setupInfiniteScroll(resultsSection, searchTerm) {
 }
 
 function loadMoreUsers(searchTerm, resultsSection) {
-  if (searchPagination.isLoading || !searchPagination.hasNextPage) {
-    return;
-  }
+  if (searchPagination.isLoading || !searchPagination.hasNextPage) return;
 
   searchPagination.isLoading = true;
   searchPagination.currentPage++;
 
-  const loadingHtml = '<div class="loading-more">Loading more users...</div>';
-  resultsSection.find(".user-search-results").append(loadingHtml);
+  resultsSection.find(".user-search-results").append('<div class="loading-more">Loading more users...</div>');
 
   searchUsersPaginated(
     searchTerm,
@@ -451,11 +382,8 @@ function loadMoreUsers(searchTerm, resultsSection) {
     (response) => {
       searchPagination.isLoading = false;
       searchPagination.hasNextPage = response.hasNextPage;
-
       resultsSection.find(".loading-more").remove();
-
       displaySearchResults(response.users, false);
-
       if (searchPagination.hasNextPage) {
         setupInfiniteScroll(resultsSection, searchTerm);
       }
@@ -463,33 +391,20 @@ function loadMoreUsers(searchTerm, resultsSection) {
     () => {
       searchPagination.isLoading = false;
       searchPagination.currentPage--;
-
       resultsSection.find(".loading-more").remove();
-      resultsSection.find(".user-search-results").append('<div class="load-error">Error loading more users. Try again.</div>');
     }
   );
 }
 
 function refreshCurrentSearchResults() {
-  // Only refresh if there are current search results visible
   const resultsSection = $("#searchResultsSection");
-  if (!resultsSection.is(":visible") || !searchPagination.lastSearchTerm) {
-    console.log("Refresh skipped - no visible results or search term");
-    return;
-  }
+  if (!resultsSection.is(":visible") || !searchPagination.lastSearchTerm) return;
 
-  console.log("Refreshing search results...");
-
-  // Get all currently displayed user items
-  const userItems = resultsSection.find(".user-search-item");
-  console.log(`Found ${userItems.length} user items to refresh`);
-
-  userItems.each(function () {
+  resultsSection.find(".user-search-item").each(function () {
     const $item = $(this);
     const userId = parseInt($item.data("user-id"));
-    const $actionBtn = $item.find("button");
+    const $btn = $item.find("button");
 
-    // Update button state based on current friend relationships
     let buttonText, buttonClass;
 
     if (currentFriends.has(userId)) {
@@ -506,26 +421,17 @@ function refreshCurrentSearchResults() {
       buttonClass = "send-friend-request-btn";
     }
 
-    console.log(`User ${userId}: ${currentFriends.has(userId) ? "is friend" : "not friend"} -> ${buttonText}`);
-
-    // Update button text and classes
-    $actionBtn
+    $btn
       .text(buttonText)
       .removeClass("unfriend-btn danger-btn accept-friend-request-btn primary-btn cancel-friend-request-btn success-btn send-friend-request-btn")
-      .addClass(buttonClass)
-      .data("user-id", userId)
-      .data("user-name", $item.find(".user-list-name").text());
+      .addClass(buttonClass);
   });
 }
 
 function updateFriendsListWithPendingRequests(incomingRequests) {
   $(".pending-requests-section").remove();
 
-  if (incomingRequests.length === 0) {
-    return;
-  }
-
-  const friendsList = $("#friendsList");
+  if (incomingRequests.length === 0) return;
 
   const pendingRequestsHtml = `
     <div class="pending-requests-section">
@@ -553,7 +459,7 @@ function updateFriendsListWithPendingRequests(incomingRequests) {
     </div>
   `;
 
-  friendsList.prepend(pendingRequestsHtml);
+  $("#friendsList").prepend(pendingRequestsHtml);
 }
 
 function handleSendFriendRequest(e) {
@@ -561,16 +467,10 @@ function handleSendFriendRequest(e) {
   const userId = button.data("user-id");
   const userName = button.data("user-name");
 
-  const originalText = button.text();
   button.text("Sending...").prop("disabled", true);
 
-  const requestData = {
-    SenderId: currentUser.id,
-    RecipientId: userId
-  };
-
   sendFriendRequest(
-    requestData,
+    { SenderId: currentUser.id, RecipientId: userId },
     () => {
       UIManager.showPopup(`Friend request sent to ${userName}!`, true);
       outgoingFriendRequests.add(userId);
@@ -578,7 +478,7 @@ function handleSendFriendRequest(e) {
       button.off("click").on("click", handleCancelFriendRequest);
     },
     () => {
-      button.text(originalText).prop("disabled", false);
+      button.text("Send Request").prop("disabled", false);
       UIManager.showPopup("Failed to send friend request. Please try again.", false);
     }
   );
@@ -589,16 +489,10 @@ function handleCancelFriendRequest(e) {
   const userId = button.data("user-id");
   const userName = button.data("user-name");
 
-  const originalText = button.text();
   button.text("Unsending...").prop("disabled", true);
 
-  const requestData = {
-    SenderId: currentUser.id,
-    RecipientId: userId
-  };
-
   cancelFriendRequest(
-    requestData,
+    { SenderId: currentUser.id, RecipientId: userId },
     () => {
       UIManager.showPopup(`Friend request to ${userName} unsent.`, true);
       outgoingFriendRequests.delete(userId);
@@ -606,7 +500,7 @@ function handleCancelFriendRequest(e) {
       button.off("click").on("click", handleSendFriendRequest);
     },
     () => {
-      button.text(originalText).prop("disabled", false);
+      button.text("Unsend").prop("disabled", false);
       UIManager.showPopup("Failed to unsend friend request. Please try again.", false);
     }
   );
@@ -617,31 +511,17 @@ function handleAcceptFriendRequestFromSearch(e) {
   const userId = button.data("user-id");
   const userName = button.data("user-name");
 
-  const originalText = button.text();
   button.text("Accepting...").prop("disabled", true);
 
-  const requestData = {
-    RequesterId: userId,
-    ResponderId: currentUser.id,
-    Response: 1
-  };
-
   respondToFriendRequest(
-    requestData,
+    { RequesterId: userId, ResponderId: currentUser.id, Response: 1 },
     () => {
       UIManager.showPopup(`You are now friends with ${userName}!`, true);
-
-      // Remove from pending friend requests
       pendingFriendRequests.delete(userId);
-
-      // Update button to show they are now friends (could be disabled or removed)
-      button.text("Friends").prop("disabled", true).removeClass("accept-friend-request-btn primary-btn").addClass("friends-btn");
-
-      // Refresh the friends list to show the new friend
       loadAndPopulateFriendsList();
     },
     () => {
-      button.text(originalText).prop("disabled", false);
+      button.text("Accept").prop("disabled", false);
       UIManager.showPopup("Failed to accept friend request. Please try again.", false);
     }
   );
@@ -655,25 +535,16 @@ function handleUnfriendFromSearch(e) {
   UIManager.showDialog(`Are you sure you want to unfriend ${userName}?`).then((confirmed) => {
     if (!confirmed) return;
 
-    const originalText = button.text();
     button.text("Unfriending...").prop("disabled", true);
 
-    const data = {
-      userId: currentUser.id,
-      friendId: userId
-    };
-
     removeFriend(
-      data,
+      { userId: currentUser.id, friendId: userId },
       () => {
         UIManager.showPopup(`${userName} has been removed from your friends list.`, true);
-
-        // Refresh the friends list to update the count and reload friends data from server
-        // This will also update the currentFriends Set and refresh search results
         loadAndPopulateFriendsList();
       },
       () => {
-        button.text(originalText).prop("disabled", false);
+        button.text("Unfriend").prop("disabled", false);
         UIManager.showPopup("Failed to unfriend user. Please try again.", false);
       }
     );
@@ -689,30 +560,22 @@ function handleAcceptFriendRequest(e) {
   button.text("Accepting...").prop("disabled", true);
   button.siblings(".decline-friend-btn").prop("disabled", true);
 
-  const requestData = {
-    RequesterId: userId,
-    ResponderId: currentUser.id,
-    Response: 1
-  };
-
   respondToFriendRequest(
-    requestData,
+    { RequesterId: userId, ResponderId: currentUser.id, Response: 1 },
     () => {
       UIManager.showPopup(`You are now friends with ${userName}!`, true);
       pendingFriendRequests.delete(userId);
 
       item.fadeOut(300, function () {
         $(this).remove();
-
         const remainingRequests = $(".pending-request-item").length;
         if (remainingRequests === 0) {
           $(".pending-requests-section").fadeOut(300, function () {
             $(this).remove();
           });
         } else {
-          $(".pending-requests-title").text(`Pending Friend Requests (${remainingRequests})`);
+          $(".request-number").text(remainingRequests);
         }
-
         loadAndPopulateFriendsList();
       });
     },
@@ -733,28 +596,21 @@ function handleDeclineFriendRequest(e) {
   button.text("Declining...").prop("disabled", true);
   button.siblings(".accept-friend-btn").prop("disabled", true);
 
-  const requestData = {
-    RequesterId: userId,
-    ResponderId: currentUser.id,
-    Response: 2
-  };
-
   respondToFriendRequest(
-    requestData,
+    { RequesterId: userId, ResponderId: currentUser.id, Response: 2 },
     () => {
       UIManager.showPopup(`Friend request from ${userName} declined.`, true);
       pendingFriendRequests.delete(userId);
 
       item.fadeOut(300, function () {
         $(this).remove();
-
         const remainingRequests = $(".pending-request-item").length;
         if (remainingRequests === 0) {
           $(".pending-requests-section").fadeOut(300, function () {
             $(this).remove();
           });
         } else {
-          $(".pending-requests-title").text(`Pending Friend Requests (${remainingRequests})`);
+          $(".request-number").text(remainingRequests);
         }
       });
     },
@@ -787,15 +643,12 @@ function handleUnblockUser(e) {
 
         item.fadeOut(300, function () {
           $(this).remove();
-
           if ($("#blockedUsersList .user-list-item").length === 0) {
             $("#blockedUsersList").html('<p class="empty-list-message">You have no blocked users.</p>');
           }
         });
       },
-      () => {
-        UIManager.showPopup("Failed to unblock user. Please try again.", false);
-      }
+      () => UIManager.showPopup("Failed to unblock user. Please try again.", false)
     );
   });
 }
@@ -805,39 +658,27 @@ function handleImagePreview() {
   const cleanedUrl = ValidationManager.cleanImageUrl(imageUrlInput.val().trim());
   imageUrlInput.val(cleanedUrl);
 
-  const newUrl = cleanedUrl;
   const avatarPreview = $("#avatarPreview");
   const fallbackImage = CONSTANTS.NO_IMAGE_URL;
 
-  if (!newUrl) {
+  if (!cleanedUrl) {
     avatarPreview.attr("src", fallbackImage);
     return;
   }
 
-  const validation = ValidationManager.validateImageUrl(newUrl);
-  if (!validation.valid) {
-    return;
-  }
+  const validation = ValidationManager.validateImageUrl(cleanedUrl);
+  if (!validation.valid) return;
 
   const tempImage = new Image();
-
-  tempImage.onload = function () {
-    avatarPreview.attr("src", newUrl);
-  };
-
-  tempImage.onerror = function () {
-    avatarPreview.attr("src", fallbackImage);
-  };
-
-  tempImage.src = newUrl;
+  tempImage.onload = () => avatarPreview.attr("src", cleanedUrl);
+  tempImage.onerror = () => avatarPreview.attr("src", fallbackImage);
+  tempImage.src = cleanedUrl;
 }
 
 function handleProfileUpdate(e) {
   e.preventDefault();
 
-  if (!hasFormChanged()) {
-    return;
-  }
+  if (!hasFormChanged()) return;
 
   const imageUrlInput = $("#imageUrl");
   const cleanedUrl = ValidationManager.cleanImageUrl(imageUrlInput.val().trim());
@@ -849,9 +690,10 @@ function handleProfileUpdate(e) {
   form.find(".input-error").removeClass("input-error");
   form.find(".error-message").hide();
 
-  form.find('input[name="firstName"], input[name="lastName"], input[name="birthdate"], input[name="imageUrl"]').each(function () {
-    const input = $(this);
-    const validator = validationMap[input.attr("name")];
+  // Validate form fields
+  ["firstName", "lastName", "birthdate", "imageUrl"].forEach((fieldName) => {
+    const input = form.find(`input[name="${fieldName}"]`);
+    const validator = validationMap[fieldName];
     if (validator) {
       const result = validator(input.val().trim());
       if (!result.valid) {
@@ -861,24 +703,23 @@ function handleProfileUpdate(e) {
     }
   });
 
-  const newPasswordInput = $("#newPassword");
-  const confirmPasswordInput = $("#confirmPassword");
-  const newPassword = newPasswordInput.val();
-
+  // Validate passwords if changed
+  const newPassword = $("#newPassword").val();
   if (newPassword) {
     const newPasswordResult = validationMap.newPassword(newPassword);
     if (!newPasswordResult.valid) {
       isValid = false;
-      ValidationManager.showError(newPasswordInput, newPasswordResult.message);
+      ValidationManager.showError($("#newPassword"), newPasswordResult.message);
     }
 
     const confirmPasswordResult = validationMap.confirmPassword();
     if (!confirmPasswordResult.valid) {
       isValid = false;
-      ValidationManager.showError(confirmPasswordInput, confirmPasswordResult.message);
+      ValidationManager.showError($("#confirmPassword"), confirmPasswordResult.message);
     }
   }
 
+  // Validate interests
   if (selectedInterests.length < 3) {
     $("#interestsError").text("Please select at least 3 interests.").show();
     isValid = false;
@@ -910,7 +751,6 @@ function handleProfileUpdate(e) {
       UIManager.showPopup("Profile updated successfully!", true);
 
       localStorage.setItem("currentUser", JSON.stringify(updatedUserFromServer));
-
       currentUser = updatedUserFromServer;
       $(".nav-profile-picture").attr("src", currentUser.imageUrl || CONSTANTS.NO_IMAGE_URL);
 
@@ -921,7 +761,7 @@ function handleProfileUpdate(e) {
       captureOriginalFormState();
       updateSubmitButtonState();
     },
-    (err) => {
+    () => {
       UIManager.showPopup("Failed to update profile. Please check your inputs.", false);
       updateSubmitButtonState();
     }
@@ -933,16 +773,17 @@ function handlePasswordToggle() {
   const passwordInput = button.closest(".password-input-group").find("input");
   const isPassword = passwordInput.attr("type") === "password";
   const cursorPosition = passwordInput[0].selectionStart;
+
   passwordInput.attr("type", isPassword ? "text" : "password");
   button.find(".password-toggle-icon").attr("src", isPassword ? "../sources/icons/eye-off-svgrepo-com.svg" : "../sources/icons/eye-svgrepo-com.svg");
+
   passwordInput.focus();
   passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
 }
 
 function handleNewPasswordInput() {
-  const confirmContainer = $(".confirm-password-container");
   const passwordValue = $(this).val();
-  confirmContainer.toggleClass("show", !!passwordValue);
+  $(".confirm-password-container").toggleClass("show", !!passwordValue);
   ValidationManager.updatePasswordCriteria(passwordValue);
 }
 
@@ -953,10 +794,7 @@ function loadPendingFriendRequests() {
     currentUser.id,
     (incomingRequests) => {
       pendingFriendRequests.clear();
-      incomingRequests.forEach((request) => {
-        pendingFriendRequests.add(request.id);
-      });
-
+      incomingRequests.forEach((request) => pendingFriendRequests.add(request.id));
       updateFriendsListWithPendingRequests(incomingRequests);
     },
     () => {}
@@ -966,9 +804,7 @@ function loadPendingFriendRequests() {
     currentUser.id,
     (outgoingRequests) => {
       outgoingFriendRequests.clear();
-      outgoingRequests.forEach((request) => {
-        outgoingFriendRequests.add(request.id);
-      });
+      outgoingRequests.forEach((request) => outgoingFriendRequests.add(request.id));
     },
     () => {}
   );
@@ -979,10 +815,8 @@ function loadUserProfile() {
 
   getProfile(
     currentUser.id,
-    (profileData) => {
-      populateForm(profileData);
-    },
-    (err) => {
+    (profileData) => populateForm(profileData),
+    () => {
       UIManager.showPopup("Could not load your profile data. Please log in again.", false);
       localStorage.removeItem("currentUser");
       window.location.href = "auth.html";
@@ -1001,13 +835,14 @@ $(document).ready(function () {
   ValidationManager.populateInterestsList();
   loadUserProfile();
 
+  // Event handlers
   $(document)
     .on("click", ".interest-item", handleInterestListItemSelection)
     .on("click", ".unblock-btn", handleUnblockUser)
     .on("click", ".remove-friend-btn", handleRemoveFriend)
     .on("click", ".accept-friend-btn", handleAcceptFriendRequest)
     .on("click", ".decline-friend-btn", handleDeclineFriendRequest)
-    .on("click", "#addFriendsBtn", handleAddFriend)
+    .on("click", "#addFriendsBtn", showAddFriendDialog)
     .on("input", "#imageUrl", handleImagePreview)
     .on("submit", "#profileForm", handleProfileUpdate)
     .on("click", ".password-toggle-btn", handlePasswordToggle)
