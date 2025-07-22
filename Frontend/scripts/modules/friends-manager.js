@@ -229,7 +229,7 @@ const ProfileFriendsManager = {
           buttonText = "Unfriend";
           buttonClass = "unfriend-btn danger-btn";
         } else if (hasPendingOutgoing) {
-          buttonText = "Unsend";
+          buttonText = "Cancel Request";
           buttonClass = "cancel-friend-request-btn success-btn";
         } else if (hasPendingIncoming) {
           buttonText = "Accept";
@@ -330,7 +330,7 @@ const ProfileFriendsManager = {
           buttonText = "Accept";
           buttonClass = "accept-friend-request-btn primary-btn";
         } else if (this.outgoingFriendRequests.has(userId)) {
-          buttonText = "Unsend";
+          buttonText = "Cancel Request";
           buttonClass = "cancel-friend-request-btn success-btn";
         } else {
           buttonText = "Send Request";
@@ -408,7 +408,7 @@ const ProfileFriendsManager = {
     const userId = button.data("user-id");
     const userName = button.data("user-name");
 
-    button.text("Unsending...").prop("disabled", true);
+    button.text("Canceling...").prop("disabled", true);
 
     cancelFriendRequest(
       { SenderId: currentUser.id, RecipientId: userId },
@@ -419,8 +419,8 @@ const ProfileFriendsManager = {
         button.off("click").on("click", (e) => this.handleSendFriendRequest(e));
       },
       () => {
-        button.text("Unsend").prop("disabled", false);
-        UIManager.showPopup("Failed to unsend friend request. Please try again.", false);
+        button.text("Cancel Request").prop("disabled", false);
+        UIManager.showPopup("Failed to cancel friend request. Please try again.", false);
       }
     );
   },

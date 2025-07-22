@@ -1,0 +1,310 @@
+/* Add Friend Dialog */
+.add-friend-dialog {
+  min-width: 450px;
+  max-width: 90vw;
+  padding: 20px 32px;
+  text-align: left;
+}
+
+.add-friend-dialog .dialog-message {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.add-friend-form {
+  width: 100%;
+}
+
+.add-friend-form input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  font-size: 16px;
+  color: var(--c-dark);
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.add-friend-form input:focus {
+  outline: none;
+  border-color: var(--c-border-light);
+}
+
+.add-friend-form input::placeholder {
+  color: rgba(var(--c-dark-rgb), 0.6);
+}
+
+.add-friend-form input.error {
+  border-color: var(--c-danger);
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+  animation: shake 0.35s ease-in-out;
+}
+
+.search-results-section {
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  margin-top: 0;
+  opacity: 0;
+  transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+}
+
+.search-results-section.show {
+  max-height: 300px;
+  margin-top: 16px;
+  opacity: 1;
+  overflow-y: auto;
+}
+
+.user-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-search-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  gap: 12px;
+}
+
+.user-search-item:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.user-search-item .user-list-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-search-item .user-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 120px;
+  overflow: hidden;
+}
+
+.user-search-item .user-list-name {
+  font-weight: 600;
+  color: var(--c-dark);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-search-item .user-email {
+  font-size: 14px;
+  color: rgba(var(--c-dark-rgb), 0.7);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Button styles for search items */
+.user-search-item button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 50px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.user-search-item .send-friend-request-btn {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(var(--c-primary-rgb), 0.75);
+  backdrop-filter: blur(10px);
+  color: var(--c-dark);
+}
+
+.user-search-item .send-friend-request-btn:hover {
+  background-color: var(--c-primary-light);
+}
+
+.user-search-item .success-btn,
+.user-search-item .primary-btn,
+.user-search-item .danger-btn {
+  color: var(--c-light);
+}
+
+.user-search-item .success-btn {
+  background-color: var(--c-red);
+  border-color: rgba(var(--c-success-rgb), 0.5) !important;
+}
+
+.user-search-item .success-btn:hover {
+  background-color: var(--c-red-light);
+}
+
+.user-search-item .primary-btn {
+  background-color: var(--c-green);
+  border-color: rgba(var(--c-primary-rgb), 0.5) !important;
+}
+
+.user-search-item .primary-btn:hover {
+  background-color: var(--c-green-light);
+}
+
+.user-search-item .danger-btn {
+  background-color: var(--c-red);
+  border-color: rgba(220, 53, 69, 0.5) !important;
+}
+
+.user-search-item .danger-btn:hover {
+  background-color: var(--c-red-light);
+}
+
+.dialog-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  align-items: center;
+}
+
+.loading-more {
+  text-align: center;
+  padding: 15px;
+  color: var(--c-text-muted);
+  font-size: 14px;
+  border-top: 1px solid rgba(var(--c-dark-rgb), 0.1);
+  margin-top: 10px;
+}
+
+.search-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.search-input-row input {
+  flex-grow: 1;
+}
+
+.search-input-row .search-btn {
+  padding: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input-row .search-btn:hover {
+  background-color: rgba(var(--c-primary-rgb), 0.75);
+}
+
+.search-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.empty-search-message {
+  text-align: center;
+  color: rgba(var(--c-dark-rgb), 0.6);
+}
+
+/* Pending Friend Requests Section */
+.pending-requests-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: var(--c-background);
+  border-radius: 12px;
+  border: 1px solid var(--c-border-light);
+}
+
+.pending-requests-title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.request-number {
+  color: var(--c-primary);
+}
+
+.pending-request-item {
+  background-color: var(--c-light);
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.pending-request-item:last-child {
+  margin-bottom: 0;
+}
+
+.pending-request-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.accept-friend-btn,
+.decline-friend-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  min-width: 70px;
+  color: var(--c-dark);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.accept-friend-btn:hover {
+  background-color: rgba(40, 167, 69, 0.75);
+  color: var(--c-light);
+}
+
+.decline-friend-btn:hover {
+  background-color: rgba(220, 53, 69, 0.75);
+  color: var(--c-light);
+}
+
+.accept-friend-btn:disabled,
+.decline-friend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .user-search-item .send-friend-request-btn {
+    font-size: 12px;
+  }
+
+  .pending-request-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .accept-friend-btn,
+  .decline-friend-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    min-width: 60px;
+  }
+}

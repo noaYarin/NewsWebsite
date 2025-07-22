@@ -23,6 +23,7 @@
 @import url("./components/comments.css");
 @import url("./components/article-list.css");
 @import url("./components/loader.css");
+@import url("./components/friend-dialog.css");
 
 /* === PAGE-SPECIFIC STYLES === */
 @import url("./pages/home.css");
