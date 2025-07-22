@@ -23,8 +23,8 @@ namespace Horizon.DAL
                     { "@RecipientId", recipientId },
                     { "@SenderId", senderId },
                     { "@NotificationType", notificationType.ToString() },
-                    { "@RelatedEntityId", relatedEntityId },
-                    { "@Message", message }
+                    { "@RelatedEntityId", relatedEntityId ?? (object)DBNull.Value },
+                    { "@Message", message ?? (object)DBNull.Value }
                 };
                 SqlCommand cmd = CreateCommand("SP_CreateNotification", con, parameters);
                 return Convert.ToInt32(cmd.ExecuteScalar()) > 0;

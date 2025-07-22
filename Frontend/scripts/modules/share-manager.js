@@ -30,12 +30,12 @@ const ShareManager = {
     e.preventDefault();
     const $button = $(e.currentTarget);
     const articleData = $button.data("article") || $button.closest("[data-article]").data("article");
-    
+
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to share articles.", false);
       return;
     }
-    
+
     if (!articleData) return;
 
     // Temporarily set the article for sharing
@@ -79,7 +79,7 @@ const ShareManager = {
           </div>
           <div class="dialog-body">
             <div class="article-preview">
-              <h4 class="article-title">${this.currentArticle.title || 'Untitled Article'}</h4>
+              <h4 class="article-title">${this.currentArticle.title || "Untitled Article"}</h4>
             </div>
             <div class="friends-selection">
               <h5>Select friends to share with:</h5>
@@ -109,14 +109,16 @@ const ShareManager = {
     `;
 
     $("body").append(dialogHtml);
-    
+
     setTimeout(() => $("#share-article-dialog").addClass("show"), 10);
 
     this.setupDialogEventHandlers(onCloseCallback);
   },
 
   renderFriendsList() {
-    return this.friends.map(friend => `
+    return this.friends
+      .map(
+        (friend) => `
       <div class="friend-item">
         <label class="friend-checkbox-label">
           <input type="checkbox" class="friend-checkbox" data-friend-id="${friend.id}" data-friend-name="${friend.fullName}">
@@ -125,7 +127,9 @@ const ShareManager = {
           <span class="friend-name">${friend.fullName}</span>
         </label>
       </div>
-    `).join('');
+    `
+      )
+      .join("");
   },
 
   setupDialogEventHandlers(onCloseCallback = null) {
@@ -161,7 +165,7 @@ const ShareManager = {
   updateShareButton() {
     const selectedFriends = $(".friend-checkbox:checked").length;
     const shareButton = $("#confirmShare");
-    
+
     if (selectedFriends > 0) {
       shareButton.prop("disabled", false).removeClass("disabled");
     } else {
@@ -171,7 +175,7 @@ const ShareManager = {
 
   processShare(onCloseCallback = null) {
     const selectedFriends = [];
-    $(".friend-checkbox:checked").each(function() {
+    $(".friend-checkbox:checked").each(function () {
       selectedFriends.push({
         id: parseInt($(this).data("friend-id")),
         name: $(this).data("friend-name")
@@ -184,7 +188,7 @@ const ShareManager = {
     }
 
     const message = $("#shareMessage").val().trim();
-    
+
     // Show loading state
     $("#confirmShare").prop("disabled", true).text("Sharing...");
 
@@ -193,7 +197,7 @@ const ShareManager = {
     let sharesTotal = selectedFriends.length;
     let errors = [];
 
-    selectedFriends.forEach(friend => {
+    selectedFriends.forEach((friend) => {
       const shareData = {
         SenderId: this.currentUser.id,
         RecipientId: friend.id,
@@ -222,7 +226,7 @@ const ShareManager = {
 
   handleShareComplete(total, errors, onCloseCallback = null) {
     this.closeShareDialog(onCloseCallback);
-    
+
     if (errors.length === 0) {
       const friendText = total === 1 ? "friend" : "friends";
       UIManager.showPopup(`Article shared successfully with ${total} ${friendText}!`, true);
@@ -241,7 +245,7 @@ const ShareManager = {
       $("#share-article-dialog").remove();
       $(document).off("click.shareDialog");
       $(document).off("keydown.shareDialog");
-      if (onCloseCallback && typeof onCloseCallback === 'function') {
+      if (onCloseCallback && typeof onCloseCallback === "function") {
         onCloseCallback();
       }
     }, 400);

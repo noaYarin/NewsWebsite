@@ -249,7 +249,7 @@
 }
 
 .share-article-dialog .friend-checkbox:checked + .checkmark::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 5px;
   top: 2px;
@@ -273,18 +273,18 @@
     max-height: 90vh;
     margin: 20px;
   }
-  
+
   .share-article-dialog .dialog-header,
   .share-article-dialog .dialog-body,
   .share-article-dialog .dialog-actions {
     padding-left: 16px;
     padding-right: 16px;
   }
-  
+
   .share-article-dialog .friends-list {
     max-height: 150px;
   }
-  
+
   .share-article-dialog .friend-avatar {
     width: 32px;
     height: 32px;

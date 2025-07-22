@@ -5,7 +5,7 @@
         public int SenderId { get; set; }
         public int RecipientId { get; set; }
         public int ArticleId { get; set; }
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 
     public class NotificationDto
