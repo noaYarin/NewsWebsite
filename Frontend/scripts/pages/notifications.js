@@ -286,16 +286,28 @@ const NotificationsPage = {
   },
 
   loadUnreadCount() {
+    console.log("Loading unread count for user:", this.currentUser.id);
     getUnreadNotificationCount(
       this.currentUser.id,
-      (count) => {
+      (response) => {
+        console.log("Unread count response:", response);
+        console.log("Type of response:", typeof response);
+
+        // Extract count from response object
+        const count = response.count || response || 0;
+        console.log("Extracted count:", count);
+
+        const $unreadBadge = $("#unreadCount");
         if (count > 0) {
-          $("#unreadCount").text(count).show();
+          console.log("Showing badge with count:", count);
+          $unreadBadge.text(count).show();
         } else {
-          $("#unreadCount").hide();
+          console.log("Hiding badge, count is 0 or falsy");
+          $unreadBadge.hide();
         }
       },
-      () => {
+      (error) => {
+        console.error("Error loading unread count:", error);
         $("#unreadCount").hide();
       }
     );

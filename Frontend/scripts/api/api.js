@@ -196,7 +196,20 @@ function getRecentNotifications(userId, successCallback, errorCallback) {
 }
 
 function getUnreadNotificationCount(userId, successCallback, errorCallback) {
-  ajaxCall("GET", `${notificationsEndpoint}/unread-count/${userId}`, null, successCallback, errorCallback);
+  console.log("API: Getting unread count for userId:", userId);
+  ajaxCall(
+    "GET",
+    `${notificationsEndpoint}/unread-count/${userId}`,
+    null,
+    (response) => {
+      console.log("API: Unread count response:", response);
+      successCallback(response);
+    },
+    (error) => {
+      console.error("API: Unread count error:", error);
+      errorCallback(error);
+    }
+  );
 }
 
 function markNotificationAsRead(notificationId, userId, successCallback, errorCallback) {

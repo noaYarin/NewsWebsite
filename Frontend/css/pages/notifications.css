@@ -94,6 +94,22 @@
   transform: translateX(var(--indicator-position, 0px));
 }
 
+/* Unread count badge */
+#unreadCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+#unreadCount:empty {
+  display: none;
+}
+
 /* Notification Items */
 .notification-item {
   background: var(--c-light);
