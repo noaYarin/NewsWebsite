@@ -226,8 +226,8 @@ const NotificationsPage = {
           return `
             <div class="notification-article">
               <div class="notification-article-link">
-                <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Article" class="notification-icon" />
-                <strong class="notification-article-title">Comment on: ${notification.articleTitle}</strong>
+                <img src="../sources/icons/full-heart-svgrepo-com.svg" alt="Article" class="notification-icon" />
+                <strong class="notification-article-title">${notification.articleTitle}</strong>
               </div>
             </div>
           `;
