@@ -18,5 +18,6 @@
         public string? SenderName { get; set; }
         public string? SenderAvatar { get; set; }
         public string? ArticleTitle { get; set; }
+        public int? ArticleId { get; set; }
     }
 }

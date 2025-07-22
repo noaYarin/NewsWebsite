@@ -149,7 +149,8 @@ namespace Horizon.DAL
                 CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
                 SenderName = reader["SenderName"] == DBNull.Value ? null : reader["SenderName"].ToString(),
                 SenderAvatar = reader["SenderAvatar"] == DBNull.Value ? null : reader["SenderAvatar"].ToString(),
-                ArticleTitle = reader["ArticleTitle"] == DBNull.Value ? null : reader["ArticleTitle"].ToString()
+                ArticleTitle = reader["ArticleTitle"] == DBNull.Value ? null : reader["ArticleTitle"].ToString(),
+                ArticleId = reader["ArticleId"] == DBNull.Value ? null : Convert.ToInt32(reader["ArticleId"])
             };
         }
     }
