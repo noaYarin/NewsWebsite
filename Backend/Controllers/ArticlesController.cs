@@ -1,6 +1,5 @@
 ﻿using Horizon.BL;
 using Horizon.DTOs;
-using Horizon.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Horizon.Controllers;
@@ -9,11 +8,8 @@ namespace Horizon.Controllers;
 [Route("api/[controller]")]
 public class ArticlesController : ControllerBase
 {
-    private readonly HuggingFaceSummarizer _summarizer;
-
-    public ArticlesController(HuggingFaceSummarizer summarizer)
+    public ArticlesController()
     {
-        _summarizer = summarizer;
     }
 
     [HttpGet("search")]
@@ -108,7 +104,7 @@ public class ArticlesController : ControllerBase
 
         try
         {
-            var summary = await _summarizer.SummarizeAsync(request.ArticleUrl);
+            var summary = await ArticleSummarization.SummarizeTextAsync(request.ArticleUrl);
             return Ok(new { summary });
         }
         catch (Exception)
