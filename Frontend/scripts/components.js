@@ -6,6 +6,7 @@ const ComponentsManager = {
 
     this.setupImageErrorHandling();
     this.setupKeyboardWatcher();
+    this.setupProfileMenuHandlers();
 
     if (typeof Navigation !== "undefined") {
       Navigation.init();
@@ -13,6 +14,10 @@ const ComponentsManager = {
 
     if (typeof SearchManager !== "undefined") {
       SearchManager.init();
+    }
+
+    if (typeof GlobalFriendDialog !== "undefined") {
+      GlobalFriendDialog.init();
     }
 
     const isAuthPage = window.location.pathname.includes("auth.html");
@@ -32,6 +37,19 @@ const ComponentsManager = {
     });
   },
 
+  setupProfileMenuHandlers() {
+    $(document).on("click", ".nav-profile-menu-add-friend", (e) => {
+      e.preventDefault();
+
+      if (typeof Navigation !== "undefined" && Navigation.toggleProfileMenu) {
+        Navigation.toggleProfileMenu();
+      }
+
+      if (typeof GlobalFriendDialog !== "undefined" && GlobalFriendDialog.showAddFriendDialog) {
+        GlobalFriendDialog.showAddFriendDialog();
+      }
+    });
+  },
   setupKeyboardWatcher() {
     if (!window.visualViewport) return;
 
