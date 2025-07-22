@@ -194,7 +194,7 @@ const HTMLSnippets = {
             <span>Notifications</span>
           </a></li>
           <li><a href="#" class="nav-profile-menu-item nav-profile-menu-add-friend">
-            <img class="nav-profile-menu-icon" src="../sources/icons/user-svgrepo-com.svg"></img>
+            <img class="nav-profile-menu-icon" src="../sources/icons/profile-plus-round-1324-svgrepo-com.svg"></img>
             <span>Add Friend</span>
           </a></li>
           <li><a href="${Utils.getNavHref("bookmarks")}" class="nav-profile-menu-item">
