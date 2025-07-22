@@ -214,6 +214,70 @@
   cursor: pointer;
 }
 
+/* Article Share Notification */
+.notification-article {
+  cursor: pointer;
+}
+
+.notification-article .notification-article-link.article-share {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: rgba(0, 123, 255, 0.1);
+  margin-top: 8px;
+  transition: background-color var(--transition-fast);
+}
+
+.notification-article .notification-article-link.article-share:hover {
+  background-color: rgba(0, 123, 255, 0.15);
+}
+
+.notification-article .notification-article-link.article-share .notification-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.notification-article .notification-article-link.article-share .notification-article-title {
+  color: #007bff;
+}
+
+.notification-article .notification-article-link.article-share .article-hint {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+/* Comment Like Notification */
+.notification-article .notification-article-link.comment-like {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: rgba(40, 167, 69, 0.1);
+  margin-top: 8px;
+  transition: background-color var(--transition-fast);
+}
+
+.notification-article .notification-article-link.comment-like:hover {
+  background-color: rgba(40, 167, 69, 0.15);
+}
+
+.notification-article .notification-article-link.comment-like .notification-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.notification-article .notification-article-link.comment-like .notification-article-title {
+  color: #28a745;
+}
+
+.notification-article .notification-article-link.comment-like .article-hint {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
 /* Empty State */
 .empty-state {
   padding: 3rem 2rem;

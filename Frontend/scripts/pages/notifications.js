@@ -74,6 +74,17 @@ const NotificationsPage = {
       }
     });
 
+    // Handle direct article link clicks (for better UX)
+    $(document).on("click", ".notification-article-link", (e) => {
+      e.stopPropagation(); // Prevent event bubbling
+      const $notification = $(e.currentTarget).closest(".notification-item");
+      const articleId = $notification.data("article-id");
+
+      if (articleId) {
+        window.location.href = `article.html?id=${articleId}`;
+      }
+    });
+
     $("#markAllReadBtn").on("click", () => this.markAllAsRead());
 
     $("#refreshBtn").on("click", () => {
@@ -198,13 +209,25 @@ const NotificationsPage = {
 
     switch (notificationType) {
       case "ArticleShare":
-      case "CommentLike":
         if (notification.articleTitle && notification.articleId) {
           return `
             <div class="notification-article">
               <div class="notification-article-link">
                 <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Article" class="notification-icon" />
                 <strong class="notification-article-title">${notification.articleTitle}</strong>
+              </div>
+            </div>
+          `;
+        }
+        break;
+
+      case "CommentLike":
+        if (notification.articleTitle && notification.articleId) {
+          return `
+            <div class="notification-article">
+              <div class="notification-article-link">
+                <img src="../sources/icons/text-align-left-svgrepo-com.svg" alt="Article" class="notification-icon" />
+                <strong class="notification-article-title">Comment on: ${notification.articleTitle}</strong>
               </div>
             </div>
           `;
