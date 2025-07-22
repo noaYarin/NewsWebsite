@@ -49,6 +49,7 @@ const BookmarkManager = {
         this.updateButton(response.isBookmarked);
         const message = response.isBookmarked ? "Article saved!" : "Article removed from bookmarks.";
         UIManager.showPopup(message, true);
+        response.isBookmarked ? StatisticsManager.incrementSavedArticlesCount() : StatisticsManager.decrementSavedArticlesCount();
       },
       () => UIManager.showPopup("An error occurred. Please try again.", false)
     );
