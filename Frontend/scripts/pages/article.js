@@ -30,6 +30,10 @@ function initializeModules() {
   BookmarkManager.init(currentUser, currentArticle);
   ArticleReporter.init(currentUser, currentArticle);
 
+  if (typeof ShareManager !== "undefined") {
+    ShareManager.init(currentUser, currentArticle);
+  }
+
   if (currentUser) {
     $(".article-actions").show();
   } else {

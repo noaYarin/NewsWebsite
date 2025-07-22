@@ -14,7 +14,7 @@ export const PAGE_CONFIGS = {
 
   "article.html": {
     bundles: ["core", "ui"],
-    modules: ["comments", "bookmarks", "articleReporter", "reportDialog"],
+    modules: ["comments", "bookmarks", "articleReporter", "reportDialog", "shareManager"],
     page: "./pages/article.js"
   },
 
