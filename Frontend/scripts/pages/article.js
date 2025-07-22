@@ -41,20 +41,6 @@ function initializeModules() {
   }
 }
 
-$(document).on("click", "#ai-summarize-btn", summarizeArticle);
-
-function summarizeArticle() {
-  getSummarizedArticle(
-    $("#url-source").attr("href"),
-    (result) => {
-      console.log("Summary:", result.summary);
-    },
-    (error) => {
-      console.error("Error:", error);
-    }
-  );
-}
-
 function showArticle() {
   if (!currentArticle) {
     showError();
@@ -92,6 +78,8 @@ function showArticle() {
 
   $("#article-main-content").show();
   $("#article-error-message").hide();
+
+  $("#ai-summarize-btn").click(summarizeArticle);
 }
 
 function showError() {
@@ -109,4 +97,50 @@ function formatContent(content) {
     .filter((p) => p.trim() !== "")
     .map((p) => `<p>${p.trim()}</p>`)
     .join("");
+}
+
+function summarizeArticle() {
+  const loadingHtml = `
+    <div id="summary-section" class="summary-section">
+      <div class="summary-loading">
+        <div class="thinking-container">
+          <img src="../sources/images/sun-thinking.png" alt="AI Thinking" class="thinking-icon" />
+        </div>
+      </div>
+    </div>
+  `;
+
+  $(".article-actions").before(loadingHtml);
+
+  getSummarizedArticle(
+    $("#url-source").attr("href"),
+    (result) => {
+      const summaryHtml = `
+        <div id="summary-section">
+          <h3>Sunnary:</h3>
+          <div class="summary-content">
+            <p>${result.summary}</p>
+          </div>
+        </div>
+      `;
+
+      $("#summary-section").replaceWith(summaryHtml);
+
+      setTimeout(() => {
+        $("#summary-section").addClass("summary-section-styled");
+      }, 100);
+    },
+    () => {
+      const errorHtml = `
+        <div id="summary-section" class="summary-section">
+          <div class="summary-error">
+            <p>Failed to generate summary. Please try again.</p>
+            <button onclick="$('#summary-section').remove();" class="close-summary-btn">✕</button>
+          </div>
+        </div>
+      `;
+
+      $("#summary-section").replaceWith(errorHtml);
+    }
+  );
 }

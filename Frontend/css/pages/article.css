@@ -113,3 +113,111 @@
 .back-to-homepage {
   color: var(--c-dark);
 }
+
+/* AI Summary Section */
+.summary-section-styled {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid var(--c-primary);
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+.summary-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.thinking-container {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+}
+
+.thinking-icon {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  z-index: 3;
+  display: block;
+}
+
+/* Water drop ripple effects */
+.thinking-container::before,
+.thinking-container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--c-primary);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.thinking-container::before {
+  animation: waterDrop 3s infinite;
+}
+
+.thinking-container::after {
+  animation: waterDrop 3s infinite 1.5s;
+}
+
+@keyframes waterDrop {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#summary-section h3 {
+  margin-top: 0;
+  color: var(--c-primary);
+  font-size: 1.2em;
+}
+
+.summary-error {
+  text-align: center;
+  color: #dc3545;
+  position: relative;
+}
+
+.close-summary-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-size: 12px;
+}
