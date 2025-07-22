@@ -55,7 +55,7 @@ function getArticlesByCategoryPaged(category, page, pageSize, successCallback, e
 
 function getSummarizedArticle(text, successCallback, errorCallback) {
   const url = `${articlesEndpoint}/summarize`;
-  ajaxCall("POST", url, JSON.stringify({ articleText: text }), successCallback, errorCallback);
+  ajaxCall("POST", url, JSON.stringify({ ArticleUrl: text }), successCallback, errorCallback);
 }
 
 function syncArticles(articleList, successCallback, errorCallback) {
