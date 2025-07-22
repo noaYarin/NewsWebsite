@@ -129,6 +129,11 @@ const GlobalFriendDialog = {
 
     this.lastSearchedEmail = email;
 
+    this.searchPagination.currentPage = 1;
+    this.searchPagination.hasNextPage = false;
+    this.searchPagination.isLoading = false;
+    this.searchPagination.lastSearchTerm = "";
+
     if (resultsSection.hasClass("show")) {
       resultsSection.removeClass("show");
       setTimeout(() => this.performSearch(email, resultsSection), 500);
@@ -142,6 +147,7 @@ const GlobalFriendDialog = {
       this.searchPagination.currentPage = 1;
       this.searchPagination.hasNextPage = false;
       this.searchPagination.lastSearchTerm = searchTerm;
+      this.searchPagination.isLoading = false;
     }
 
     resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
