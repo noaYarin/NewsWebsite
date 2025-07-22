@@ -4,6 +4,7 @@ let originalFormState = null;
 let lastSearchedEmail = null;
 let pendingFriendRequests = new Set();
 let outgoingFriendRequests = new Set();
+let currentFriends = new Set();
 
 let searchPagination = {
   currentPage: 1,
@@ -132,6 +133,9 @@ function loadAndPopulateFriendsList() {
       $("#friendsList").show();
 
       loadPendingFriendRequests();
+
+      // Refresh search results if there's an active search
+      refreshCurrentSearchResults();
     },
     (error) => {
       $("#friendsList").html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Failed to load friends list.</div>');
@@ -144,6 +148,12 @@ function loadAndPopulateFriendsList() {
 function populateFriendsList(friends) {
   const listContainer = $("#friendsList");
   listContainer.empty();
+
+  // Update the currentFriends Set
+  currentFriends.clear();
+  friends.forEach((friend) => {
+    currentFriends.add(friend.id);
+  });
 
   $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
 
@@ -184,17 +194,7 @@ function handleRemoveFriend(e) {
       data,
       () => {
         UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
-
-        item.fadeOut(300, function () {
-          $(this).remove();
-
-          const remainingFriends = $("#friendsList .user-list-item").length;
-          $(".friends-count").text(`${remainingFriends} friend${remainingFriends !== 1 ? "s" : ""}`);
-
-          if (remainingFriends === 0) {
-            $("#friendsList").html('<p class="empty-list-message">You have no friends yet.</p>');
-          }
-        });
+        loadAndPopulateFriendsList();
       },
       () => {
         UIManager.showPopup("Failed to remove friend. Please try again.", false);
@@ -360,10 +360,15 @@ function displaySearchResults(users, isNewSearch = true) {
     .map((user) => {
       const hasPendingOutgoing = outgoingFriendRequests.has(user.id);
       const hasPendingIncoming = pendingFriendRequests.has(user.id);
+      const isAlreadyFriend = currentFriends.has(user.id);
 
       let buttonText, buttonClass;
 
-      if (hasPendingOutgoing) {
+      if (isAlreadyFriend) {
+        // Already friends with this user
+        buttonText = "Unfriend";
+        buttonClass = "unfriend-btn danger-btn";
+      } else if (hasPendingOutgoing) {
         // Current user sent a request to this user
         buttonText = "Unsend";
         buttonClass = "cancel-friend-request-btn success-btn";
@@ -376,7 +381,6 @@ function displaySearchResults(users, isNewSearch = true) {
         buttonText = "Send Request";
         buttonClass = "send-friend-request-btn";
       }
-
       return `
         <div class="user-search-item" data-user-id="${user.id}">
           <img src="${user.imageUrl || user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
@@ -408,6 +412,7 @@ function displaySearchResults(users, isNewSearch = true) {
   $(".send-friend-request-btn").on("click", handleSendFriendRequest);
   $(".cancel-friend-request-btn").on("click", handleCancelFriendRequest);
   $(".accept-friend-request-btn").on("click", handleAcceptFriendRequestFromSearch);
+  $(".unfriend-btn").on("click", handleUnfriendFromSearch);
 }
 
 function setupInfiniteScroll(resultsSection, searchTerm) {
@@ -463,6 +468,54 @@ function loadMoreUsers(searchTerm, resultsSection) {
       resultsSection.find(".user-search-results").append('<div class="load-error">Error loading more users. Try again.</div>');
     }
   );
+}
+
+function refreshCurrentSearchResults() {
+  // Only refresh if there are current search results visible
+  const resultsSection = $("#searchResultsSection");
+  if (!resultsSection.is(":visible") || !searchPagination.lastSearchTerm) {
+    console.log("Refresh skipped - no visible results or search term");
+    return;
+  }
+
+  console.log("Refreshing search results...");
+
+  // Get all currently displayed user items
+  const userItems = resultsSection.find(".user-search-item");
+  console.log(`Found ${userItems.length} user items to refresh`);
+
+  userItems.each(function () {
+    const $item = $(this);
+    const userId = parseInt($item.data("user-id"));
+    const $actionBtn = $item.find("button");
+
+    // Update button state based on current friend relationships
+    let buttonText, buttonClass;
+
+    if (currentFriends.has(userId)) {
+      buttonText = "Unfriend";
+      buttonClass = "unfriend-btn danger-btn";
+    } else if (pendingFriendRequests.has(userId)) {
+      buttonText = "Accept";
+      buttonClass = "accept-friend-request-btn primary-btn";
+    } else if (outgoingFriendRequests.has(userId)) {
+      buttonText = "Unsend";
+      buttonClass = "cancel-friend-request-btn success-btn";
+    } else {
+      buttonText = "Send Request";
+      buttonClass = "send-friend-request-btn";
+    }
+
+    console.log(`User ${userId}: ${currentFriends.has(userId) ? "is friend" : "not friend"} -> ${buttonText}`);
+
+    // Update button text and classes
+    $actionBtn
+      .text(buttonText)
+      .removeClass("unfriend-btn danger-btn accept-friend-request-btn primary-btn cancel-friend-request-btn success-btn send-friend-request-btn")
+      .addClass(buttonClass)
+      .data("user-id", userId)
+      .data("user-name", $item.find(".user-list-name").text());
+  });
 }
 
 function updateFriendsListWithPendingRequests(incomingRequests) {
@@ -592,6 +645,39 @@ function handleAcceptFriendRequestFromSearch(e) {
       UIManager.showPopup("Failed to accept friend request. Please try again.", false);
     }
   );
+}
+
+function handleUnfriendFromSearch(e) {
+  const button = $(e.currentTarget);
+  const userId = button.data("user-id");
+  const userName = button.data("user-name");
+
+  UIManager.showDialog(`Are you sure you want to unfriend ${userName}?`).then((confirmed) => {
+    if (!confirmed) return;
+
+    const originalText = button.text();
+    button.text("Unfriending...").prop("disabled", true);
+
+    const data = {
+      userId: currentUser.id,
+      friendId: userId
+    };
+
+    removeFriend(
+      data,
+      () => {
+        UIManager.showPopup(`${userName} has been removed from your friends list.`, true);
+
+        // Refresh the friends list to update the count and reload friends data from server
+        // This will also update the currentFriends Set and refresh search results
+        loadAndPopulateFriendsList();
+      },
+      () => {
+        button.text(originalText).prop("disabled", false);
+        UIManager.showPopup("Failed to unfriend user. Please try again.", false);
+      }
+    );
+  });
 }
 
 function handleAcceptFriendRequest(e) {
