@@ -188,7 +188,7 @@ const GlobalFriendDialog = {
           buttonText = "Unfriend";
           buttonClass = "unfriend-btn danger-btn";
         } else if (hasPendingOutgoing) {
-          buttonText = "Unsend";
+          buttonText = "Cancel Request";
           buttonClass = "cancel-friend-request-btn success-btn";
         } else if (hasPendingIncoming) {
           buttonText = "Accept";
@@ -299,7 +299,7 @@ const GlobalFriendDialog = {
     const userId = button.data("user-id");
     const userName = button.data("user-name");
 
-    button.text("Unsending...").prop("disabled", true);
+    button.text("Canceling...").prop("disabled", true);
 
     cancelFriendRequest(
       { SenderId: currentUser.id, RecipientId: userId },
@@ -310,8 +310,8 @@ const GlobalFriendDialog = {
         button.off("click").on("click", (e) => this.handleSendFriendRequest(e));
       },
       () => {
-        button.text("Unsend").prop("disabled", false);
-        UIManager.showPopup("Failed to unsend friend request. Please try again.", false);
+        button.text("Cancel Request").prop("disabled", false);
+        UIManager.showPopup("Failed to cancel friend request. Please try again.", false);
       }
     );
   },
