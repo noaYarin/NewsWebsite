@@ -221,3 +221,9 @@
   cursor: pointer;
   font-size: 12px;
 }
+
+.action-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
