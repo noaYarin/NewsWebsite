@@ -75,7 +75,6 @@ const ShareManager = {
         <div class="dialog-content-wrapper">
           <div class="dialog-header">
             <h3 class="dialog-title">Share Article</h3>
-            <button class="dialog-close-btn" id="closeShareDialog">&times;</button>
           </div>
           <div class="dialog-body">
             <div class="article-preview">
@@ -95,13 +94,9 @@ const ShareManager = {
                 placeholder="Write a message to your friends..." 
                 maxlength="200"
               ></textarea>
-              <div class="character-count">
-                <span id="messageCharCount">0</span>/200
-              </div>
             </div>
           </div>
           <div class="dialog-actions">
-            <button class="dialog-btn dialog-cancel" id="cancelShare">Cancel</button>
             <button class="dialog-btn dialog-share" id="confirmShare" disabled>Share</button>
           </div>
         </div>
