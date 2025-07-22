@@ -54,14 +54,12 @@ const NotificationsPage = {
       }
     });
 
-    // Mark as read on hover
     $(document).on("mouseenter", ".notification-item.unread", (e) => {
       const $notification = $(e.currentTarget);
       const notificationId = $notification.data("notification-id");
       this.markAsRead(notificationId);
     });
 
-    // Handle notification clicks
     $(document).on("click", ".notification-item.clickable", (e) => {
       const $notification = $(e.currentTarget);
       const notificationType = $notification.data("notification-type");
@@ -74,9 +72,8 @@ const NotificationsPage = {
       }
     });
 
-    // Handle direct article link clicks (for better UX)
     $(document).on("click", ".notification-article-link", (e) => {
-      e.stopPropagation(); // Prevent event bubbling
+      e.stopPropagation();
       const $notification = $(e.currentTarget).closest(".notification-item");
       const articleId = $notification.data("article-id");
 
@@ -263,7 +260,7 @@ const NotificationsPage = {
         this.loadUnreadCount();
       },
       () => {
-        // Silent fail on mark as read
+        UIManager.showPopup("Failed to mark notification as read", false);
       }
     );
   },
