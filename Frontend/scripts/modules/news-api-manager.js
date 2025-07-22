@@ -36,6 +36,11 @@ const NewsAPIManager = {
   },
 
   mapArticles(apiArticles, category) {
+    if (window.StatisticsManager) {
+      for (let i = 0; i < apiArticles.length; i++) {
+        StatisticsManager.incrementArticlesFetchesCount();
+      }
+    }
     return apiArticles
       .filter((a) => a && a.url && a.title && a.title !== "[Removed]" && (a.urlToImage || a.imageUrl) && a.description)
       .map((a) => ({
