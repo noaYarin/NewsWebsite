@@ -1,6 +1,6 @@
 .category-banner {
   position: relative;
-  height: 480px;
+  height: 240px;
   background-color: #222;
   background-size: cover;
   background-position: center;
@@ -56,4 +56,52 @@
   font-size: 18px;
   color: var(--c-text-muted);
   padding: 50px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .category-banner {
+    height: 320px;
+  }
+
+  .category-container {
+    margin: 30px auto;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-banner {
+    height: 250px;
+  }
+
+  .category-container {
+    margin: 20px auto;
+    padding: 10px;
+  }
+
+  #error-message .loading-message,
+  #error-message .error-message {
+    font-size: 16px;
+    padding: 30px 0;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .category-banner {
+    height: 400px;
+  }
+
+  .category-title {
+    font-size: 34px;
+    letter-spacing: 3px;
+  }
+
+  .category-title::after {
+    width: 70px;
+  }
+
+  .category-container {
+    padding: 15px;
+  }
 }

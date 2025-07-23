@@ -118,7 +118,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-width: 120px;
+  max-width: 100px;
   overflow: hidden;
 }
 
@@ -315,7 +315,9 @@
 }
 
 @media (max-width: 768px) {
-  .user-search-item .send-friend-request-btn {
+  .user-search-item .send-friend-request-btn,
+  .user-search-item .cancel-friend-request-btn,
+  .user-search-item .unfriend-btn {
     font-size: 12px;
   }
 

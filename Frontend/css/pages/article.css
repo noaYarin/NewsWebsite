@@ -166,3 +166,9 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+@media (max-width: 768px) {
+  .article-title {
+    font-size: 24px;
+  }
+}
