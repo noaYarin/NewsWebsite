@@ -2,7 +2,10 @@
 #secondary-container,
 #third-container,
 #fourth-container {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 20px 0 50px;

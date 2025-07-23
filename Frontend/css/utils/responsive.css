@@ -59,40 +59,8 @@
   main {
     padding-top: var(--navbar-height-mobile);
   }
-  #container,
-  #secondary-container,
-  #third-container,
-  #fourth-container {
-    padding: 16px 12px;
-  }
   #search-results-container {
     padding-top: var(--navbar-height-mobile);
-  }
-
-  /* --- Page layout adjustments --- */
-  .today-picks-sidebar {
-    min-height: auto;
-    position: relative;
-    margin-bottom: 2rem;
-  }
-  .featured-article {
-    height: 300px;
-  }
-  .titles h1 {
-    font-size: 36px;
-  }
-  .discover-more {
-    display: none; /* Hide discover more section on smaller screens */
-  }
-
-  /* --- Video section adjustments --- */
-  .video-background,
-  .bg-video,
-  .video-content {
-    height: 500px !important;
-  }
-  .video-content {
-    padding-top: 100px !important;
   }
 
   /* --- Footer adjustments --- */
@@ -174,45 +142,9 @@
     width: 100%;
   }
 
-  /* --- Article Page --- */
-  .article-container {
-    padding: 20px;
-    margin: 20px 10px;
-  }
-  .article-title {
-    font-size: 32px;
-  }
-  .tag-item {
-    font-size: 12px;
-    padding: 4px 10px;
-  }
-  .article-content {
-    font-size: 16px;
-  }
-  .action-btn {
-    padding: 6px 10px;
-    font-size: 14px;
-  }
-  .comment-item {
-    position: static;
-  }
-  .comment-actions {
-    position: static;
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 8px;
-  }
-  .blocked-comment-message {
-    padding: 12px;
-    font-size: 14px;
-  }
-  .article-error {
-    height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
-  }
-
-  /* --- Category Page --- */
-  .category-banner {
-    height: 300px;
+  /* --- Titles and headings --- */
+  .titles {
+    width: 90%;
   }
 }
 
@@ -220,56 +152,37 @@
    Mobile Phones (max 768px)
    -------------------- */
 @media (max-width: 768px) {
-  /* --- Video section adjustments --- */
+  /* --- Container spacing --- */
+  .container-fluid {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* --- Sidebar reorder --- */
+  .today-picks-sidebar {
+    order: 2; /* Move sidebar below main content */
+    margin-top: 2rem;
+  }
+
+  /* --- Typography scaling --- */
+  .titles h1 {
+    font-size: 32px;
+  }
+
+  /* --- Video section scaling --- */
   .video-background,
   .bg-video,
   .video-content {
-    height: 750px !important;
+    height: 400px !important;
   }
   .video-title {
-    font-size: 36px;
-  }
-  .video-description {
-    font-size: 16px;
+    font-size: 28px;
   }
 
-  /* --- Newsletter button adjustments --- */
+  /* --- Newsletter button scaling --- */
   .newsletter-signup .styled-button {
-    padding: 12px 120px !important;
-  }
-
-  /* --- Typography adjustments --- */
-  .titles h1 {
-    font-size: 28px;
-    letter-spacing: 2px;
-  }
-
-  /* --- Card adjustments --- */
-  .image-container,
-  .card img {
-    height: 150px;
-  }
-
-  /* --- Our picks section adjustments --- */
-  .our-picks h1 {
-    font-size: 28px;
-    letter-spacing: 4px;
-  }
-  .our-picks p {
-    letter-spacing: 1px;
-  }
-
-  /* --- Article List adjustments --- */
-  .article-list-item {
-    flex-direction: column;
-    max-height: none;
-  }
-  .article-item-image {
-    width: 100%;
-    height: 200px;
-  }
-  .article-item-content {
-    padding: 20px;
+    padding: 12px 60px !important;
+    font-size: 14px;
   }
 }
 
@@ -277,103 +190,27 @@
    Small Mobile Phones (max 480px)
    -------------------- */
 @media (max-width: 480px) {
-  /* --- Container padding adjustments --- */
-  #container,
-  #secondary-container,
-  #third-container,
-  #fourth-container {
-    padding: 12px 8px;
-  }
-
   /* --- Further typography reduction --- */
   .titles h1 {
-    font-size: 24px;
-    letter-spacing: 1px;
-  }
-  .video-title {
     font-size: 28px;
   }
-
-  /* --- Newsletter adjustments --- */
-  .newsletter-signup h1 {
+  .video-title {
     font-size: 24px;
   }
-  .newsletter-signup p {
-    font-size: 16px;
-  }
-  .newsletter-signup .styled-button {
-    padding: 10px 60px !important;
-    font-size: 14px;
-  }
 
-  /* --- Sidebar adjustments --- */
-  .pick-item-image {
-    width: 80px;
-    height: 80px;
+  /* --- Card text scaling --- */
+  .card-title {
+    font-size: 16px !important;
   }
-
-  /* --- Card adjustments --- */
-  .article-card .card-body {
-    min-height: 140px;
-  }
-  .our-picks-card {
-    height: 350px;
-  }
-
-  /* --- Auth Page --- */
-  .auth-main {
-    min-height: calc(100vh - var(--navbar-height-mobile) - var(--footer-height-mobile));
-    padding: 12px;
-  }
-  .auth-container {
-    padding: 0;
-  }
-  .auth-logo img {
-    width: 80px;
-    height: 80px;
-  }
-  .auth-logo h1,
-  .auth-title {
-    font-size: 20px;
-  }
-  .auth-form input {
-    padding: 16px;
-  }
-  .auth-button {
-    padding: 16px;
-    font-size: 14px;
-  }
-  .auth-form .password-toggle-btn {
-    top: 20px;
-    right: 16px;
-  }
-  .interest-card-title {
+  .category-tag {
     font-size: 12px;
   }
-  .auth-container.interests-active {
-    padding: 20px 12px;
-  }
-}
 
-/* --------------------
-   Print Styles
-   -------------------- */
-@media print {
-  body {
-    padding-top: 0;
-    background-color: white;
-    color: black;
+  /* --- Newsletter further scaling --- */
+  .newsletter-signup h1 {
+    font-size: 22px;
   }
-
-  .video-background,
-  #navbar,
-  #mobileMenu,
-  #footer {
-    display: none;
-  }
-
-  .card,
-  .featured-article {
-    break-inside: avoid;
+  .newsletter-signup .styled-button {
+    padding: 10px 40px !important;
   }
 }
