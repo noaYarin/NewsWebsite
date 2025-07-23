@@ -60,10 +60,16 @@ GO
 
 -- Procedure to get daily statistics for a date range
 CREATE PROCEDURE SP_GetDailyStatistics
-    @StartDate DATE,
-    @EndDate DATE
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL
 AS
 BEGIN
+    IF @StartDate IS NULL
+        SET @StartDate = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));
+    
+    IF @EndDate IS NULL
+        SET @EndDate = CAST(GETDATE() AS DATE);
+
     SELECT StatDate, UserLoginCount, ArticlesPulledCount, ArticlesInsertedCount, CommentsPostedCount
     FROM DailyStatistics
     WHERE StatDate BETWEEN @StartDate AND @EndDate
@@ -84,5 +90,62 @@ BEGIN
     SELECT @TotalComments = COUNT(*) FROM Comments;
 
     SELECT @TotalUsers AS TotalUsers, @TotalArticles AS TotalArticles, @TotalComments AS TotalComments;
+END
+GO
+
+-- Procedure to get daily logins for a date range
+CREATE PROCEDURE SP_GetDailyLogins
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL
+AS
+BEGIN
+    IF @StartDate IS NULL
+        SET @StartDate = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));
+    
+    IF @EndDate IS NULL
+        SET @EndDate = CAST(GETDATE() AS DATE);
+
+    SELECT StatDate, UserLoginCount
+    FROM DailyStatistics
+    WHERE StatDate BETWEEN @StartDate AND @EndDate
+    ORDER BY StatDate;
+END
+GO
+
+-- Procedure to get daily article pulls for a date range
+CREATE PROCEDURE SP_GetDailyArticlePulls
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL
+AS
+BEGIN
+    IF @StartDate IS NULL
+        SET @StartDate = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));
+    
+    IF @EndDate IS NULL
+        SET @EndDate = CAST(GETDATE() AS DATE);
+
+    SELECT StatDate, ArticlesPulledCount
+    FROM DailyStatistics
+    WHERE StatDate BETWEEN @StartDate AND @EndDate
+    ORDER BY StatDate;
+END
+GO
+
+-- Procedure to get daily article inserts for a date range (synced from API to DB)
+CREATE PROCEDURE SP_GetDailyArticleInserts
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL
+AS
+BEGIN
+    IF @StartDate IS NULL
+        SET @StartDate = DATEADD(DAY, -1, CAST(GETDATE() AS DATE));
+    
+    IF @EndDate IS NULL
+        SET @EndDate = CAST(GETDATE() AS DATE);
+
+    SELECT StatDate, ArticlesInsertedCount
+    FROM DailyStatistics
+    WHERE StatDate BETWEEN @StartDate AND @EndDate
+    ORDER BY StatDate;
 END
 GO

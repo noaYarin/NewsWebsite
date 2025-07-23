@@ -7,7 +7,7 @@ namespace Horizon.BL
 {
     public class Statistics
     {
-        public static IEnumerable<DailyStatisticsDto> GetDailyStatistics(DateTime startDate, DateTime endDate)
+        public static IEnumerable<DailyStatisticsDto> GetDailyStatistics(DateTime? startDate = null, DateTime? endDate = null)
         {
             var statisticsService = new StatisticsService();
             return statisticsService.GetDailyStatistics(startDate, endDate);
@@ -40,6 +40,24 @@ namespace Horizon.BL
         public static void IncrementCommentsPosted()
         {
             new StatisticsService().IncrementDailyStat("CommentPosted");
+        }
+
+        public static IEnumerable<DailyStatisticsDto> GetDailyLogins(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var statisticsService = new StatisticsService();
+            return statisticsService.GetDailyLogins(startDate, endDate);
+        }
+
+        public static IEnumerable<DailyStatisticsDto> GetDailyArticlePulls(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var statisticsService = new StatisticsService();
+            return statisticsService.GetDailyArticlePulls(startDate, endDate);
+        }
+
+        public static IEnumerable<DailyStatisticsDto> GetDailyArticleInserts(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var statisticsService = new StatisticsService();
+            return statisticsService.GetDailyArticleInserts(startDate, endDate);
         }
     }
 }

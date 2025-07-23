@@ -25,18 +25,19 @@ namespace Horizon.DAL
             }
         }
 
-        public IEnumerable<DailyStatisticsDto> GetDailyStatistics(DateTime startDate, DateTime endDate)
+        public IEnumerable<DailyStatisticsDto> GetDailyStatistics(DateTime? startDate = null, DateTime? endDate = null)
         {
             var stats = new List<DailyStatisticsDto>();
             SqlConnection con = null;
             try
             {
                 con = Connect();
-                var parameters = new Dictionary<string, object>
-                {
-                    { "@StartDate", startDate },
-                    { "@EndDate", endDate }
-                };
+                var parameters = new Dictionary<string, object>();
+                if (startDate.HasValue)
+                    parameters.Add("@StartDate", startDate.Value);
+                if (endDate.HasValue)
+                    parameters.Add("@EndDate", endDate.Value);
+
                 SqlCommand cmd = CreateCommand("SP_GetDailyStatistics", con, parameters);
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -78,6 +79,105 @@ namespace Horizon.DAL
                             TotalArticles = Convert.ToInt32(reader["TotalArticles"]),
                             TotalComments = Convert.ToInt32(reader["TotalComments"])
                         };
+                    }
+                }
+                return stats;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
+        public IEnumerable<DailyStatisticsDto> GetDailyLogins(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var stats = new List<DailyStatisticsDto>();
+            SqlConnection con = null;
+            try
+            {
+                con = Connect();
+                var parameters = new Dictionary<string, object>();
+                if (startDate.HasValue)
+                    parameters.Add("@StartDate", startDate.Value);
+                if (endDate.HasValue)
+                    parameters.Add("@EndDate", endDate.Value);
+
+                SqlCommand cmd = CreateCommand("SP_GetDailyLogins", con, parameters);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stats.Add(new DailyStatisticsDto
+                        {
+                            StatDate = Convert.ToDateTime(reader["StatDate"]),
+                            UserLoginCount = Convert.ToInt32(reader["UserLoginCount"])
+                        });
+                    }
+                }
+                return stats;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
+        public IEnumerable<DailyStatisticsDto> GetDailyArticlePulls(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var stats = new List<DailyStatisticsDto>();
+            SqlConnection con = null;
+            try
+            {
+                con = Connect();
+                var parameters = new Dictionary<string, object>();
+                if (startDate.HasValue)
+                    parameters.Add("@StartDate", startDate.Value);
+                if (endDate.HasValue)
+                    parameters.Add("@EndDate", endDate.Value);
+
+                SqlCommand cmd = CreateCommand("SP_GetDailyArticlePulls", con, parameters);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stats.Add(new DailyStatisticsDto
+                        {
+                            StatDate = Convert.ToDateTime(reader["StatDate"]),
+                            ArticlesPulledCount = Convert.ToInt32(reader["ArticlesPulledCount"])
+                        });
+                    }
+                }
+                return stats;
+            }
+            finally
+            {
+                con?.Close();
+            }
+        }
+
+        public IEnumerable<DailyStatisticsDto> GetDailyArticleInserts(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var stats = new List<DailyStatisticsDto>();
+            SqlConnection con = null;
+            try
+            {
+                con = Connect();
+                var parameters = new Dictionary<string, object>();
+                if (startDate.HasValue)
+                    parameters.Add("@StartDate", startDate.Value);
+                if (endDate.HasValue)
+                    parameters.Add("@EndDate", endDate.Value);
+
+                SqlCommand cmd = CreateCommand("SP_GetDailyArticleInserts", con, parameters);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stats.Add(new DailyStatisticsDto
+                        {
+                            StatDate = Convert.ToDateTime(reader["StatDate"]),
+                            ArticlesInsertedCount = Convert.ToInt32(reader["ArticlesInsertedCount"])
+                        });
                     }
                 }
                 return stats;
