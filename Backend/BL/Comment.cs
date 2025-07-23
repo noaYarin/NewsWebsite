@@ -50,15 +50,25 @@
             var commentService = new CommentService();
             (bool isLiked, int commentAuthorId) = commentService.ToggleCommentLike(commentId, userId);
 
+            var notificationService = new NotificationService();
+
             if (isLiked && userId != commentAuthorId)
             {
-                var notificationService = new NotificationService();
                 notificationService.InsertNotification(
                     recipientId: commentAuthorId,
                     senderId: userId,
                     notificationType: NotificationType.CommentLike,
                     relatedEntityId: commentId,
                     message: null
+                );
+            }
+            else if (!isLiked && userId != commentAuthorId)
+            {
+                notificationService.DeleteNotification(
+                    recipientId: commentAuthorId,
+                    senderId: userId,
+                    notificationType: NotificationType.CommentLike,
+                    relatedEntityId: commentId
                 );
             }
 
