@@ -24,7 +24,12 @@
         {
             var commentService = new CommentService();
             int newCommentId = commentService.AddComment(this);
-            return newCommentId > 0;
+            if (newCommentId > 0)
+            {
+                Statistics.IncrementCommentsPosted();
+                return true;
+            }
+            return false;
         }
 
         public static List<CommentResponseDto> GetByArticleId(int articleId, int? requestingUserId)

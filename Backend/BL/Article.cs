@@ -36,7 +36,12 @@ public class Article
     public static Article GetById(int id)
     {
         var articleService = new ArticleService();
-        return articleService.GetArticleById(id);
+        var article = articleService.GetArticleById(id);
+        if (article != null)
+        {
+            Statistics.IncrementArticlesPulled();
+        }
+        return article;
     }
 
     public static List<Article> Sync(List<ArticleSyncDto> articlesFromAPI)
@@ -52,6 +57,7 @@ public class Article
         if (newArticleDtos.Any())
         {
             articleService.BulkInsert(newArticleDtos);
+            Statistics.IncrementArticlesInserted();
             return articleService.GetArticlesByUrls(urls);
         }
 
@@ -61,18 +67,24 @@ public class Article
     public static List<Article> GetRecentByCategory(string categoryName, int count)
     {
         var articleService = new ArticleService();
-        return articleService.FetchRecentByCategory(categoryName, count);
+        var articles = articleService.FetchRecentByCategory(categoryName, count);
+        Statistics.IncrementArticlesPulled(articles.Count);
+        return articles;
     }
 
     public static List<Article> GetRecentByCategoryPaged(string categoryName, int page, int pageSize)
     {
         var articleService = new ArticleService();
-        return articleService.FetchRecentByCategoryPaged(categoryName, page, pageSize);
+        var articles = articleService.FetchRecentByCategoryPaged(categoryName, page, pageSize);
+        Statistics.IncrementArticlesPulled(articles.Count);
+        return articles;
     }
 
     public static List<Article> Search(string searchTerm, int page, int pageSize)
     {
         var articleService = new ArticleService();
-        return articleService.SearchArticles(searchTerm, page, pageSize);
+        var articles = articleService.SearchArticles(searchTerm, page, pageSize);
+        Statistics.IncrementArticlesPulled(articles.Count);
+        return articles;
     }
 }
