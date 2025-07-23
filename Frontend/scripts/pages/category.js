@@ -94,17 +94,35 @@ const CategoryPage = {
       author: article.author || "Unknown Author",
       sourceName: (article.source && article.source.name) || "Unknown Source",
       publishedAt: article.publishedAt,
-      // Use the category from API if available (already properly formatted),
-      // otherwise use the current category with proper formatting
       category: article.category || this.currentCategory.charAt(0).toUpperCase() + this.currentCategory.slice(1)
     }));
   },
 
   showLoadingState($initialLoadingMessage, $infiniteScrollLoader) {
     if (this.currentPage === 1) {
-      $initialLoadingMessage.show();
+      $initialLoadingMessage
+        .html(
+          `
+        <div class="sun-loading">
+          <div class="thinking-container">
+            <img src="../sources/images/sun/sun.png" alt="Loading Articles" class="thinking-icon" />
+          </div>
+        </div>
+      `
+        )
+        .show();
     } else {
-      $infiniteScrollLoader.show();
+      $infiniteScrollLoader
+        .html(
+          `
+        <div class="sun-loading">
+          <div class="thinking-container">
+            <img src="../sources/images/sun/sun.png" alt="Loading More Articles" class="thinking-icon" />
+          </div>
+        </div>
+      `
+        )
+        .show();
     }
   },
 

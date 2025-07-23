@@ -1,7 +1,7 @@
 const NotificationsPage = {
   currentUser: null,
   currentPage: 1,
-  pageSize: 40,
+  pageSize: 10,
   activeTab: "all",
   isLoading: false,
   hasMorePages: true,
