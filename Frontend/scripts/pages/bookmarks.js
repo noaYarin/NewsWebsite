@@ -16,6 +16,18 @@ const BookmarksPage = {
     const $listContainer = $("#bookmarks-list");
     const $loadingMessage = $("#bookmarks-loading-message");
 
+    $loadingMessage
+      .html(
+        `
+      <div class="sun-loading">
+        <div class="thinking-container">
+          <img src="../sources/images/sun/sun.png" alt="Loading Bookmarks" class="thinking-icon" />
+        </div>
+      </div>
+    `
+      )
+      .show();
+
     getUserBookmarks(
       this.currentUser.id,
       (articles) => {
