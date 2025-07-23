@@ -39,7 +39,7 @@ namespace Horizon.DAL
             {
                 NotificationType.FriendRequest => "sent you a friend request.",
                 NotificationType.FriendRequestAccepted => "has accepted your friend request.",
-                NotificationType.CommentLike => "has liked your comment.",
+                NotificationType.CommentLike => "liked your comment on an article.",
                 NotificationType.ArticleShare => "shared an article with you.",
                 _ => "sent you a system notification."
             };

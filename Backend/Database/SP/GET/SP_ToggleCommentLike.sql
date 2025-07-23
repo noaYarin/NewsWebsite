@@ -1,11 +1,18 @@
 CREATE PROCEDURE SP_ToggleCommentLike
     @CommentId INT,
     @UserId INT,
-    @IsNowLiked BIT OUTPUT
+    @IsNowLiked BIT OUTPUT,
+    @CommentAuthorId INT OUTPUT,
+    @ArticleId INT OUTPUT
 AS
 BEGIN
     -- This makes sure SQL Server doesn't send back the count of rows affected
     SET NOCOUNT ON;
+
+    -- Get the comment author and article ID
+    SELECT @CommentAuthorId = AuthorId, @ArticleId = ArticleId
+    FROM Comments
+    WHERE Id = @CommentId;
 
     -- Check if the user has already liked this comment
     IF EXISTS (SELECT 1 FROM CommentLikes WHERE CommentId = @CommentId AND UserId = @UserId)

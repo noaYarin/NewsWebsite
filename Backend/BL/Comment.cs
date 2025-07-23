@@ -48,7 +48,7 @@
         public static bool ToggleLike(int commentId, int userId)
         {
             var commentService = new CommentService();
-            (bool isLiked, int commentAuthorId) = commentService.ToggleCommentLike(commentId, userId);
+            bool isLiked = commentService.ToggleCommentLike(commentId, userId, out int commentAuthorId, out int articleId);
 
             var notificationService = new NotificationService();
 
@@ -58,8 +58,8 @@
                     recipientId: commentAuthorId,
                     senderId: userId,
                     notificationType: NotificationType.CommentLike,
-                    relatedEntityId: commentId,
-                    message: null
+                    relatedEntityId: articleId,
+                    message: "liked your comment on an article."
                 );
             }
             else if (!isLiked && userId != commentAuthorId)
@@ -68,7 +68,7 @@
                     recipientId: commentAuthorId,
                     senderId: userId,
                     notificationType: NotificationType.CommentLike,
-                    relatedEntityId: commentId
+                    relatedEntityId: articleId
                 );
             }
 

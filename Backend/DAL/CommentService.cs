@@ -103,7 +103,7 @@ public class CommentService : DBService
         finally { con?.Close(); }
     }
 
-    public (bool isLiked, int authorId) ToggleCommentLike(int commentId, int userId)
+    public bool ToggleCommentLike(int commentId, int userId, out int authorId, out int articleId)
     {
         SqlConnection con = null;
         try
@@ -129,12 +129,19 @@ public class CommentService : DBService
             };
             cmd.Parameters.Add(commentAuthorIdParam);
 
+            SqlParameter articleIdParam = new SqlParameter("@ArticleId", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+            cmd.Parameters.Add(articleIdParam);
+
             cmd.ExecuteNonQuery();
 
             bool isLiked = Convert.ToBoolean(isNowLikedParam.Value);
-            int authorId = Convert.ToInt32(commentAuthorIdParam.Value);
+            authorId = Convert.ToInt32(commentAuthorIdParam.Value);
+            articleId = Convert.ToInt32(articleIdParam.Value);
 
-            return (isLiked, authorId);
+            return isLiked;
         }
         finally
         {
