@@ -105,10 +105,11 @@ function summarizeArticle() {
 
   const loadingHtml = `
     <div id="summary-section" class="summary-section">
-      <div class="summary-loading">
+      <div class="sun-loading">
         <div class="thinking-container">
           <img src="../sources/images/sun-thinking.png" alt="AI Thinking" class="thinking-icon" />
         </div>
+        <p>AI is analyzing the article...</p>
       </div>
     </div>
   `;

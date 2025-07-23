@@ -25,6 +25,7 @@
 @import url("./components/loader.css");
 @import url("./components/friend-dialog.css");
 @import url("./components/share-dialog.css");
+@import url("./components/sun-loading.css");
 
 /* === PAGE-SPECIFIC STYLES === */
 @import url("./pages/home.css");

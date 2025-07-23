@@ -1,0 +1,131 @@
+.sun-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.thinking-container {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+}
+
+.thinking-icon {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  z-index: 3;
+  display: block;
+}
+
+/* Water drop ripple effects */
+.thinking-container::before,
+.thinking-container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--c-primary);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.thinking-container::before {
+  animation: waterDrop 3s infinite;
+}
+
+.thinking-container::after {
+  animation: waterDrop 3s infinite 1.5s;
+}
+
+@keyframes waterDrop {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+  }
+}
+
+/* Variations for different sizes */
+.thinking-container.small {
+  width: 60px;
+  height: 60px;
+}
+
+.thinking-container.small .thinking-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.thinking-container.small::before,
+.thinking-container.small::after {
+  animation: waterDropSmall 3s infinite;
+}
+
+.thinking-container.small::after {
+  animation-delay: 1.5s;
+}
+
+@keyframes waterDropSmall {
+  0% {
+    width: 12px;
+    height: 12px;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
+}
+
+.thinking-container.large {
+  width: 150px;
+  height: 150px;
+}
+
+.thinking-container.large .thinking-icon {
+  width: 150px;
+  height: 150px;
+}
+
+.thinking-container.large::before,
+.thinking-container.large::after {
+  animation: waterDropLarge 3s infinite;
+}
+
+.thinking-container.large::after {
+  animation-delay: 1.5s;
+}
+
+@keyframes waterDropLarge {
+  0% {
+    width: 30px;
+    height: 30px;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 180px;
+    height: 180px;
+    opacity: 0;
+  }
+}
