@@ -467,7 +467,7 @@
   margin-right: 12px;
   flex-shrink: 0;
   object-fit: cover;
-  border: 2px solid var(--c-text-muted);
+  border: 2px solid var(--c-border-light);
 }
 
 .nav-notification-content {
