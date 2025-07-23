@@ -71,9 +71,7 @@ const NotificationsManager = {
         this.unreadCount = response.count || 0;
         this.updateBadge();
       },
-      (error) => {
-        console.error("Failed to load unread count:", error);
-      }
+      () => {}
     );
   },
 
@@ -89,8 +87,7 @@ const NotificationsManager = {
         this.notifications = notifications || [];
         this.renderNotifications();
       },
-      (error) => {
-        console.error("Failed to load recent notifications:", error);
+      () => {
         this.showErrorState();
       }
     );
@@ -218,7 +215,7 @@ const NotificationsManager = {
     markNotificationAsRead(
       notificationId,
       this.currentUser.id,
-      (response) => {
+      () => {
         const notification = this.notifications.find((n) => n.id === notificationId);
         if (notification && !notification.isRead) {
           notification.isRead = true;
@@ -228,9 +225,7 @@ const NotificationsManager = {
           $(`.nav-notification-item[data-notification-id="${notificationId}"]`).removeClass("unread");
         }
       },
-      (error) => {
-        console.error("Failed to mark notification as read:", error);
-      }
+      () => {}
     );
   },
 
