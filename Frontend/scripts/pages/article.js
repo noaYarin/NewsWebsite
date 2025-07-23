@@ -119,7 +119,10 @@ function summarizeArticle() {
     (result) => {
       const summaryHtml = `
         <div id="summary-section">
-          <h3>Sunnary:</h3>
+          <div class="summary-header">
+            <img src="../sources/images/sun-thinking.png" alt="AI Summary" class="summary-sun-icon" />
+            <h3>Summary:</h3>
+          </div>
           <div class="summary-content">
             <p>${result.summary}</p>
           </div>
