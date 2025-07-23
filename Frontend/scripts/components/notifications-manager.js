@@ -200,10 +200,17 @@ const NotificationsManager = {
 
   updateBadge() {
     const $badge = $(".nav-notifications-badge");
+    const $icon = $(".nav-notifications-icon");
+    const $btn = $(".nav-notifications-btn");
+
     if (this.unreadCount > 0) {
       $badge.text(this.unreadCount > 99 ? "99+" : this.unreadCount).show();
+      $icon.attr("src", "../sources/icons/notifications-alert-svgrepo-com.svg");
+      $btn.addClass("has-unread");
     } else {
       $badge.hide();
+      $icon.attr("src", "../sources/icons/notifications-svgrepo-com.svg");
+      $btn.removeClass("has-unread");
     }
   },
 
