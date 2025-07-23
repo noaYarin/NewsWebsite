@@ -20,6 +20,10 @@ const ComponentsManager = {
       GlobalFriendDialog.init();
     }
 
+    if (typeof NotificationsManager !== "undefined") {
+      NotificationsManager.init();
+    }
+
     const isAuthPage = window.location.pathname.includes("auth.html");
     if (!isAuthPage && $(window).width() > (window.CONSTANTS ? CONSTANTS.MOBILE_BREAKPOINT : 1024)) {
       if (typeof BackToTop !== "undefined") {

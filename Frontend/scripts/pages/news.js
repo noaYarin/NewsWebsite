@@ -37,10 +37,8 @@ const NewsPage = {
 
     if ($loader.length && $mainContent.length) {
       $loader.addClass("fade-out");
-
       $mainContent.show();
 
-      // Unblock navbar when loading is complete
       this.unblockNavbar();
 
       setTimeout(() => {

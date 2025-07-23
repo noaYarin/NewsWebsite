@@ -1,7 +1,14 @@
 export const SCRIPT_BUNDLES = {
   core: ["./core/constants.js", "./core/helpers.js", "./api/api.js" /*, "./statistics/siteStatistics.js"*/],
 
-  ui: ["./components/ui-manager.js", "./components/html-snippets.js", "./components/navigation.js", "./components/search-manager.js", "./components/friend-dialog.js"],
+  ui: [
+    "./components/ui-manager.js",
+    "./components/html-snippets.js",
+    "./components/navigation.js",
+    "./components/search-manager.js",
+    "./components/friend-dialog.js",
+    "./components/notifications-manager.js"
+  ],
 
   modules: {
     validation: "./modules/validation.js",

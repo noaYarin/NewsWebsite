@@ -171,7 +171,7 @@ const NotificationsPage = {
 
   createNotificationHtml(notification) {
     const isUnread = !notification.isRead;
-    const timeAgo = this.formatTimeAgo(notification.createdAt);
+    const timeAgo = Utils.formatTimeAgo(notification.createdAt);
     const avatar = notification.senderAvatar || "../sources/images/no-image.png";
     const notificationType = notification.notificationType;
 
@@ -301,19 +301,6 @@ const NotificationsPage = {
         $("#unreadCount").hide();
       }
     );
-  },
-
-  formatTimeAgo(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const seconds = Math.floor((now - date) / 1000);
-
-    if (seconds < 60) return "Just now";
-    if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
-    if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
-    if (seconds < 604800) return Math.floor(seconds / 86400) + "d ago";
-
-    return date.toLocaleDateString();
   },
 
   getTypeBadge(type) {

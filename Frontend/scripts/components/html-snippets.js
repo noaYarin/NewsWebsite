@@ -56,6 +56,25 @@ const HTMLSnippets = {
         ${
           isLoggedIn
             ? `
+          <div class="nav-notifications-container">
+            <button class="nav-notifications-btn">
+              <img src="../sources/icons/notifications-svgrepo-com.svg" alt="Notifications" class="nav-notifications-icon" />
+              <span class="nav-notifications-badge" style="display: none;">0</span>
+            </button>
+            <div class="nav-notifications-dropdown">
+              <div class="nav-notifications-header">
+                <h4>Notifications</h4>
+                <a href="../html/notifications.html" class="nav-notifications-view-all">View All</a>
+              </div>
+              <div class="nav-notifications-list">
+                <div class="nav-notifications-loading">
+                  <div class="thinking-container small">
+                    <img src="../sources/images/sun/sun.png" alt="Loading" class="thinking-icon" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="nav-profile-container">
             <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
           </div>
@@ -94,6 +113,25 @@ const HTMLSnippets = {
           ${
             isLoggedIn
               ? `
+            <div class="nav-notifications-container">
+              <button class="nav-notifications-btn">
+                <img src="../sources/icons/notifications-svgrepo-com.svg" alt="Notifications" class="nav-notifications-icon" />
+                <span class="nav-notifications-badge" style="display: none;">0</span>
+              </button>
+              <div class="nav-notifications-dropdown">
+                <div class="nav-notifications-header">
+                  <h4>Notifications</h4>
+                  <a href="../html/notifications.html" class="nav-notifications-view-all">View All</a>
+                </div>
+                <div class="nav-notifications-list">
+                  <div class="nav-notifications-loading">
+                    <div class="thinking-container small">
+                      <img src="../sources/images/sun/sun.png" alt="Loading" class="thinking-icon" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="nav-profile-container">
               <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
             </div>

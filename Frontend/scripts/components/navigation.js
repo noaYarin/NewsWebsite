@@ -11,6 +11,9 @@ const Navigation = {
         if ($("#searchOverlay").hasClass("active")) SearchManager.toggle();
         if ($("#mobileMenu").hasClass("active")) this.toggleMobileMenu();
         if ($("#profileMenu").hasClass("active")) this.toggleProfileMenu();
+        if (typeof NotificationsManager !== "undefined" && NotificationsManager.isDropdownOpen) {
+          NotificationsManager.closeDropdown();
+        }
       }
     });
 
@@ -61,6 +64,11 @@ const Navigation = {
   toggleProfileMenu() {
     const $profileMenu = $("#profileMenu");
     if (!$profileMenu.length) return;
+
+    if (typeof NotificationsManager !== "undefined" && NotificationsManager.isDropdownOpen) {
+      NotificationsManager.closeDropdown();
+    }
+
     $profileMenu.toggleClass("active");
   },
 
