@@ -9,6 +9,7 @@ const reportsEndpoint = `${dotnetBaseUrl}/Reports`;
 const bookmarksEndpoint = `${dotnetBaseUrl}/Bookmarks`;
 const friendsEndpoint = `${dotnetBaseUrl}/Friends`;
 const notificationsEndpoint = `${dotnetBaseUrl}/Notifications`;
+const statisticsEndpoint = `${dotnetBaseUrl}/Statistics`;
 
 function ajaxCall(method, api, data, successCB, errorCB) {
   $.ajax({
@@ -205,4 +206,49 @@ function markNotificationAsRead(notificationId, userId, successCallback, errorCa
 
 function markAllNotificationsAsRead(userId, successCallback, errorCallback) {
   ajaxCall("PUT", `${notificationsEndpoint}/read-all/${userId}`, null, successCallback, errorCallback);
+}
+
+// --- Statistics API Calls ---
+function getGeneralStatistics(successCallback, errorCallback) {
+  ajaxCall("GET", `${statisticsEndpoint}/general`, null, successCallback, errorCallback);
+}
+
+function getDailyStatistics(startDate = null, endDate = null, successCallback, errorCallback) {
+  let url = `${statisticsEndpoint}/daily`;
+  const params = [];
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (params.length > 0) url += `?${params.join("&")}`;
+
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
+function getDailyLogins(startDate = null, endDate = null, successCallback, errorCallback) {
+  let url = `${statisticsEndpoint}/daily/logins`;
+  const params = [];
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (params.length > 0) url += `?${params.join("&")}`;
+
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
+function getDailyArticlePulls(startDate = null, endDate = null, successCallback, errorCallback) {
+  let url = `${statisticsEndpoint}/daily/article-pulls`;
+  const params = [];
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (params.length > 0) url += `?${params.join("&")}`;
+
+  ajaxCall("GET", url, null, successCallback, errorCallback);
+}
+
+function getDailyArticleInserts(startDate = null, endDate = null, successCallback, errorCallback) {
+  let url = `${statisticsEndpoint}/daily/article-inserts`;
+  const params = [];
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (params.length > 0) url += `?${params.join("&")}`;
+
+  ajaxCall("GET", url, null, successCallback, errorCallback);
 }
