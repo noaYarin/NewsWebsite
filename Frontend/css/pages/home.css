@@ -1,3 +1,7 @@
+#main-content {
+  display: none;
+}
+
 .home-page {
   background-color: var(--c-dark);
 }

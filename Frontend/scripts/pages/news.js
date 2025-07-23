@@ -9,6 +9,23 @@ const NewsPage = {
     }
 
     NewsLinkManager.setupCategoryLinks();
+
+    this.hideLoader();
+  },
+
+  hideLoader() {
+    const $loader = $("#page-loader");
+    const $mainContent = $("#main-content");
+
+    if ($loader.length && $mainContent.length) {
+      $loader.addClass("fade-out");
+
+      $mainContent.show();
+
+      setTimeout(() => {
+        $loader.remove();
+      }, 500);
+    }
   }
 };
 

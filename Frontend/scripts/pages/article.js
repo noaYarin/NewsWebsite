@@ -100,7 +100,6 @@ function formatContent(content) {
 }
 
 function summarizeArticle() {
-  // Disable the button to prevent multiple clicks
   $("#ai-summarize-btn").prop("disabled", true).addClass("disabled");
 
   const loadingHtml = `
@@ -109,7 +108,6 @@ function summarizeArticle() {
         <div class="thinking-container">
           <img src="../sources/images/sun-thinking.png" alt="AI Thinking" class="thinking-icon" />
         </div>
-        <p>AI is analyzing the article...</p>
       </div>
     </div>
   `;
@@ -146,7 +144,6 @@ function summarizeArticle() {
 
       $("#summary-section").replaceWith(errorHtml);
 
-      // Re-enable button after error
       $("#ai-summarize-btn").prop("disabled", false).removeClass("disabled");
     }
   );
