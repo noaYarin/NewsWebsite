@@ -305,7 +305,7 @@
 }
 
 .nav-notifications-btn:hover {
-  background-color: var(--c-gray-100);
+  background-color: var(--c-border-light);
 }
 
 .nav-notifications-icon {
@@ -331,12 +331,12 @@
 
 .nav-notifications-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 12px);
   right: 0;
   width: 350px;
   max-height: 400px;
   background-color: var(--c-light);
-  border: 1px solid var(--c-gray-200);
+  border: 1px solid var(--c-border-light);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   opacity: 0;
@@ -358,8 +358,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--c-gray-200);
-  background-color: var(--c-gray-50);
+  border-bottom: 1px solid var(--c-primary);
 }
 
 .nav-notifications-header h4 {
@@ -370,7 +369,7 @@
 }
 
 .nav-notifications-view-all {
-  color: var(--c-primary);
+  color: var(--c-dark);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -378,7 +377,7 @@
 }
 
 .nav-notifications-view-all:hover {
-  color: var(--c-primary-dark);
+  color: var(--c-primary);
 }
 
 .nav-notifications-list {
@@ -397,14 +396,14 @@
   display: flex;
   align-items: flex-start;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--c-gray-100);
+  border-bottom: 1px solid var(--c-border-light);
   cursor: pointer;
   transition: background-color var(--transition-fast);
   position: relative;
 }
 
 .nav-notification-item:hover {
-  background-color: var(--c-gray-50);
+  background-color: var(--c-border-light);
 }
 
 .nav-notification-item.unread {
@@ -434,7 +433,7 @@
   margin-right: 12px;
   flex-shrink: 0;
   object-fit: cover;
-  border: 2px solid var(--c-gray-200);
+  border: 2px solid var(--c-text-muted);
 }
 
 .nav-notification-content {
@@ -451,13 +450,13 @@
 
 .nav-notification-time {
   font-size: 12px;
-  color: var(--c-gray-600);
+  color: var(--c-text-muted);
 }
 
 .nav-notifications-empty {
   text-align: center;
   padding: 40px 20px;
-  color: var(--c-gray-600);
+  color: var(--c-text-muted);
   font-size: 14px;
 }
 
@@ -478,8 +477,7 @@
 
 @media (max-width: 480px) {
   .nav-notifications-dropdown {
-    width: 280px;
-    right: -80px;
+    width: 320px;
   }
 
   .nav-notifications-header {

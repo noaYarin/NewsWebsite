@@ -1,9 +1,15 @@
 .search-icon {
   cursor: pointer;
-  width: 24px;
-  height: 24px;
+  width: 38px;
+  height: 38px;
   position: relative;
+  padding: 8px;
+  border-radius: 50%;
   transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.search-icon:hover {
+  background-color: var(--c-border-light);
 }
 
 .search-icon.hide {
