@@ -19,7 +19,6 @@ const GlobalFriendDialog = {
     const currentUser = Utils.getCurrentUser();
     if (!currentUser || !currentUser.id) return;
 
-    // Load current friends
     getFriends(
       currentUser.id,
       (friends) => {
@@ -29,7 +28,6 @@ const GlobalFriendDialog = {
       () => {}
     );
 
-    // Load pending requests
     getPendingFriendRequests(
       currentUser.id,
       (incomingRequests) => {
@@ -100,8 +98,9 @@ const GlobalFriendDialog = {
     setTimeout(() => {
       $("#add-friend-dialog").remove();
       $(document).off("click.addFriend");
+      $("#searchResultsSection").off("click.friendButtons");
+      $("#searchResultsSection").off("scroll.infiniteSearch");
       this.lastSearchedEmail = null;
-      // Reset pagination state when closing dialog
       this.searchPagination.currentPage = 1;
       this.searchPagination.hasNextPage = false;
       this.searchPagination.isLoading = false;
@@ -221,14 +220,19 @@ const GlobalFriendDialog = {
 
     if (isNewSearch) {
       resultsSection.html(`<div class="user-search-results">${userItems}</div>`);
+      this.setupEventDelegation(resultsSection);
     } else {
       resultsSection.find(".user-search-results").append(userItems);
     }
+  },
 
-    $(".send-friend-request-btn").on("click", (e) => this.handleSendFriendRequest(e));
-    $(".cancel-friend-request-btn").on("click", (e) => this.handleCancelFriendRequest(e));
-    $(".accept-friend-request-btn").on("click", (e) => this.handleAcceptFriendRequest(e));
-    $(".unfriend-btn").on("click", (e) => this.handleUnfriend(e));
+  setupEventDelegation(resultsSection) {
+    resultsSection.off("click.friendButtons");
+
+    resultsSection.on("click.friendButtons", ".send-friend-request-btn", (e) => this.handleSendFriendRequest(e));
+    resultsSection.on("click.friendButtons", ".cancel-friend-request-btn", (e) => this.handleCancelFriendRequest(e));
+    resultsSection.on("click.friendButtons", ".accept-friend-request-btn", (e) => this.handleAcceptFriendRequest(e));
+    resultsSection.on("click.friendButtons", ".unfriend-btn", (e) => this.handleUnfriend(e));
   },
 
   setupInfiniteScroll(resultsSection, searchTerm) {
