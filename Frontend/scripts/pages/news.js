@@ -24,7 +24,7 @@ const NewsPage = {
 
       setTimeout(() => {
         $loader.remove();
-      }, 500);
+      }, 600);
     }
   }
 };
