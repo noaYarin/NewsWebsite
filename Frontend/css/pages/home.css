@@ -168,6 +168,7 @@
 
 .discover-articles-section {
   padding: 20px 0;
+  gap: 20px;
   display: flex;
   justify-content: space-between;
 }

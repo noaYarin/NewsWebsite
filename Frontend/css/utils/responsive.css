@@ -178,11 +178,18 @@
   .video-title {
     font-size: 28px;
   }
+  .video-content {
+    padding-top: 120px !important;
+  }
 
   /* --- Newsletter button scaling --- */
   .newsletter-signup .styled-button {
     padding: 12px 60px !important;
     font-size: 14px;
+  }
+
+  .discover-more {
+    display: none;
   }
 }
 
