@@ -15,6 +15,7 @@ const BookmarksPage = {
   loadBookmarks() {
     const $listContainer = $("#bookmarks-list");
     const $loadingMessage = $("#bookmarks-loading-message");
+    $listContainer.empty();
 
     $loadingMessage
       .html(
