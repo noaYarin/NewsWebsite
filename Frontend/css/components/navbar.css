@@ -109,6 +109,10 @@
   max-height: 60px;
 }
 
+.mobile-nav-items {
+  padding: 0;
+}
+
 .mobile-nav-items li {
   border-bottom: 1px solid var(--c-border-light);
 }
