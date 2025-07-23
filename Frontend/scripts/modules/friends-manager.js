@@ -185,7 +185,17 @@ const ProfileFriendsManager = {
       this.searchPagination.lastSearchTerm = searchTerm;
     }
 
-    resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
+    resultsSection
+      .html(
+        `
+      <div class="sun-loading">
+        <div class="thinking-container">
+          <img src="../sources/images/sun/sun.png" alt="Searching Users" class="thinking-icon" />
+        </div>
+      </div>
+    `
+      )
+      .addClass("show");
     this.searchPagination.isLoading = true;
 
     searchUsersPaginated(
@@ -288,7 +298,15 @@ const ProfileFriendsManager = {
     this.searchPagination.isLoading = true;
     this.searchPagination.currentPage++;
 
-    resultsSection.find(".user-search-results").append('<div class="loading-more">Loading more users...</div>');
+    resultsSection.find(".user-search-results").append(`
+      <div class="loading-more">
+        <div class="sun-loading">
+          <div class="thinking-container">
+            <img src="../sources/images/sun/sun.png" alt="Loading More Users" class="thinking-icon" />
+          </div>
+        </div>
+      </div>
+    `);
 
     searchUsersPaginated(
       searchTerm,

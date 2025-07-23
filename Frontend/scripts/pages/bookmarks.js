@@ -55,9 +55,10 @@ const BookmarksPage = {
   showErrorState(container) {
     container.html(`
       <div class="error-state">
+        <img src="../sources/images/not-found.png" alt="Error" class="error-state-icon" />
         <h3>Could not load your bookmarks</h3>
-        <p>There was an error loading your saved articles. Please try again.</p>
-        <button onclick="BookmarksPage.loadBookmarks()" class="retry-btn">Try Again</button>
+        <p>There was an error loading your saved articles.</p>
+        <button onclick="BookmarksPage.loadBookmarks()" class="retry-btn highlight">Try Again</button>
       </div>
     `);
   }

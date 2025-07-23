@@ -153,7 +153,7 @@ const CategoryPage = {
   handleError($initialLoadingMessage, $infiniteScrollLoader) {
     $initialLoadingMessage.hide();
     $infiniteScrollLoader.hide();
-    this.showError("Could not load articles. Please try again later.");
+    this.showError("Could not load articles.");
     this.isLoading = false;
     this.allArticlesLoaded = true;
     this.pagination.setLoading(false);
@@ -184,10 +184,10 @@ const CategoryPage = {
     const $listContainer = $("#category-articles-list");
     $listContainer.html(`
       <div class="error-state">
-        <img src="../sources/icons/not-found.png" alt="Error" class="error-state-icon" />
+        <img src="../sources/images/not-found.png" alt="Error" class="error-state-icon" />
         <h3>Oops! Something went wrong</h3>
         <p>${message}</p>
-        <button onclick="CategoryPage.retry()" class="retry-btn">Try Again</button>
+        <button onclick="CategoryPage.retry()" class="retry-btn highlight">Try Again</button>
       </div>
     `);
   },

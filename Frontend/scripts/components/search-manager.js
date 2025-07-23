@@ -240,7 +240,11 @@ const SearchManager = {
           <div class="search-results-content">
             <div id="search-results-list" class="articles-list"></div>
             <div id="search-loading-message" class="loading-message">
-              <p>Searching articles...</p>
+              <div class="sun-loading">
+                <div class="thinking-container">
+                  <img src="../sources/images/sun/sun.png" alt="Searching Articles" class="thinking-icon" />
+                </div>
+              </div>
             </div>
           </div>
         </div>`;

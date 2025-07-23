@@ -58,6 +58,24 @@
   padding: 50px 0;
 }
 
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-dark);
+}
+
+.error-state-icon {
+  width: 100px;
+  height: 100px;
+  margin: 10px 0;
+}
+
+.retry-btn {
+  color: var(--c-dark);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .category-banner {
