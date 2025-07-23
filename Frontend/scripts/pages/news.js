@@ -1,5 +1,8 @@
 const NewsPage = {
   async init() {
+    // Block navbar interactions during loading
+    this.blockNavbar();
+
     try {
       NewsSectionManager.initializeSectionRequirements();
       await NewsSectionManager.collectAllArticles();
@@ -13,6 +16,21 @@ const NewsPage = {
     this.hideLoader();
   },
 
+  blockNavbar() {
+    const $navbar = $("#navbar, #mobileMenu, #profileMenu");
+    $navbar.css({
+      "pointer-events": "none"
+    });
+  },
+
+  unblockNavbar() {
+    const $navbar = $("#navbar, #mobileMenu, #profileMenu");
+    $navbar.css({
+      "pointer-events": "auto",
+      opacity: "1"
+    });
+  },
+
   hideLoader() {
     const $loader = $("#page-loader");
     const $mainContent = $("#main-content");
@@ -21,6 +39,9 @@ const NewsPage = {
       $loader.addClass("fade-out");
 
       $mainContent.show();
+
+      // Unblock navbar when loading is complete
+      this.unblockNavbar();
 
       setTimeout(() => {
         $loader.remove();
