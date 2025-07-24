@@ -9,7 +9,6 @@ const GlobalFriendDialog = {
     isLoading: false,
     lastSearchTerm: ""
   },
-  lastSearchedEmail: null,
 
   init() {
     this.loadUserFriendshipData();
@@ -17,7 +16,6 @@ const GlobalFriendDialog = {
 
   reloadFriendshipState() {
     this.loadUserFriendshipData();
-
     setTimeout(() => this.refreshCurrentSearchResults(), 500);
   },
 
@@ -49,7 +47,7 @@ const GlobalFriendDialog = {
           <p class="dialog-message">Add Friend</p>
           <div class="add-friend-form">
             <div class="search-input-row">
-              <input type="text" id="friendEmailInput" placeholder="Enter email or name..." />
+              <input type="text" id="friendEmailInput" placeholder="Enter email or name..." autocomplete="off" />
               <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
             </div>
           </div>
@@ -60,11 +58,13 @@ const GlobalFriendDialog = {
     $("body").append(dialogHtml);
     $("#friendEmailInput").focus();
     setTimeout(() => $("#add-friend-dialog").addClass("show"), 10);
+
     $(document).on("click.addFriend", (e) => {
-      if (!$(e.target).closest("#add-friend-dialog").length && !$(e.target).is("#addFriendsBtn")) {
+      if (!$(e.target).closest("#add-friend-dialog").length && !$(e.target).closest("#addFriendsBtn").length) {
         this.closeAddFriendDialog();
       }
     });
+
     $("#searchUserButton").on("click", (e) => this.handleUserSearch(e));
     $("#friendEmailInput")
       .on("keypress", (e) => {
@@ -85,25 +85,36 @@ const GlobalFriendDialog = {
     setTimeout(() => {
       $("#add-friend-dialog").remove();
       $(document).off("click.addFriend");
+
+      this.searchPagination = {
+        currentPage: 1,
+        pageSize: 10,
+        hasNextPage: false,
+        isLoading: false,
+        lastSearchTerm: ""
+      };
     }, 400);
   },
 
   handleUserSearch(e) {
     if (e) e.stopPropagation();
-    const email = $("#friendEmailInput").val().trim();
-    if (email === this.lastSearchedEmail) return;
-    if (!email) {
+    const searchTerm = $("#friendEmailInput").val().trim();
+
+    if (searchTerm === this.searchPagination.lastSearchTerm) return;
+
+    if (!searchTerm) {
       $("#searchResultsSection").removeClass("show");
       return;
     }
-    this.lastSearchedEmail = email;
+
     this.searchPagination.currentPage = 1;
-    this.performSearch(email);
+    this.performSearch(searchTerm);
   },
 
   performSearch(searchTerm) {
     const resultsSection = $("#searchResultsSection");
     if (this.searchPagination.isLoading) return;
+
     this.searchPagination.isLoading = true;
     this.searchPagination.lastSearchTerm = searchTerm;
     resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
@@ -115,7 +126,7 @@ const GlobalFriendDialog = {
       (response) => {
         this.searchPagination.isLoading = false;
         this.searchPagination.hasNextPage = response.hasNextPage;
-        this.displaySearchResults(response.users, true);
+        this.displaySearchResults(response.users, this.searchPagination.currentPage === 1);
       },
       () => {
         this.searchPagination.isLoading = false;
@@ -205,8 +216,8 @@ const GlobalFriendDialog = {
     this.searchPagination.currentPage++;
     const resultsContainer = $("#searchResultsSection .user-search-results");
     resultsContainer.append('<div class="loading-spinner"></div>');
-
     searchUsersPaginated(
+      searchTerm,
       this.searchPagination.currentPage,
       this.searchPagination.pageSize,
       (response) => {
@@ -232,6 +243,7 @@ const GlobalFriendDialog = {
     sendFriendRequest(
       { SenderId: currentUser.id, RecipientId: userId },
       () => {
+        UIManager.showPopup(`Friend request sent to ${userName}!`, true);
         this.outgoingFriendRequests.add(userId);
         button.text("Cancel Request").prop("disabled", false).removeClass("send-friend-request-btn").addClass("cancel-friend-request-btn success-btn");
       },
@@ -246,10 +258,12 @@ const GlobalFriendDialog = {
     const currentUser = Utils.getCurrentUser();
     const button = $(e.currentTarget);
     const userId = button.data("user-id");
+    const userName = button.data("user-name");
     button.text("Canceling...").prop("disabled", true);
     cancelFriendRequest(
       { SenderId: currentUser.id, RecipientId: userId },
       () => {
+        UIManager.showPopup(`Friend request to ${userName} unsent.`, true);
         this.outgoingFriendRequests.delete(userId);
         button.text("Send Request").prop("disabled", false).removeClass("cancel-friend-request-btn success-btn").addClass("send-friend-request-btn");
       },
@@ -269,6 +283,7 @@ const GlobalFriendDialog = {
     respondToFriendRequest(
       { RequesterId: userId, ResponderId: currentUser.id, Response: 1 },
       () => {
+        UIManager.showPopup(`You are now friends with ${userName}!`, true);
         this.pendingFriendRequests.delete(userId);
         this.currentFriends.add(userId);
         button.text("Unfriend").prop("disabled", false).removeClass("accept-friend-request-btn primary-btn").addClass("unfriend-btn danger-btn");
@@ -294,6 +309,7 @@ const GlobalFriendDialog = {
       removeFriend(
         { userId: currentUser.id, friendId: userId },
         () => {
+          UIManager.showPopup(`${userName} has been removed from your friends list.`, true);
           this.currentFriends.delete(userId);
           button.text("Send Request").prop("disabled", false).removeClass("unfriend-btn danger-btn").addClass("send-friend-request-btn");
           if (window.ProfileFriendsManager) {
@@ -310,5 +326,4 @@ const GlobalFriendDialog = {
 };
 
 window.GlobalFriendDialog = GlobalFriendDialog;
-
 $(() => GlobalFriendDialog.init());
