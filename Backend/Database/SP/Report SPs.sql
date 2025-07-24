@@ -21,6 +21,7 @@ BEGIN
         r.Reason,
         r.Status,
         r.CreatedAt,
+        r.Details,
         r.AdminNotes,
         reporter.Id AS ReporterUserId,
         reporter.FirstName + ' ' + reporter.LastName AS ReporterName,

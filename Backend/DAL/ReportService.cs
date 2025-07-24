@@ -50,7 +50,7 @@ namespace Horizon.DAL
                             ReportedCommentId = reader["ReportedCommentId"] == DBNull.Value ? null : Convert.ToInt32(reader["ReportedCommentId"]),
                             Reason = Enum.Parse<ReportReason>(reader["Reason"]?.ToString() ?? "Other"),
                             Status = Enum.Parse<ReportStatus>(statusStr),
-                            Details = reader["AdminNotes"]?.ToString() ?? ""
+                            Details = reader["Details"]?.ToString() ?? ""
                         };
                         reports.Add(report);
                     }
