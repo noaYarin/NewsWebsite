@@ -44,7 +44,7 @@ export const PAGE_CONFIGS = {
 
   "admin.html": {
     bundles: ["core", "ui"],
-    modules: [],
+    modules: ["adminDataManager", "adminChartManager"],
     page: "./pages/admin.js"
   }
 };
