@@ -243,10 +243,6 @@ const HTMLSnippets = {
             <img class="nav-profile-menu-icon" src="../sources/icons/bookmarks-svgrepo-com.svg"></img>
             <span>Bookmarks</span>
           </a></li>
-          <li><a href="${Utils.getNavHref("messages")}" class="nav-profile-menu-item">
-            <img class="nav-profile-menu-icon" src="../sources/icons/messages-2-svgrepo-com.svg"></img>
-            <span>Messages</span>
-          </a></li>
           <li><a href="${Utils.getNavHref("profile")}" class="nav-profile-menu-item">
             <img class="nav-profile-menu-icon" src="../sources/icons/user-svgrepo-com.svg"></img>
             <span>Profile Settings</span>
