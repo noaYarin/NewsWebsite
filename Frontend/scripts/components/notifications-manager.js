@@ -140,7 +140,7 @@ const NotificationsManager = {
   generateNotificationItem(notification) {
     const timeAgo = Utils.formatTimeAgo(notification.createdAt);
     const isUnread = !notification.isRead;
-    const avatarSrc = notification.senderAvatar || "../sources/images/placeholder.png";
+    const avatarSrc = notification.senderAvatar || "../sources/images/no-image.png";
     const message = this.formatNotificationMessage(notification);
 
     return `
