@@ -69,6 +69,32 @@ namespace Horizon.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult GetAllReports()
+        {
+            try
+            {
+                var allReports = Report.GetAllReports();
+                var reportDtos = allReports.Select(r => new ReportResponseDto
+                {
+                    Id = r.Id,
+                    ReporterUserId = r.ReporterUserId,
+                    ReportedCommentId = r.ReportedCommentId,
+                    ReportedArticleId = r.ReportedArticleId,
+                    Reason = r.Reason,
+                    Details = r.Details,
+                    Status = r.Status,
+                    AdminNotes = r.AdminNotes ?? ""
+                }).ToList();
+
+                return Ok(reportDtos);
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(500, "An error occurred while retrieving reports.");
+            }
+        }
+
         [HttpPut("{reportId}/status")]
         public IActionResult UpdateReportStatus(int reportId, [FromBody] UpdateReportStatusDto request)
         {

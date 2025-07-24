@@ -61,6 +61,37 @@ namespace Horizon.DAL
             return reports;
         }
 
+        public List<Report> GetAllReports()
+        {
+            SqlConnection? con = null;
+            List<Report> reports = new List<Report>();
+            try
+            {
+                con = Connect();
+                SqlCommand cmd = CreateCommand("SP_GetAllReports", con, new Dictionary<string, object>());
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var statusStr = reader["Status"]?.ToString() ?? "Pending";
+                    var report = new Report
+                    {
+                        Id = Convert.ToInt32(reader["Id"]),
+                        ReporterUserId = Convert.ToInt32(reader["ReporterUserId"]),
+                        ReportedArticleId = reader["ReportedArticleId"] == DBNull.Value ? null : Convert.ToInt32(reader["ReportedArticleId"]),
+                        ReportedCommentId = reader["ReportedCommentId"] == DBNull.Value ? null : Convert.ToInt32(reader["ReportedCommentId"]),
+                        Reason = Enum.Parse<ReportReason>(reader["Reason"]?.ToString() ?? "Other"),
+                        Status = Enum.Parse<ReportStatus>(statusStr),
+                        Details = reader["Details"]?.ToString() ?? "",
+                        AdminNotes = reader["AdminNotes"]?.ToString() ?? ""
+                    };
+                    reports.Add(report);
+                }
+            }
+            finally { con?.Close(); }
+            return reports;
+        }
+
         public bool UpdateReportStatus(int reportId, ReportStatus newStatus, string adminNotes = "")
         {
             SqlConnection? con = null;

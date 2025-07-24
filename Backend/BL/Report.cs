@@ -31,6 +31,12 @@ namespace Horizon.BL
             return reportService.GetAllPendingReports();
         }
 
+        public static List<Report> GetAllReports()
+        {
+            var reportService = new ReportService();
+            return reportService.GetAllReports();
+        }
+
         public bool UpdateStatus(ReportStatus newStatus, string adminNotes = "")
         {
             var reportService = new ReportService();
