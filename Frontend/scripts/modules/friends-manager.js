@@ -9,7 +9,6 @@ const ProfileFriendsManager = {
 
   setupEventHandlers() {
     $(document)
-      // This now calls the global dialog instead of its own method
       .on("click", "#addFriendsBtn", () => GlobalFriendDialog.showAddFriendDialog())
       .on("click", ".remove-friend-btn", (e) => this.handleRemoveFriend(e))
       .on("click", ".accept-friend-btn", (e) => this.handleAcceptFriendRequest(e))
@@ -28,7 +27,6 @@ const ProfileFriendsManager = {
       (friends) => {
         this.populateFriendsList(friends);
         $("#friendsList").show();
-        // It's important to still load pending requests to update the state
         this.loadPendingFriendRequests();
       },
       () => {
@@ -39,24 +37,18 @@ const ProfileFriendsManager = {
 
   populateFriendsList(friends) {
     const listContainer = $("#friendsList");
-    // Preserve pending requests if they are already displayed
     const pendingRequestsSection = listContainer.find(".pending-requests-section").detach();
     listContainer.empty();
     listContainer.append(pendingRequestsSection);
-
     this.currentFriends.clear();
     friends.forEach((friend) => this.currentFriends.add(friend.id));
-
     $(".friends-count").text(`${friends.length} friend${friends.length !== 1 ? "s" : ""}`);
-
     if (friends.length === 0) {
-      // Don't show the "no friends" message if there are pending requests
       if (pendingRequestsSection.length === 0) {
         listContainer.append('<p class="empty-list-message">You have no friends yet.</p>');
       }
       return;
     }
-
     friends.forEach((friend) => {
       listContainer.append(`
         <div class="user-list-item" data-friend-id="${friend.id}">
@@ -76,14 +68,15 @@ const ProfileFriendsManager = {
     const friendId = $(e.currentTarget).data("friend-id");
     const friendName = $(e.currentTarget).data("friend-name");
 
-    UIManager.showDialog(`Are you sure you want to remove ${friendName} from your friends list?`).then((confirmed) => {
+    UIManager.showDialog(`Are you sure you want to remove ${friendName}?`).then((confirmed) => {
       if (!confirmed) return;
-
       removeFriend(
         { userId: currentUser.id, friendId },
         () => {
           UIManager.showPopup(`${friendName} has been removed from your friends list.`, true);
           this.loadAndPopulateFriendsList();
+
+          if (window.GlobalFriendDialog) GlobalFriendDialog.reloadFriendshipState();
         },
         () => UIManager.showPopup("Failed to remove friend. Please try again.", false)
       );
@@ -91,14 +84,10 @@ const ProfileFriendsManager = {
   },
 
   updateFriendsListWithPendingRequests(incomingRequests) {
-    // Remove existing pending requests section before adding a new one
     $(".pending-requests-section").remove();
-
     if (incomingRequests.length === 0) return;
-
     this.pendingFriendRequests.clear();
     incomingRequests.forEach((request) => this.pendingFriendRequests.add(request.id));
-
     const pendingRequestsHtml = `
       <div class="pending-requests-section">
         <h4 class="pending-requests-title">Pending Friend Requests (<span class="request-number">${incomingRequests.length}</span>)</h4>
@@ -110,21 +99,15 @@ const ProfileFriendsManager = {
               <img src="${request.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${request.fullName}" class="user-list-avatar" />
               <span class="user-list-name">${request.fullName}</span>
               <div class="pending-request-buttons">
-                <button type="button" class="accept-friend-btn" data-user-id="${request.id}" data-user-name="${request.fullName}">
-                  Accept
-                </button>
-                <button type="button" class="decline-friend-btn" data-user-id="${request.id}" data-user-name="${request.fullName}">
-                  Decline
-                </button>
+                <button type="button" class="accept-friend-btn" data-user-id="${request.id}" data-user-name="${request.fullName}">Accept</button>
+                <button type="button" class="decline-friend-btn" data-user-id="${request.id}" data-user-name="${request.fullName}">Decline</button>
               </div>
-            </div>
-          `
+            </div>`
             )
             .join("")}
         </div>
       </div>
     `;
-
     $("#friendsList").prepend(pendingRequestsHtml);
   },
 
@@ -134,16 +117,13 @@ const ProfileFriendsManager = {
     const userId = button.data("user-id");
     const userName = button.data("user-name");
     const item = button.closest(".pending-request-item");
-
     button.text("Accepting...").prop("disabled", true);
     button.siblings(".decline-friend-btn").prop("disabled", true);
-
     respondToFriendRequest(
       { RequesterId: userId, ResponderId: currentUser.id, Response: 1 },
       () => {
         UIManager.showPopup(`You are now friends with ${userName}!`, true);
         this.pendingFriendRequests.delete(userId);
-
         item.fadeOut(300, function () {
           $(this).remove();
           const remainingRequests = $(".pending-request-item").length;
@@ -154,8 +134,9 @@ const ProfileFriendsManager = {
           } else {
             $(".request-number").text(remainingRequests);
           }
-          // Reload the entire friends list to move the new friend to the main list
           ProfileFriendsManager.loadAndPopulateFriendsList();
+
+          if (window.GlobalFriendDialog) GlobalFriendDialog.reloadFriendshipState();
         });
       },
       () => {
@@ -172,16 +153,13 @@ const ProfileFriendsManager = {
     const userId = button.data("user-id");
     const userName = button.data("user-name");
     const item = button.closest(".pending-request-item");
-
     button.text("Declining...").prop("disabled", true);
     button.siblings(".accept-friend-btn").prop("disabled", true);
-
     respondToFriendRequest(
       { RequesterId: userId, ResponderId: currentUser.id, Response: 2 },
       () => {
         UIManager.showPopup(`Friend request from ${userName} declined.`, true);
         this.pendingFriendRequests.delete(userId);
-
         item.fadeOut(300, function () {
           $(this).remove();
           const remainingRequests = $(".pending-request-item").length;
@@ -192,6 +170,8 @@ const ProfileFriendsManager = {
           } else {
             $(".request-number").text(remainingRequests);
           }
+
+          if (window.GlobalFriendDialog) GlobalFriendDialog.reloadFriendshipState();
         });
       },
       () => {
@@ -205,23 +185,13 @@ const ProfileFriendsManager = {
   loadPendingFriendRequests() {
     const currentUser = Utils.getCurrentUser();
     if (!currentUser || !currentUser.id) return;
-
-    getPendingFriendRequests(
-      currentUser.id,
-      (incomingRequests) => {
-        this.updateFriendsListWithPendingRequests(incomingRequests);
-      },
-      () => {}
-    );
-
-    getOutgoingFriendRequests(
-      currentUser.id,
-      (outgoingRequests) => {
-        this.outgoingFriendRequests.clear();
-        outgoingRequests.forEach((request) => this.outgoingFriendRequests.add(request.id));
-      },
-      () => {}
-    );
+    getPendingFriendRequests(currentUser.id, (incomingRequests) => {
+      this.updateFriendsListWithPendingRequests(incomingRequests);
+    });
+    getOutgoingFriendRequests(currentUser.id, (outgoingRequests) => {
+      this.outgoingFriendRequests.clear();
+      outgoingRequests.forEach((request) => this.outgoingFriendRequests.add(request.id));
+    });
   }
 };
 
