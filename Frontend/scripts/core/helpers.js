@@ -77,6 +77,22 @@ const Utils = {
     } catch (error) {
       return "Unknown time";
     }
+  },
+
+  checkUserAccess(requireAdmin = false, redirectPage = "index.html") {
+    const currentUser = this.getCurrentUser();
+
+    if (!currentUser) {
+      window.location.href = "auth.html";
+      return null;
+    }
+
+    if (requireAdmin && !currentUser.isAdmin) {
+      window.location.href = redirectPage;
+      return null;
+    }
+
+    return currentUser;
   }
 };
 
