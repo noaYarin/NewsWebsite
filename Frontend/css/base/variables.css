@@ -25,6 +25,7 @@
 
   /* Typography */
   --font-primary: "GeographWeb", sans-serif;
+  --webkit-line-clamp-short: 2;
   --webkit-line-clamp: 3;
 
   /* Layout & Spacing */

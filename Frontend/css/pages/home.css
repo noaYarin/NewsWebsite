@@ -276,3 +276,29 @@
   padding: 18px 180px;
   font-size: 16px;
 }
+
+/* Bottom container card styles */
+#third-container .article-card,
+#fourth-container .article-card {
+  max-height: 420px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#third-container .card-title,
+#third-container .card-text,
+#third-container .featured-large-description,
+#fourth-container .card-title,
+#fourth-container .card-text,
+#fourth-container .featured-large-description {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--webkit-line-clamp-short);
+  line-clamp: var(--webkit-line-clamp-short);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 3em;
+  max-height: 4.5em;
+  line-height: 1.5em;
+}
