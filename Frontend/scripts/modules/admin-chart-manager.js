@@ -1,6 +1,27 @@
 const AdminChartManager = {
   charts: {},
 
+  COLORS: {
+    PRIMARY: "#ffcc00",
+    PRIMARY_ALPHA: "rgba(255, 204, 0, 0.1)",
+    PRIMARY_SOLID: "rgba(255, 204, 0, 0.8)",
+
+    SUCCESS: "#28a745",
+    SUCCESS_ALPHA: "rgba(40, 167, 69, 0.1)",
+    SUCCESS_SOLID: "rgba(40, 167, 69, 0.8)",
+
+    WARNING: "#ffc107",
+    WARNING_ALPHA: "rgba(255, 193, 7, 0.1)",
+    WARNING_SOLID: "rgba(255, 193, 7, 0.8)",
+
+    // UI Colors
+    BACKGROUND_DARK: "rgba(0, 0, 0, 0.9)",
+    TEXT_PRIMARY: "#000000",
+    TEXT_SECONDARY: "#666666",
+    GRID_COLOR: "#eeeeee",
+    WHITE: "#ffffff"
+  },
+
   init() {
     if (typeof Chart !== "undefined") {
       Chart.defaults.font.family = "GeographWeb, sans-serif";
@@ -47,34 +68,34 @@ const AdminChartManager = {
           {
             label: "Daily Logins",
             data: loginsData,
-            borderColor: "#ffcc00",
-            backgroundColor: "rgba(255, 204, 0, 0.1)",
+            borderColor: this.COLORS.PRIMARY,
+            backgroundColor: this.COLORS.PRIMARY_ALPHA,
             tension: 0.4,
             fill: false,
-            pointBackgroundColor: "#ffcc00",
-            pointBorderColor: "#000000",
+            pointBackgroundColor: this.COLORS.PRIMARY,
+            pointBorderColor: this.COLORS.TEXT_PRIMARY,
             pointBorderWidth: 2
           },
           {
             label: "Article Pulls",
             data: pullsData,
-            borderColor: "#28a745",
-            backgroundColor: "rgba(40, 167, 69, 0.1)",
+            borderColor: this.COLORS.SUCCESS,
+            backgroundColor: this.COLORS.SUCCESS_ALPHA,
             tension: 0.4,
             fill: false,
-            pointBackgroundColor: "#28a745",
-            pointBorderColor: "#000000",
+            pointBackgroundColor: this.COLORS.SUCCESS,
+            pointBorderColor: this.COLORS.TEXT_PRIMARY,
             pointBorderWidth: 2
           },
           {
             label: "Article Inserts",
             data: insertsData,
-            borderColor: "#ffc107",
-            backgroundColor: "rgba(255, 193, 7, 0.1)",
+            borderColor: this.COLORS.WARNING,
+            backgroundColor: this.COLORS.WARNING_ALPHA,
             tension: 0.4,
             fill: false,
-            pointBackgroundColor: "#ffc107",
-            pointBorderColor: "#000000",
+            pointBackgroundColor: this.COLORS.WARNING,
+            pointBorderColor: this.COLORS.TEXT_PRIMARY,
             pointBorderWidth: 2
           }
         ]
@@ -105,8 +126,8 @@ const AdminChartManager = {
           {
             label: "Daily Logins",
             data: data,
-            backgroundColor: "rgba(255, 204, 0, 0.8)",
-            borderColor: "#ffcc00",
+            backgroundColor: this.COLORS.PRIMARY_SOLID,
+            borderColor: this.COLORS.PRIMARY,
             borderWidth: 2,
             borderRadius: 0
           }
@@ -138,8 +159,8 @@ const AdminChartManager = {
           {
             label: "Daily Article Pulls",
             data: data,
-            backgroundColor: "rgba(40, 167, 69, 0.8)",
-            borderColor: "#28a745",
+            backgroundColor: this.COLORS.SUCCESS_SOLID,
+            borderColor: this.COLORS.SUCCESS,
             borderWidth: 2,
             borderRadius: 0
           }
@@ -171,8 +192,8 @@ const AdminChartManager = {
           {
             label: "Daily Article Inserts",
             data: data,
-            backgroundColor: "rgba(255, 193, 7, 0.8)",
-            borderColor: "#ffc107",
+            backgroundColor: this.COLORS.WARNING_SOLID,
+            borderColor: this.COLORS.WARNING,
             borderWidth: 2,
             borderRadius: 0
           }
@@ -198,14 +219,14 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: "#000000"
+            color: this.COLORS.TEXT
           }
         },
         tooltip: {
           backgroundColor: "rgba(0, 0, 0, 0.9)",
-          titleColor: "#ffcc00",
+          titleColor: this.COLORS.PRIMARY,
           bodyColor: "#ffffff",
-          borderColor: "#ffcc00",
+          borderColor: this.COLORS.PRIMARY,
           borderWidth: 2,
           titleFont: {
             family: "GeographWeb, sans-serif",
@@ -226,16 +247,16 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: "#000000"
+            color: this.COLORS.TEXT
           },
           ticks: {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: "#666666"
+            color: this.COLORS.TEXT_MUTED
           },
           grid: {
-            color: "#eeeeee"
+            color: this.COLORS.BORDER
           }
         },
         y: {
@@ -247,17 +268,17 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: "#000000"
+            color: this.COLORS.TEXT
           },
           beginAtZero: true,
           ticks: {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: "#666666"
+            color: this.COLORS.TEXT_MUTED
           },
           grid: {
-            color: "#eeeeee"
+            color: this.COLORS.BORDER
           }
         }
       }
@@ -283,16 +304,16 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: "#000000"
+            color: this.COLORS.TEXT
           },
           ticks: {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: "#666666"
+            color: this.COLORS.TEXT_MUTED
           },
           grid: {
-            color: "#eeeeee"
+            color: this.COLORS.BORDER
           }
         },
         x: {
@@ -300,10 +321,10 @@ const AdminChartManager = {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: "#666666"
+            color: this.COLORS.TEXT_MUTED
           },
           grid: {
-            color: "#eeeeee"
+            color: this.COLORS.BORDER
           }
         }
       }
