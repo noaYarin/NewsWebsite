@@ -43,12 +43,14 @@ const HTMLSnippets = {
         </a>
         <ul class="nav-items">
           <li><a href="../html/category.html?name=business">Business</a></li>
+          <li><a href="../html/category.html?name=culture">Culture</a></li>
           <li><a href="../html/category.html?name=entertainment">Entertainment</a></li>
+          <li><a href="../html/category.html?name=general">General</a></li>
           <li><a href="../html/category.html?name=health">Health</a></li>
           <li><a href="../html/category.html?name=science">Science</a></li>
           <li><a href="../html/category.html?name=sports">Sports</a></li>
           <li><a href="../html/category.html?name=technology">Technology</a></li>
-          <li><a href="../html/category.html?name=general">More</a></li>
+          <li><a href="../html/category.html?name=travel">Travel</a></li>
         </ul>
       </div>
       <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
@@ -168,12 +170,14 @@ const HTMLSnippets = {
       </div>
       <ul class="mobile-nav-items">
         <li><a href="../html/category.html?name=business">Business</a></li>
+        <li><a href="../html/category.html?name=culture">Culture</a></li>
         <li><a href="../html/category.html?name=entertainment">Entertainment</a></li>
+        <li><a href="../html/category.html?name=general">General</a></li>
         <li><a href="../html/category.html?name=health">Health</a></li>
         <li><a href="../html/category.html?name=science">Science</a></li>
         <li><a href="../html/category.html?name=sports">Sports</a></li>
         <li><a href="../html/category.html?name=technology">Technology</a></li>
-        <li><a href="../html/category.html?name=general">More</a></li>
+        <li><a href="../html/category.html?name=travel">Travel</a></li>
       </ul>
       <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
         ${
