@@ -94,6 +94,18 @@ function reportArticle(reportData, successCallback, errorCallback) {
   ajaxCall("POST", reportsEndpoint, JSON.stringify(reportData), successCallback, errorCallback);
 }
 
+function getAllReports(successCallback, errorCallback) {
+  ajaxCall("GET", reportsEndpoint, null, successCallback, errorCallback);
+}
+
+function updateReportStatus(reportId, newStatus, adminNotes, successCallback, errorCallback) {
+  ajaxCall("PUT", `${reportsEndpoint}/${reportId}/status`, JSON.stringify({ newStatus, adminNotes }), successCallback, errorCallback);
+}
+
+function getPendingReports(successCallback, errorCallback) {
+  ajaxCall("GET", `${reportsEndpoint}/pending`, null, successCallback, errorCallback);
+}
+
 // --- Bookmark Management Functions ---
 function toggleBookmark(data, successCallback, errorCallback) {
   ajaxCall("POST", `${bookmarksEndpoint}/toggle`, JSON.stringify(data), successCallback, errorCallback);

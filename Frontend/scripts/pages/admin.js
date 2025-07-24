@@ -1,9 +1,8 @@
 const AdminDashboard = {
   init() {
-    // Check authentication and admin privileges
     const currentUser = Utils.checkUserAccess(true);
     if (!currentUser) {
-      return; // User was redirected
+      return;
     }
 
     try {
