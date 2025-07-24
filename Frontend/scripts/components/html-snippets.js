@@ -250,8 +250,8 @@ const HTMLSnippets = {
           ${
             isLoggedIn && currentUser.isAdmin
               ? `
-          <li><a href="${Utils.getNavHref("admin")}" class="nav-profile-menu-item">
-            <img class="nav-profile-menu-icon" src="../sources/icons/admin-dashboard-svgrepo-com.svg"></img>
+          <li><a href="${Utils.getNavHref("admin")}" class="nav-profile-menu-item nav-profile-menu-admin">
+            <img class="nav-profile-menu-icon" src="../sources/icons/dashboard-1-svgrepo-com.svg"></img>
             <span>Admin Dashboard</span>
           </a></li>
           `

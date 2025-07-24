@@ -255,6 +255,10 @@
   transition: background-color var(--transition-fast);
 }
 
+.nav-profile-menu-admin {
+  background-color: var(--c-primary-bg);
+}
+
 .nav-profile-menu-icon {
   font-size: 18px;
   width: 20px;
