@@ -5,7 +5,6 @@ namespace Horizon.DAL
 {
     public class BookmarkService : DBService
     {
-        // Reuse the article mapping logic
         private ArticleService _articleService = new ArticleService();
 
         public bool ToggleBookmark(int userId, int articleId)

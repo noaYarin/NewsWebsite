@@ -38,7 +38,20 @@ namespace Horizon.BL
         public static bool CancelRequest(int senderId, int recipientId)
         {
             var friendshipService = new FriendshipService();
-            return friendshipService.CancelRequest(senderId, recipientId);
+            var notificationService = new NotificationService();
+
+            if (friendshipService.CancelRequest(senderId, recipientId))
+            {
+                notificationService.DeleteNotification(
+                    recipientId: recipientId,
+                    senderId: senderId,
+                    notificationType: NotificationType.FriendRequest,
+                    relatedEntityId: null
+                );
+                return true;
+            }
+
+            return false;
         }
 
         public static bool RemoveFriend(int userId, int friendId)

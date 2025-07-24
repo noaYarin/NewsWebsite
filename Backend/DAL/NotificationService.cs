@@ -141,27 +141,21 @@ namespace Horizon.DAL
 
         public bool DeleteNotification(int recipientId, int senderId, NotificationType notificationType, int? relatedEntityId)
         {
-            string query = @"
-                DELETE FROM Notifications 
-                WHERE RecipientId = @RecipientId 
-                  AND SenderId = @SenderId 
-                  AND NotificationType = @NotificationType 
-                  AND RelatedEntityId = @RelatedEntityId";
-
             SqlConnection con = null;
             try
             {
                 con = Connect();
-                using (SqlCommand command = new SqlCommand(query, con))
+                var parameters = new Dictionary<string, object>
                 {
-                    command.Parameters.AddWithValue("@RecipientId", recipientId);
-                    command.Parameters.AddWithValue("@SenderId", senderId);
-                    command.Parameters.AddWithValue("@NotificationType", notificationType.ToString());
-                    command.Parameters.AddWithValue("@RelatedEntityId", relatedEntityId ?? (object)DBNull.Value);
+                    { "@RecipientId", recipientId },
+                    { "@SenderId", senderId },
+                    { "@NotificationType", notificationType.ToString() },
+                    { "@RelatedEntityId", relatedEntityId ?? (object)DBNull.Value }
+                };
 
-                    int rowsAffected = command.ExecuteNonQuery();
-                    return rowsAffected > 0;
-                }
+                SqlCommand cmd = CreateCommand("SP_DeleteNotification", con, parameters);
+                int rowsAffected = Convert.ToInt32(cmd.ExecuteScalar());
+                return rowsAffected > 0;
             }
             finally { con?.Close(); }
         }
