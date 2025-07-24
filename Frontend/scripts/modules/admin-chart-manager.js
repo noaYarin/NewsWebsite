@@ -6,9 +6,9 @@ const AdminChartManager = {
     PRIMARY_ALPHA: "rgba(255, 204, 0, 0.1)",
     PRIMARY_SOLID: "rgba(255, 204, 0, 0.8)",
 
-    SUCCESS: "#28a745",
+    SUCCESS: "#ff7300",
     SUCCESS_ALPHA: "rgba(40, 167, 69, 0.1)",
-    SUCCESS_SOLID: "rgba(40, 167, 69, 0.8)",
+    SUCCESS_SOLID: "rgba(255, 115, 0, 0.8)",
 
     WARNING: "#ffc107",
     WARNING_ALPHA: "rgba(255, 193, 7, 0.1)",
@@ -45,9 +45,8 @@ const AdminChartManager = {
   },
 
   renderDailyStatsChart(statistics) {
-    const ctx = document.getElementById("dailyStatsChart");
+    const ctx = $("#dailyStatsChart")[0];
     if (!ctx) {
-      console.warn("Daily stats chart canvas not found");
       return;
     }
 
@@ -105,9 +104,8 @@ const AdminChartManager = {
   },
 
   renderDailyLoginsChart(statistics) {
-    const ctx = document.getElementById("dailyLoginsChart");
+    const ctx = $("#dailyLoginsChart")[0];
     if (!ctx) {
-      console.warn("Daily logins chart canvas not found");
       return;
     }
 
@@ -138,9 +136,8 @@ const AdminChartManager = {
   },
 
   renderDailyArticlePullsChart(statistics) {
-    const ctx = document.getElementById("dailyArticlePullsChart");
+    const ctx = $("#dailyArticlePullsChart")[0];
     if (!ctx) {
-      console.warn("Daily article pulls chart canvas not found");
       return;
     }
 
@@ -171,9 +168,8 @@ const AdminChartManager = {
   },
 
   renderDailyArticleInsertsChart(statistics) {
-    const ctx = document.getElementById("dailyArticleInsertsChart");
+    const ctx = $("#dailyArticleInsertsChart")[0];
     if (!ctx) {
-      console.warn("Daily article inserts chart canvas not found");
       return;
     }
 
@@ -219,7 +215,7 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: this.COLORS.TEXT
+            color: this.COLORS.TEXT_PRIMARY
           }
         },
         tooltip: {
@@ -247,16 +243,16 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: this.COLORS.TEXT
+            color: this.COLORS.TEXT_PRIMARY
           },
           ticks: {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: this.COLORS.TEXT_MUTED
+            color: this.COLORS.TEXT_SECONDARY
           },
           grid: {
-            color: this.COLORS.BORDER
+            color: this.COLORS.GRID_COLOR
           }
         },
         y: {
@@ -268,17 +264,17 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: this.COLORS.TEXT
+            color: this.COLORS.TEXT_PRIMARY
           },
           beginAtZero: true,
           ticks: {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: this.COLORS.TEXT_MUTED
+            color: this.COLORS.TEXT_SECONDARY
           },
           grid: {
-            color: this.COLORS.BORDER
+            color: this.COLORS.GRID_COLOR
           }
         }
       }
@@ -304,16 +300,16 @@ const AdminChartManager = {
               family: "GeographWeb, sans-serif",
               weight: "600"
             },
-            color: this.COLORS.TEXT
+            color: this.COLORS.TEXT_PRIMARY
           },
           ticks: {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: this.COLORS.TEXT_MUTED
+            color: this.COLORS.TEXT_SECONDARY
           },
           grid: {
-            color: this.COLORS.BORDER
+            color: this.COLORS.GRID_COLOR
           }
         },
         x: {
@@ -321,10 +317,10 @@ const AdminChartManager = {
             font: {
               family: "GeographWeb, sans-serif"
             },
-            color: this.COLORS.TEXT_MUTED
+            color: this.COLORS.TEXT_SECONDARY
           },
           grid: {
-            color: this.COLORS.BORDER
+            color: this.COLORS.GRID_COLOR
           }
         }
       }

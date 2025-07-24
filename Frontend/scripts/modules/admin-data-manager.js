@@ -69,14 +69,6 @@ const AdminDataManager = {
 
   loadGeneralStatistics() {
     return new Promise((resolve, reject) => {
-      if (typeof getGeneralStatistics === "undefined") {
-        console.warn("getGeneralStatistics function not available");
-        const fallbackData = { totalUsers: 0, totalArticles: 0, totalComments: 0, totalBookmarks: 0 };
-        this.statistics.general = fallbackData;
-        resolve(fallbackData);
-        return;
-      }
-
       getGeneralStatistics(
         (data) => {
           this.statistics.general = data;
@@ -84,14 +76,7 @@ const AdminDataManager = {
         },
         (error) => {
           console.error("Error loading general statistics:", error);
-          const fallbackData = {
-            totalUsers: 0,
-            totalArticles: 0,
-            totalComments: 0,
-            totalBookmarks: 0
-          };
-          this.statistics.general = fallbackData;
-          resolve(fallbackData);
+          reject(error);
         }
       );
     });
@@ -99,13 +84,6 @@ const AdminDataManager = {
 
   loadDailyStatistics() {
     return new Promise((resolve, reject) => {
-      if (typeof getDailyStatistics === "undefined") {
-        console.warn("getDailyStatistics function not available");
-        this.statistics.daily = [];
-        resolve([]);
-        return;
-      }
-
       getDailyStatistics(
         this.currentDateRange.startDate,
         this.currentDateRange.endDate,
@@ -115,8 +93,7 @@ const AdminDataManager = {
         },
         (error) => {
           console.error("Error loading daily statistics:", error);
-          this.statistics.daily = [];
-          resolve([]);
+          reject(error);
         }
       );
     });
@@ -124,13 +101,6 @@ const AdminDataManager = {
 
   loadDailyLogins() {
     return new Promise((resolve, reject) => {
-      if (typeof getDailyLogins === "undefined") {
-        console.warn("getDailyLogins function not available");
-        this.statistics.dailyLogins = [];
-        resolve([]);
-        return;
-      }
-
       getDailyLogins(
         this.currentDateRange.startDate,
         this.currentDateRange.endDate,
@@ -140,8 +110,7 @@ const AdminDataManager = {
         },
         (error) => {
           console.error("Error loading daily logins:", error);
-          this.statistics.dailyLogins = [];
-          resolve([]);
+          reject(error);
         }
       );
     });
@@ -149,13 +118,6 @@ const AdminDataManager = {
 
   loadDailyArticlePulls() {
     return new Promise((resolve, reject) => {
-      if (typeof getDailyArticlePulls === "undefined") {
-        console.warn("getDailyArticlePulls function not available");
-        this.statistics.dailyArticlePulls = [];
-        resolve([]);
-        return;
-      }
-
       getDailyArticlePulls(
         this.currentDateRange.startDate,
         this.currentDateRange.endDate,
@@ -165,8 +127,7 @@ const AdminDataManager = {
         },
         (error) => {
           console.error("Error loading daily article pulls:", error);
-          this.statistics.dailyArticlePulls = [];
-          resolve([]);
+          reject(error);
         }
       );
     });
@@ -174,13 +135,6 @@ const AdminDataManager = {
 
   loadDailyArticleInserts() {
     return new Promise((resolve, reject) => {
-      if (typeof getDailyArticleInserts === "undefined") {
-        console.warn("getDailyArticleInserts function not available");
-        this.statistics.dailyArticleInserts = [];
-        resolve([]);
-        return;
-      }
-
       getDailyArticleInserts(
         this.currentDateRange.startDate,
         this.currentDateRange.endDate,
@@ -190,8 +144,7 @@ const AdminDataManager = {
         },
         (error) => {
           console.error("Error loading daily article inserts:", error);
-          this.statistics.dailyArticleInserts = [];
-          resolve([]);
+          reject(error);
         }
       );
     });

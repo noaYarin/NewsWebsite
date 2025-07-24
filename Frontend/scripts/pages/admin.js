@@ -1,9 +1,6 @@
 const AdminDashboard = {
   init() {
-    console.log("AdminDashboard initializing...");
-
     try {
-      // Initialize sub-modules
       AdminDataManager.init();
       AdminChartManager.init();
 
@@ -15,7 +12,6 @@ const AdminDashboard = {
         this.hidePageLoader();
       }, 1000);
     } catch (error) {
-      console.error("Error initializing AdminDashboard:", error);
       this.showError("Failed to initialize dashboard: " + error.message);
     }
   },
@@ -38,14 +34,12 @@ const AdminDashboard = {
     $("#applyDateFilter").on("click", () => this.applyDateFilter());
     $("#clearDateFilter").on("click", () => this.clearDateFilter());
 
-    // Enter key support for date inputs
     $("#startDate, #endDate").on("keypress", (e) => {
       if (e.which === 13) this.applyDateFilter();
     });
   },
 
   initializeDateInputs() {
-    // Set default date range to last 30 days
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
@@ -81,7 +75,6 @@ const AdminDashboard = {
         this.animateCards();
       })
       .catch((error) => {
-        console.error("Error loading statistics:", error);
         this.showError("Failed to load statistics. Please check your connection and try again.");
       });
   },
@@ -98,17 +91,13 @@ const AdminDashboard = {
   updateGeneralStatisticsCards(data) {
     if (!data) return;
 
-    // Handle different field name variations from backend
     const totalUsers = data.totalUsers || data.TotalUsers || 0;
     const totalArticles = data.totalArticles || data.TotalArticles || 0;
     const totalComments = data.totalComments || data.TotalComments || 0;
-    const totalBookmarks = data.totalBookmarks || data.TotalBookmarks || 0;
 
-    // Animate number counting
     this.animateNumber("#totalUsers", totalUsers);
     this.animateNumber("#totalArticles", totalArticles);
     this.animateNumber("#totalComments", totalComments);
-    this.animateNumber("#totalBookmarks", totalBookmarks);
   },
 
   animateNumber(selector, finalValue) {
@@ -121,7 +110,6 @@ const AdminDashboard = {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Easing function for smooth animation
       const easeOut = 1 - Math.pow(1 - progress, 3);
       const currentValue = Math.floor(startValue + (finalValue - startValue) * easeOut);
 
@@ -140,7 +128,6 @@ const AdminDashboard = {
   updateSummaryMetrics() {
     const metrics = AdminDataManager.calculateSummaryMetrics();
 
-    // Update UI
     $("#avgDailyLogins").text(metrics.avgLogins.toLocaleString());
     $("#avgDailyArticles").text(metrics.avgArticles.toLocaleString());
     $("#totalPeriodLogins").text(metrics.totalLogins.toLocaleString());
@@ -162,10 +149,10 @@ const AdminDashboard = {
       const tableRow = `
         <tr class="fade-in">
           <td><strong>${row.date}</strong></td>
-          <td><span class="badge bg-primary">${row.logins.toLocaleString()}</span></td>
-          <td><span class="badge bg-success">${row.pulls.toLocaleString()}</span></td>
-          <td><span class="badge bg-warning">${row.inserts.toLocaleString()}</span></td>
-          <td><span class="badge bg-info">${row.total.toLocaleString()}</span></td>
+          <td><span>${row.logins.toLocaleString()}</span></td>
+          <td><span>${row.pulls.toLocaleString()}</span></td>
+          <td><span>${row.inserts.toLocaleString()}</span></td>
+          <td><span>${row.total.toLocaleString()}</span></td>
         </tr>
       `;
       tableBody.append(tableRow);
@@ -193,7 +180,6 @@ const AdminDashboard = {
   },
 
   animateCards() {
-    // Add staggered animation to cards
     $(".stat-card, .card").each((index, element) => {
       setTimeout(() => {
         $(element).addClass("slide-up");
@@ -204,9 +190,8 @@ const AdminDashboard = {
 
 $(document).ready(() => {
   if (typeof getGeneralStatistics === "undefined") {
-    console.warn("API functions not fully loaded. Dashboard will work with fallback data.");
+    UIManager.showPopup("API functions not fully loaded.", false);
   }
 
-  console.log("Initializing Admin Dashboard...");
   AdminDashboard.init();
 });
