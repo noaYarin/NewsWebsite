@@ -360,6 +360,9 @@ const GlobalFriendDialog = {
         this.currentFriends.add(userId);
         button.text("Unfriend").prop("disabled", false).removeClass("accept-friend-request-btn primary-btn").addClass("unfriend-btn danger-btn");
         button.off("click").on("click", (e) => this.handleUnfriend(e));
+        if (window.ProfileFriendsManager) {
+          ProfileFriendsManager.loadAndPopulateFriendsList();
+        }
       },
       () => {
         button.text("Accept").prop("disabled", false);
@@ -386,6 +389,9 @@ const GlobalFriendDialog = {
           this.currentFriends.delete(userId);
           button.text("Send Request").prop("disabled", false).removeClass("unfriend-btn danger-btn").addClass("send-friend-request-btn");
           button.off("click").on("click", (e) => this.handleSendFriendRequest(e));
+          if (window.ProfileFriendsManager) {
+            ProfileFriendsManager.loadAndPopulateFriendsList();
+          }
         },
         () => {
           button.text("Unfriend").prop("disabled", false);
