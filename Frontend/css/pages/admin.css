@@ -31,12 +31,12 @@
   margin-bottom: 3rem;
 }
 
-.charts-section {
+.table-section {
   margin-bottom: 3rem;
 }
 
-.table-section {
-  margin-bottom: 3rem;
+.table-section .card-body {
+  padding: 0;
 }
 
 /* Statistics Cards */
@@ -283,11 +283,11 @@
 @media (max-width: 768px) {
   .admin-content {
     padding: 1rem 0;
+    max-width: 90%;
   }
 
   .stats-section,
   .filters-section,
-  .charts-section,
   .table-section {
     margin-bottom: 2rem;
   }
@@ -325,6 +325,10 @@
     padding: 0.6rem 1.5rem;
     font-size: 0.85rem;
   }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
 }
 
 @media (max-width: 576px) {
@@ -334,7 +338,6 @@
 
   .stats-section,
   .filters-section,
-  .charts-section,
   .table-section {
     margin-bottom: 1.5rem;
   }
