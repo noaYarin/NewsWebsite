@@ -9,7 +9,7 @@ namespace Horizon.BL
         public int? ReportedCommentId { get; set; }
         public int? ReportedArticleId { get; set; }
         public ReportReason Reason { get; set; }
-        public string Details { get; set; }
+        public string Details { get; set; } = "";
         public ReportStatus Status { get; set; }
 
         public bool Create()
@@ -22,6 +22,30 @@ namespace Horizon.BL
                 return true;
             }
             return false;
+        }
+
+        public static List<Report> GetAllPendingReports()
+        {
+            var reportService = new ReportService();
+            return reportService.GetAllPendingReports();
+        }
+
+        public bool UpdateStatus(ReportStatus newStatus, string adminNotes = "")
+        {
+            var reportService = new ReportService();
+            bool success = reportService.UpdateReportStatus(this.Id, newStatus, adminNotes);
+            if (success)
+            {
+                this.Status = newStatus;
+                this.Details = adminNotes;
+            }
+            return success;
+        }
+
+        public static bool UpdateReportStatus(int reportId, ReportStatus newStatus, string adminNotes = "")
+        {
+            var reportService = new ReportService();
+            return reportService.UpdateReportStatus(reportId, newStatus, adminNotes);
         }
     }
 }

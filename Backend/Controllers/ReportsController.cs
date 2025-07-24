@@ -37,9 +37,52 @@ namespace Horizon.Controllers
                 }
                 return StatusCode(500, "Failed to submit report.");
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
                 return StatusCode(500, "An error occurred while submitting the report.");
+            }
+        }
+
+        [HttpGet("pending")]
+        public IActionResult GetPendingReports()
+        {
+            try
+            {
+                var pendingReports = Report.GetAllPendingReports();
+                var reportDtos = pendingReports.Select(r => new ReportResponseDto
+                {
+                    Id = r.Id,
+                    ReporterUserId = r.ReporterUserId,
+                    ReportedCommentId = r.ReportedCommentId,
+                    ReportedArticleId = r.ReportedArticleId,
+                    Reason = r.Reason,
+                    Details = r.Details,
+                    Status = r.Status
+                }).ToList();
+
+                return Ok(reportDtos);
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(500, "An error occurred while retrieving pending reports.");
+            }
+        }
+
+        [HttpPut("{reportId}/status")]
+        public IActionResult UpdateReportStatus(int reportId, [FromBody] UpdateReportStatusDto request)
+        {
+            try
+            {
+                bool success = Report.UpdateReportStatus(reportId, request.NewStatus, request.AdminNotes);
+                if (success)
+                {
+                    return Ok(new { message = "Report status updated successfully." });
+                }
+                return NotFound("Report not found or could not be updated.");
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(500, "An error occurred while updating the report status.");
             }
         }
     }
