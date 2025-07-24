@@ -20,6 +20,7 @@ namespace Horizon.DTOs
         public ReportReason Reason { get; set; }
         public string Details { get; set; } = "";
         public ReportStatus Status { get; set; }
+        public string AdminNotes { get; set; } = "";
     }
 
     public class UpdateReportStatusDto

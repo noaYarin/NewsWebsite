@@ -57,7 +57,8 @@ namespace Horizon.Controllers
                     ReportedArticleId = r.ReportedArticleId,
                     Reason = r.Reason,
                     Details = r.Details,
-                    Status = r.Status
+                    Status = r.Status,
+                    AdminNotes = r.AdminNotes ?? ""
                 }).ToList();
 
                 return Ok(reportDtos);

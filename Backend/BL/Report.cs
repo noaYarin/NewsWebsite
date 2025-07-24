@@ -11,6 +11,7 @@ namespace Horizon.BL
         public ReportReason Reason { get; set; }
         public string Details { get; set; } = "";
         public ReportStatus Status { get; set; }
+        public string AdminNotes { get; set; } = "";
 
         public bool Create()
         {
@@ -37,7 +38,7 @@ namespace Horizon.BL
             if (success)
             {
                 this.Status = newStatus;
-                this.Details = adminNotes;
+                this.AdminNotes = adminNotes;
             }
             return success;
         }
