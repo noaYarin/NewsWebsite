@@ -134,6 +134,15 @@
   animation-delay: 1.5s;
 }
 
+.empty-state-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.empty-state .highlight {
+  color: var(--c-dark);
+}
+
 @keyframes waterDropLarge {
   0% {
     width: 30px;
