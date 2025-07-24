@@ -40,5 +40,11 @@ export const PAGE_CONFIGS = {
     bundles: ["core", "ui"],
     modules: [],
     page: "./pages/notifications.js"
+  },
+
+  "admin.html": {
+    bundles: ["core", "ui"],
+    modules: [],
+    page: "./pages/admin.js"
   }
 };

@@ -247,6 +247,16 @@ const HTMLSnippets = {
             <img class="nav-profile-menu-icon" src="../sources/icons/user-svgrepo-com.svg"></img>
             <span>Profile Settings</span>
           </a></li>
+          ${
+            isLoggedIn && currentUser.isAdmin
+              ? `
+          <li><a href="${Utils.getNavHref("admin")}" class="nav-profile-menu-item">
+            <img class="nav-profile-menu-icon" src="../sources/icons/admin-dashboard-svgrepo-com.svg"></img>
+            <span>Admin Dashboard</span>
+          </a></li>
+          `
+              : ""
+          }
         </ul>
       </div>
       <div class="nav-profile-menu-footer">
