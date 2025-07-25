@@ -55,7 +55,8 @@ public class CommentService : DBService
                         AuthorName = $"{reader["FirstName"]} {reader["LastName"]}",
                         AuthorAvatar = reader["AuthorAvatar"] == DBNull.Value ? null : reader["AuthorAvatar"].ToString(),
                         LikeCount = Convert.ToInt32(reader["LikeCount"]),
-                        IsLikedByCurrentUser = Convert.ToBoolean(reader["IsLikedByCurrentUser"])
+                        IsLikedByCurrentUser = Convert.ToBoolean(reader["IsLikedByCurrentUser"]),
+                        IsAuthorLocked = Convert.ToBoolean(reader["IsAuthorLocked"])
                     });
                 }
             }

@@ -137,6 +137,14 @@ const CommentManager = {
     const hasPendingIncoming = this.pendingFriendRequests.has(comment.authorId);
 
     let actionsHtml = "";
+    if (isAdmin && !isAuthor) {
+      if (comment.isAuthorLocked) {
+        actionsHtml += `<button class="unban-user-admin-btn action-icon-btn" data-author-id="${comment.authorId}" data-author-name="${comment.authorName}" title="Unban User"><img src="../sources/icons/remove-gavel-svgrepo-com.svg" alt="Unban" /></button>`;
+      } else {
+        actionsHtml += `<button class="ban-user-admin-btn action-icon-btn" data-author-id="${comment.authorId}" data-author-name="${comment.authorName}" title="Ban User"><img src="../sources/icons/gavel-svgrepo-com.svg" alt="Ban" /></button>`;
+      }
+    }
+
     if (!isAuthor) {
       actionsHtml += `<button class="report-comment-btn action-icon-btn" title="Report comment"><img src="../sources/icons/flag-svgrepo-com.svg" alt="Report" /></button>`;
       if (isAuthorBlocked) {
@@ -232,7 +240,49 @@ const CommentManager = {
       .on("click", ".send-friend-request-btn", (e) => this.handleSendFriendRequest(e))
       .on("click", ".unfriend-user-btn", (e) => this.handleUnfriend(e))
       .on("click", ".cancel-friend-request-btn", (e) => this.handleCancelFriendRequest(e))
-      .on("click", ".accept-friend-request-btn", (e) => this.handleAcceptFriendRequest(e));
+      .on("click", ".accept-friend-request-btn", (e) => this.handleAcceptFriendRequest(e))
+      .on("click", ".ban-user-admin-btn", (e) => this.handleAdminBan(e))
+      .on("click", ".unban-user-admin-btn", (e) => this.handleAdminUnban(e));
+  },
+
+  handleAdminBan(e) {
+    const button = $(e.target).closest(".ban-user-admin-btn");
+    const authorId = button.data("author-id");
+    const authorName = button.data("author-name");
+
+    UIManager.showDialog(`Are you sure you want to ban ${authorName}?`).then((confirmed) => {
+      if (!confirmed) return;
+
+      toggleUserStatus(
+        authorId,
+        "IsLocked",
+        () => {
+          UIManager.showPopup(`${authorName} has been banned.`, true);
+          this.load();
+        },
+        () => UIManager.showPopup("Failed to ban user. Please try again.", false)
+      );
+    });
+  },
+
+  handleAdminUnban(e) {
+    const button = $(e.target).closest(".unban-user-admin-btn");
+    const authorId = button.data("author-id");
+    const authorName = button.data("author-name");
+
+    UIManager.showDialog(`Are you sure you want to unban ${authorName}?`).then((confirmed) => {
+      if (!confirmed) return;
+
+      toggleUserStatus(
+        authorId,
+        "IsLocked",
+        () => {
+          UIManager.showPopup(`${authorName} has been unbanned.`, true);
+          this.load();
+        },
+        () => UIManager.showPopup("Failed to unban user. Please try again.", false)
+      );
+    });
   },
 
   handleSubmit(e) {
@@ -390,7 +440,6 @@ const CommentManager = {
     const commentId = commentItem.data("comment-id");
 
     UIManager.showDialog("Are you sure you want to report this comment?", true).then((result) => {
-      //
       if (result && result.reported) {
         const reportData = {
           reporterUserId: this.currentUser.id,

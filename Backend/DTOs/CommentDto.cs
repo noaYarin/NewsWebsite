@@ -28,6 +28,7 @@ public class CommentResponseDto
     public string? AuthorAvatar { get; set; }
     public int LikeCount { get; set; }
     public bool IsLikedByCurrentUser { get; set; }
+    public bool IsAuthorLocked { get; set; }
 }
 
 public class EditCommentRequestDto
