@@ -20,6 +20,21 @@ $(document).ready(function () {
   } else {
     showError();
   }
+
+  const hash = window.location.hash;
+  if (hash) {
+    const targetElement = $(hash);
+    if (targetElement.length) {
+      setTimeout(() => {
+        $("html, body").animate(
+          {
+            scrollTop: targetElement.offset().top - 100
+          },
+          500
+        );
+      }, 100);
+    }
+  }
 });
 
 function initializeModules() {
