@@ -23,7 +23,9 @@ export const SCRIPT_BUNDLES = {
     profileFormManager: "./modules/profile-form-manager.js",
     profileFriendsManager: "./modules/friends-manager.js",
     adminDataManager: "./modules/admin-data-manager.js",
-    adminChartManager: "./modules/admin-chart-manager.js"
+    adminChartManager: "./modules/admin-chart-manager.js",
+    adminReportManager: "./modules/admin-report-manager.js",
+    adminUserManager: "./modules/admin-user-manager.js"
   },
 
   news: ["./modules/news-section-manager.js", "./modules/news-api-manager.js", "./modules/news-link-manager.js"],

@@ -15,10 +15,6 @@ namespace Horizon.Controllers
             {
                 return BadRequest("Either CommentId or ArticleId must be provided.");
             }
-            if (request.CommentId.HasValue && request.ArticleId.HasValue)
-            {
-                return BadRequest("A report can be for a comment or an article, not both.");
-            }
 
             var report = new Report
             {

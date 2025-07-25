@@ -207,6 +207,53 @@
               </div>
             </div>
 
+            <div class="report-management-section mt-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">Pending Reports</h5>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="reportsTable">
+                      <thead class="table-dark">
+                        <tr>
+                          <th>ID</th>
+                          <th>Type</th>
+                          <th>Reported Item</th>
+                          <th>Reason</th>
+                          <th>Status</th>
+                          <th>Date</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody id="reportsTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="user-management-section mt-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">User Management</h5>
+                </div>
+                <div class="card-body">
+                  <form id="userSearchForm" class="row g-3 mb-3">
+                    <div class="col-auto flex-grow-1">
+                      <input type="text" class="form-control" id="userSearchInput" placeholder="Search by name or email..." />
+                    </div>
+                    <div class="col-auto">
+                      <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                  </form>
+                  <div id="userSearchResults">
+                    <p class="text-center text-muted">Search for a user to manage their status.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div id="loadingIndicator" class="text-center py-5" style="display: none">
               <div class="sun-loading">
                 <div class="thinking-container">

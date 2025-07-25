@@ -8,6 +8,8 @@ const AdminDashboard = {
     try {
       AdminDataManager.init();
       AdminChartManager.init();
+      AdminReportManager.init();
+      AdminUserManager.init();
 
       this.setupEventListeners();
       this.initializeDateInputs();

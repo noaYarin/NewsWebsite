@@ -390,10 +390,12 @@ const CommentManager = {
     const commentId = commentItem.data("comment-id");
 
     UIManager.showDialog("Are you sure you want to report this comment?", true).then((result) => {
+      //
       if (result && result.reported) {
         const reportData = {
           reporterUserId: this.currentUser.id,
           commentId: commentId,
+          articleId: this.currentArticle.id,
           reason: result.reasonCategory,
           details: result.reason
         };
