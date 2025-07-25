@@ -54,7 +54,8 @@ namespace Horizon.Controllers
                     Reason = r.Reason,
                     Details = r.Details,
                     Status = r.Status,
-                    AdminNotes = r.AdminNotes ?? ""
+                    AdminNotes = r.AdminNotes ?? "",
+                    CreatedAt = r.CreatedAt
                 }).ToList();
 
                 return Ok(reportDtos);
@@ -80,7 +81,8 @@ namespace Horizon.Controllers
                     Reason = r.Reason,
                     Details = r.Details,
                     Status = r.Status,
-                    AdminNotes = r.AdminNotes ?? ""
+                    AdminNotes = r.AdminNotes ?? "",
+                    CreatedAt = r.CreatedAt
                 }).ToList();
 
                 return Ok(reportDtos);

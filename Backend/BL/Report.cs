@@ -12,6 +12,7 @@ namespace Horizon.BL
         public string Details { get; set; } = "";
         public ReportStatus Status { get; set; }
         public string AdminNotes { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
 
         public bool Create()
         {

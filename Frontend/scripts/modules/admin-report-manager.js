@@ -10,18 +10,8 @@ const AdminReportManager = {
       this.handleResolveReport(e);
     });
 
-    $(document).on("click", ".report-row-clickable", (e) => {
-      const $row = $(e.currentTarget);
-      const isCommentReport = $row.data("is-comment-report");
-
-      if (articleId) {
-        console.log(`Navigating to article ${articleId}, isCommentReport: ${isCommentReport}`);
-        let url = `../html/article.html?id=${articleId}`;
-        if (isCommentReport) {
-          url += "#comments-list";
-        }
-        window.open(url, "_blank");
-      }
+    $(document).on("click", ".report-item-link", (e) => {
+      e.stopPropagation();
     });
   },
 
@@ -44,31 +34,47 @@ const AdminReportManager = {
     tableBody.empty();
 
     if (!reports || reports.length === 0) {
-      tableBody.html('<tr><td colspan="7" class="text-center">No pending reports.</td></tr>');
+      tableBody.html('<tr><td colspan="6" class="text-center">No pending reports.</td></tr>');
       return;
     }
 
     reports.forEach((report) => {
-      const isCommentReport = !!report.reportedCommentId;
-      const reportedItemLink = report.reportedArticleId ? `Article #${report.reportedArticleId}` : `Comment #${report.reportedCommentId}`;
+      const isCommentReport = report.reportedCommentId;
+      const itemText = isCommentReport ? `Comment #${report.reportedCommentId}` : `Article #${report.reportedArticleId}`;
 
-      const row = `
-        <tr class="report-row-clickable"
-            data-article-id="${report.reportedArticleId || ""}"
-            data-is-comment-report="${isCommentReport}"
-            title="Click to view article">
+      const itemLink = report.reportedArticleId
+        ? `<a href="../html/article.html?id=${report.reportedArticleId}${isCommentReport ? "#comments-list" : ""}" target="_blank" class="report-item-link">${itemText}</a>`
+        : itemText;
+
+      const reportDate = report.createdAt ? new Date(report.createdAt).toLocaleDateString("en-GB") : "N/A";
+
+      const summaryRow = `
+        <tr class="report-summary-row" data-bs-toggle="collapse" data-bs-target="#details-${report.id}" title="Click to view details">
           <td>${report.id}</td>
-          <td>${report.reportType}</td>
-          <td>${reportedItemLink}</td>
+          <td>${itemLink}</td>
           <td>${report.reason}</td>
           <td><span class="badge bg-warning text-dark">${report.status}</span></td>
-          <td>${new Date(report.createdAt).toLocaleDateString()}</td>
+          <td>${reportDate}</td>
           <td>
-            <button class="btn btn-sm btn-success resolve-report-btn" data-report-id="${report.id}">Resolve</button>
+            <i class="fas fa-chevron-down expand-icon"></i>
           </td>
         </tr>
       `;
-      tableBody.append(row);
+
+      const detailsRow = `
+        <tr class="report-details-row collapse" id="details-${report.id}">
+            <td colspan="6">
+            <div class="report-details-content">
+                <strong>Full Report:</strong>
+                <p class="report-details-text">${report.details || "No details provided."}</p>
+                <button class="btn btn-sm btn-success resolve-report-btn" data-report-id="${report.id}">Resolve Report</button>
+            </div>
+            </td>
+        </tr>
+        `;
+
+      tableBody.append(summaryRow);
+      tableBody.append(detailsRow);
     });
   },
 

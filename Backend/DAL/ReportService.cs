@@ -51,7 +51,8 @@ namespace Horizon.DAL
                             Reason = Enum.Parse<ReportReason>(reader["Reason"]?.ToString() ?? "Other"),
                             Status = Enum.Parse<ReportStatus>(statusStr),
                             Details = reader["Details"]?.ToString() ?? "",
-                            AdminNotes = reader["AdminNotes"]?.ToString() ?? ""
+                            AdminNotes = reader["AdminNotes"]?.ToString() ?? "",
+                            CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
                         };
                         reports.Add(report);
                     }
@@ -83,7 +84,8 @@ namespace Horizon.DAL
                         Reason = Enum.Parse<ReportReason>(reader["Reason"]?.ToString() ?? "Other"),
                         Status = Enum.Parse<ReportStatus>(statusStr),
                         Details = reader["Details"]?.ToString() ?? "",
-                        AdminNotes = reader["AdminNotes"]?.ToString() ?? ""
+                        AdminNotes = reader["AdminNotes"]?.ToString() ?? "",
+                        CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
                     };
                     reports.Add(report);
                 }
