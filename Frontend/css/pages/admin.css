@@ -319,6 +319,10 @@ a.report-item-link {
   font-weight: 500;
 }
 
+.report-management-section .card-body {
+  padding: 0;
+}
+
 @media (max-width: 768px) {
   .admin-content {
     padding: 1rem 0;

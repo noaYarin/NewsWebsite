@@ -61,15 +61,22 @@ const AdminReportManager = {
         </tr>
       `;
 
+      let viewItemButton = "";
+      if (report.reportedArticleId) {
+        const viewItemUrl = `../html/article.html?id=${report.reportedArticleId}${isCommentReport ? "#comments-list" : ""}`;
+        viewItemButton = `<a href="${viewItemUrl}" target="_blank" class="btn btn-sm btn-outline-secondary ms-2">View Item</a>`;
+      }
+
       const detailsRow = `
         <tr class="report-details-row collapse" id="details-${report.id}">
-            <td colspan="6">
+        <td colspan="6">
             <div class="report-details-content">
-                <strong>Full Report:</strong>
-                <p class="report-details-text">${report.details || "No details provided."}</p>
-                <button class="btn btn-sm btn-success resolve-report-btn" data-report-id="${report.id}">Resolve Report</button>
+            <strong>Full Report:</strong>
+            <p class="report-details-text">${report.details || "No details provided."}</p>
+            <button class="btn btn-sm btn-success resolve-report-btn" data-report-id="${report.id}">Resolve Report</button>
+            ${viewItemButton}
             </div>
-            </td>
+        </td>
         </tr>
         `;
 
