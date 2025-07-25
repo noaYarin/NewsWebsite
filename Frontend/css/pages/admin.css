@@ -1,3 +1,4 @@
+/* ===== ADMIN PAGE LAYOUT ===== */
 .admin-page {
   background-color: var(--c-light);
   min-height: 100vh;
@@ -7,7 +8,6 @@
   background-color: var(--c-light);
 }
 
-/* Admin Content Container */
 .admin-container .titles {
   color: var(--c-dark);
   padding: 50px 0;
@@ -22,15 +22,9 @@
   padding: 2rem 0;
 }
 
-/* Section spacing */
-.stats-section {
-  margin-bottom: 3rem;
-}
-
-.filters-section {
-  margin-bottom: 3rem;
-}
-
+/* ===== SECTION SPACING ===== */
+.stats-section,
+.filters-section,
 .table-section {
   margin-bottom: 3rem;
 }
@@ -39,7 +33,7 @@
   padding: 0;
 }
 
-/* Statistics Cards */
+/* ===== STATISTICS CARDS ===== */
 .statistics-charts .card {
   min-height: 450px;
 }
@@ -91,7 +85,7 @@
   font-family: var(--font-primary);
 }
 
-/* Main Cards */
+/* ===== MAIN CARDS ===== */
 .card {
   border: none;
   border-radius: 0;
@@ -115,7 +109,7 @@
   min-height: auto;
 }
 
-/* Form Controls */
+/* ===== FORM CONTROLS ===== */
 .form-control {
   border-radius: 0;
   border: 2px solid var(--c-input-border);
@@ -137,7 +131,7 @@
   font-family: var(--font-primary);
 }
 
-/* Buttons */
+/* ===== BUTTONS ===== */
 .btn {
   border-radius: 0;
   font-weight: 600;
@@ -173,7 +167,7 @@
   color: var(--c-light);
 }
 
-/* Metric Boxes */
+/* ===== METRIC BOXES ===== */
 .metric-box {
   padding: 1.5rem;
   border-radius: 0;
@@ -206,7 +200,7 @@
   font-family: var(--font-primary);
 }
 
-/* Table Styles */
+/* ===== TABLE STYLES ===== */
 .table-responsive {
   border-radius: 0;
   overflow: hidden;
@@ -245,49 +239,63 @@
   padding: 1rem;
 }
 
-/* Loading and Error States */
-#loadingIndicator {
-  padding: 3rem;
+/* ===== REPORTS TABLE SPECIFIC STYLES ===== */
+/* Override Bootstrap hover for reports table */
+#reportsTable tbody tr:hover {
+  background-color: inherit !important;
 }
 
-#errorMessage {
-  border-radius: 0;
-  border: none;
-  background: var(--c-red);
-  color: var(--c-light);
-  font-weight: 500;
-  font-family: var(--font-primary);
-  border-left: 4px solid var(--c-red-light);
+/* Counter for alternating colors - only count summary rows */
+#reportsTable tbody {
+  counter-reset: summary-row;
 }
 
-/* Chart Containers */
-#dailyStatsChart {
-  max-height: 400px;
-}
-
-.text-primary {
-  color: var(--c-primary) !important;
-}
-.text-success {
-  color: var(--c-green) !important;
-}
-.text-info {
-  color: var(--c-dark-light) !important;
-}
-.text-warning {
-  color: var(--c-yellow) !important;
-}
-
-/* Report Management Styles */
-.report-summary-row {
+#reportsTable tbody tr.report-summary-row {
+  counter-increment: summary-row;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
 }
 
-.report-summary-row:hover {
-  background-color: #f8f9fa;
+/* Alternating colors using counter */
+#reportsTable tbody tr.report-summary-row:nth-of-type(odd) {
+  background-color: #ffffff !important;
 }
 
+#reportsTable tbody tr.report-summary-row:nth-of-type(even) {
+  background-color: #f8f9fa !important;
+}
+
+/* Hover effect only for summary rows */
+#reportsTable tbody tr.report-summary-row:hover {
+  background-color: var(--c-primary-bg) !important;
+}
+
+/* Detail rows - always gray background, no hover, no interaction */
+#reportsTable tbody tr.report-details-row {
+  background-color: #f8f9fa !important;
+  cursor: default;
+}
+
+#reportsTable tbody tr.report-details-row:hover {
+  background-color: #f8f9fa !important;
+}
+
+#reportsTable tbody tr.report-details-row td {
+  background-color: #f8f9fa !important;
+}
+
+#reportsTable tbody tr.report-details-row:hover td {
+  background-color: #f8f9fa !important;
+}
+
+#reportsTable tbody tr.report-details-row * {
+  background-color: #f8f9fa !important;
+}
+
+#reportsTable tbody tr.report-details-row:hover * {
+  background-color: #f8f9fa !important;
+}
+
+/* Expand icon styling */
 .report-summary-row .expand-icon {
   transition: transform 0.3s ease;
 }
@@ -296,10 +304,7 @@
   transform: rotate(180deg);
 }
 
-.report-details-row {
-  background-color: #f8f9fa;
-}
-
+/* Detail content styling */
 .report-details-content {
   padding: 1rem;
 }
@@ -318,6 +323,69 @@
   padding: 0;
 }
 
+/* ===== USER MANAGEMENT STYLES ===== */
+#userSearchResults .user-list-item {
+  flex-direction: row;
+  padding: 1rem;
+  border-bottom: 1px solid var(--c-border-light);
+  transition: background-color var(--transition-fast);
+}
+
+#userSearchResults .user-list-item:last-child {
+  border-bottom: none;
+}
+
+#userSearchResults .user-list-item:hover {
+  background-color: var(--c-primary-bg);
+}
+
+#userSearchResults .user-list-avatar-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+#userSearchResults .user-list-name {
+  margin-right: 0.5rem;
+}
+
+/* ===== LOADING AND ERROR STATES ===== */
+#loadingIndicator {
+  padding: 3rem;
+}
+
+#errorMessage {
+  border-radius: 0;
+  border: none;
+  background: var(--c-red);
+  color: var(--c-light);
+  font-weight: 500;
+  font-family: var(--font-primary);
+  border-left: 4px solid var(--c-red-light);
+}
+
+/* ===== CHART CONTAINERS ===== */
+#dailyStatsChart {
+  max-height: 400px;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.text-primary {
+  color: var(--c-primary) !important;
+}
+.text-success {
+  color: var(--c-green) !important;
+}
+.text-info {
+  color: var(--c-dark-light) !important;
+}
+.text-warning {
+  color: var(--c-yellow) !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
   .admin-content {
     padding: 1rem 0;
@@ -407,7 +475,7 @@
   }
 }
 
-/* Animation Classes */
+/* ===== ANIMATIONS ===== */
 .fade-in {
   animation: fadeIn 0.6s ease-in;
 }

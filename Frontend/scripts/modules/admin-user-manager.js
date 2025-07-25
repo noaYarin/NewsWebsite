@@ -43,7 +43,7 @@ const AdminUserManager = {
       const banClass = user.isLocked ? "btn-success" : "btn-danger";
       const userHtml = `
         <div class="user-list-item d-flex justify-content-between align-items-center">
-          <div>
+          <div class="user-list-info d-flex align-items-center">
             <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar-sm" />
             <span class="user-list-name fw-bold">${user.fullName}</span>
             <small class="text-muted">(${user.email})</small>
