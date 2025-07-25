@@ -314,11 +314,6 @@
   white-space: pre-wrap;
 }
 
-a.report-item-link {
-  text-decoration: underline;
-  font-weight: 500;
-}
-
 .report-management-section .card-body {
   padding: 0;
 }

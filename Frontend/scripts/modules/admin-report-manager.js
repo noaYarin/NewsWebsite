@@ -5,9 +5,9 @@ const AdminReportManager = {
   },
 
   setupEventHandlers() {
-    $(document).on("click", ".resolve-report-btn", (e) => {
+    $(document).on("click", ".update-report-status-btn", (e) => {
       e.stopPropagation();
-      this.handleResolveReport(e);
+      this.handleUpdateReportStatus(e);
     });
 
     $(document).on("click", ".report-item-link", (e) => {
@@ -41,11 +41,7 @@ const AdminReportManager = {
     reports.forEach((report) => {
       const isCommentReport = report.reportedCommentId;
       const itemText = isCommentReport ? `Comment #${report.reportedCommentId}` : `Article #${report.reportedArticleId}`;
-
-      const itemLink = report.reportedArticleId
-        ? `<a href="../html/article.html?id=${report.reportedArticleId}${isCommentReport ? "#comments-list" : ""}" target="_blank" class="report-item-link">${itemText}</a>`
-        : itemText;
-
+      const itemLink = itemText;
       const reportDate = report.createdAt ? new Date(report.createdAt).toLocaleDateString("en-GB") : "N/A";
 
       const summaryRow = `
@@ -69,39 +65,57 @@ const AdminReportManager = {
 
       const detailsRow = `
         <tr class="report-details-row collapse" id="details-${report.id}">
-        <td colspan="6">
+          <td colspan="6">
             <div class="report-details-content">
-            <strong>Full Report:</strong>
-            <p class="report-details-text">${report.details || "No details provided."}</p>
-            <button class="btn btn-sm btn-success resolve-report-btn" data-report-id="${report.id}">Resolve Report</button>
-            ${viewItemButton}
+              <strong>Full Report:</strong>
+              <p class="report-details-text">${report.details || "No details provided."}</p>
+              
+              <div class="mb-3">
+                <label for="notes-${report.id}" class="form-label"><strong>Resolution Notes:</strong></label>
+                <textarea id="notes-${report.id}" class="form-control" rows="2" placeholder="Optional notes for this status update..."></textarea>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-grow-1">
+                  <select id="status-select-${report.id}" class="form-select">
+                    <option value="1">Reviewed</option>
+                    <option value="2">Action Taken</option>
+                    <option value="3">Dismissed</option>
+                  </select>
+                </div>
+                <button class="btn btn-sm btn-primary update-report-status-btn" data-report-id="${report.id}">Update Status</button>
+                ${viewItemButton}
+              </div>
             </div>
-        </td>
+          </td>
         </tr>
-        `;
+      `;
 
       tableBody.append(summaryRow);
       tableBody.append(detailsRow);
     });
   },
 
-  handleResolveReport(e) {
+  handleUpdateReportStatus(e) {
     const reportId = $(e.currentTarget).data("report-id");
-    const adminNotes = prompt("Enter resolution notes (optional):");
+    const adminNotes = $(`#notes-${reportId}`).val();
+    const statusSelect = $(`#status-select-${reportId}`);
+    const newStatusValue = statusSelect.val();
+    const newStatusText = statusSelect.find("option:selected").text();
 
-    UIManager.showDialog("Mark this report as resolved?").then((confirmed) => {
+    UIManager.showDialog(`Are you sure you want to mark this report as '${newStatusText}'?`).then((confirmed) => {
       if (!confirmed) return;
 
       updateReportStatus(
         reportId,
-        "Resolved",
+        newStatusValue,
         adminNotes,
         () => {
-          UIManager.showPopup("Report resolved successfully.", true);
+          UIManager.showPopup("Report status updated successfully.", true);
           this.loadPendingReports();
         },
         () => {
-          UIManager.showPopup("Failed to resolve report.", false);
+          UIManager.showPopup("Failed to update report status.", false);
         }
       );
     });
