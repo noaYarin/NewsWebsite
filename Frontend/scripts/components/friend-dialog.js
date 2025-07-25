@@ -117,7 +117,9 @@ const GlobalFriendDialog = {
 
     this.searchPagination.isLoading = true;
     this.searchPagination.lastSearchTerm = searchTerm;
-    resultsSection.html('<div class="loading-spinner"></div>').addClass("show");
+    resultsSection
+      .html('<div class="sun-loading"><div class="thinking-container"><img src="../sources/images/sun/sun.png" alt="Searching Articles" class="thinking-icon" /></div></div>')
+      .addClass("show");
 
     searchUsersPaginated(
       searchTerm,
@@ -215,7 +217,9 @@ const GlobalFriendDialog = {
     this.searchPagination.isLoading = true;
     this.searchPagination.currentPage++;
     const resultsContainer = $("#searchResultsSection .user-search-results");
-    resultsContainer.append('<div class="loading-spinner"></div>');
+    resultsContainer.append(
+      '<div class="sun-loading"><div class="thinking-container"><img src="../sources/images/sun/sun.png" alt="Searching Articles" class="thinking-icon" /></div></div>'
+    );
     searchUsersPaginated(
       searchTerm,
       this.searchPagination.currentPage,
@@ -223,13 +227,13 @@ const GlobalFriendDialog = {
       (response) => {
         this.searchPagination.isLoading = false;
         this.searchPagination.hasNextPage = response.hasNextPage;
-        resultsContainer.find(".loading-spinner").remove();
+        resultsContainer.find(".sun-loading").remove();
         this.displaySearchResults(response.users, false);
       },
       () => {
         this.searchPagination.isLoading = false;
         this.searchPagination.currentPage--;
-        resultsContainer.find(".loading-spinner").remove();
+        resultsContainer.find(".sun-loading").remove();
       }
     );
   },
