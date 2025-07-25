@@ -3,6 +3,36 @@ const Navigation = {
     this.setupEventHandlers();
     this.setupAuthNavLinks();
     this.setupProfileMenu();
+    this.checkUserLockStatus();
+  },
+
+  checkUserLockStatus() {
+    const storedUser = localStorage.getItem("currentUser");
+    if (!storedUser) return;
+
+    try {
+      const currentUser = JSON.parse(storedUser);
+
+      getProfile(
+        currentUser.id,
+        (freshProfile) => {
+          if (freshProfile && freshProfile.isLocked) {
+            localStorage.removeItem("currentUser");
+            UIManager.showPopup("Your account has been locked by an administrator.", false);
+            setTimeout(() => (window.location.href = Utils.getNavHref("auth")), 3000);
+          }
+        },
+        (error) => {
+          if (error.status === 404) {
+            localStorage.removeItem("currentUser");
+            window.location.reload();
+          }
+          console.error("Could not verify user status.", error);
+        }
+      );
+    } catch (e) {
+      localStorage.removeItem("currentUser");
+    }
   },
 
   setupEventHandlers() {
