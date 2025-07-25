@@ -435,6 +435,29 @@
   .table-responsive {
     overflow-x: auto;
   }
+
+  #userSearchResults .user-list-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  #userSearchResults .user-list-info {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  #userSearchResults .user-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  #userSearchResults .user-actions .btn {
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+  }
 }
 
 @media (max-width: 576px) {
