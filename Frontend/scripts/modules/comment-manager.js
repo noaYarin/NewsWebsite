@@ -360,6 +360,12 @@ const CommentManager = {
     const commentId = commentItem.data("comment-id");
     const authorId = parseInt(commentItem.data("author-id"), 10);
 
+    const comment = this.lastCommentsData.find((c) => c.id == commentId);
+    if (!comment) {
+      UIManager.showPopup("Could not verify user status, please try again.", false);
+      return;
+    }
+
     UIManager.showDialog("Are you sure you want to delete this comment?").then((userClickedYes) => {
       if (!userClickedYes) return;
 
@@ -377,14 +383,17 @@ const CommentManager = {
 
           const isAdminDeletingOthersComment = this.currentUser.isAdmin && this.currentUser.id !== authorId;
 
-          if (isAdminDeletingOthersComment) {
+          if (isAdminDeletingOthersComment && !comment.isAuthorLocked) {
             setTimeout(() => {
               UIManager.showDialog("Do you also want to ban this user?").then((wantsToBan) => {
                 if (wantsToBan) {
                   toggleUserStatus(
                     authorId,
                     "IsLocked",
-                    () => UIManager.showPopup("User has been banned successfully.", true),
+                    () => {
+                      UIManager.showPopup("User has been banned successfully.", true);
+                      this.load();
+                    },
                     () => UIManager.showPopup("Failed to ban user.", false)
                   );
                 }

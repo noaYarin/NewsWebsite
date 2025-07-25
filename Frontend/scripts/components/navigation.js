@@ -27,7 +27,6 @@ const Navigation = {
             localStorage.removeItem("currentUser");
             window.location.reload();
           }
-          console.error("Could not verify user status.", error);
         }
       );
     } catch (e) {

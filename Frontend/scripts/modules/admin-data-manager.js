@@ -37,7 +37,6 @@ const AdminDataManager = {
     try {
       return date.toISOString().split("T")[0];
     } catch (error) {
-      console.error("Error formatting date for input:", error);
       return "";
     }
   },
@@ -48,7 +47,6 @@ const AdminDataManager = {
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
-        console.warn("Invalid date string:", dateString);
         return "Invalid Date";
       }
 
@@ -58,7 +56,6 @@ const AdminDataManager = {
         day: "numeric"
       });
     } catch (error) {
-      console.error("Error formatting date for display:", error, dateString);
       return "Invalid Date";
     }
   },
@@ -75,7 +72,6 @@ const AdminDataManager = {
           resolve(data);
         },
         (error) => {
-          console.error("Error loading general statistics:", error);
           reject(error);
         }
       );
@@ -92,7 +88,6 @@ const AdminDataManager = {
           resolve(data || []);
         },
         (error) => {
-          console.error("Error loading daily statistics:", error);
           reject(error);
         }
       );
@@ -109,7 +104,6 @@ const AdminDataManager = {
           resolve(data || []);
         },
         (error) => {
-          console.error("Error loading daily logins:", error);
           reject(error);
         }
       );
@@ -126,7 +120,6 @@ const AdminDataManager = {
           resolve(data || []);
         },
         (error) => {
-          console.error("Error loading daily article pulls:", error);
           reject(error);
         }
       );
@@ -143,7 +136,6 @@ const AdminDataManager = {
           resolve(data || []);
         },
         (error) => {
-          console.error("Error loading daily article inserts:", error);
           reject(error);
         }
       );
