@@ -116,6 +116,7 @@
   background-color: var(--c-input-bg);
   transition: all var(--transition-fast);
   font-family: var(--font-primary);
+  resize: none;
 }
 
 .form-control:focus {
