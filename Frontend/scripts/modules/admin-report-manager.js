@@ -5,7 +5,24 @@ const AdminReportManager = {
   },
 
   setupEventHandlers() {
-    $(document).on("click", ".resolve-report-btn", (e) => this.handleResolveReport(e));
+    $(document).on("click", ".resolve-report-btn", (e) => {
+      e.stopPropagation();
+      this.handleResolveReport(e);
+    });
+
+    $(document).on("click", ".report-row-clickable", (e) => {
+      const $row = $(e.currentTarget);
+      const isCommentReport = $row.data("is-comment-report");
+
+      if (articleId) {
+        console.log(`Navigating to article ${articleId}, isCommentReport: ${isCommentReport}`);
+        let url = `../html/article.html?id=${articleId}`;
+        if (isCommentReport) {
+          url += "#comments-list";
+        }
+        window.open(url, "_blank");
+      }
+    });
   },
 
   loadPendingReports() {
@@ -32,12 +49,14 @@ const AdminReportManager = {
     }
 
     reports.forEach((report) => {
-      const reportedItemLink = report.articleId
-        ? `<a href="../html/article.html?id=${report.articleId}" target="_blank">Article #${report.articleId}</a>`
-        : `Comment #${report.commentId}`;
+      const isCommentReport = !!report.reportedCommentId;
+      const reportedItemLink = report.reportedArticleId ? `Article #${report.reportedArticleId}` : `Comment #${report.reportedCommentId}`;
 
       const row = `
-        <tr>
+        <tr class="report-row-clickable"
+            data-article-id="${report.reportedArticleId || ""}"
+            data-is-comment-report="${isCommentReport}"
+            title="Click to view article">
           <td>${report.id}</td>
           <td>${report.reportType}</td>
           <td>${reportedItemLink}</td>
