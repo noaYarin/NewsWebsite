@@ -21,7 +21,7 @@ export const SCRIPT_BUNDLES = {
     backToTop: "./components/back-to-top.js",
     reportDialog: "./components/report-dialog.js",
     profileFormManager: "./modules/profile-form-manager.js",
-    profileFriendsManager: "./modules/friends-manager.js",
+    profileFriendsManager: "./modules/profile-friends-manager.js",
     adminDataManager: "./modules/admin-data-manager.js",
     adminChartManager: "./modules/admin-chart-manager.js",
     adminReportManager: "./modules/admin-report-manager.js",
