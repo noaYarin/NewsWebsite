@@ -87,6 +87,10 @@
   object-fit: cover;
 }
 
+.pick-item:hover {
+  text-decoration: underline;
+}
+
 .explore-button {
   display: flex;
   text-decoration: none;

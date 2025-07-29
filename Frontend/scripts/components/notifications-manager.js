@@ -108,7 +108,7 @@ const NotificationsManager = {
     const $list = $(".nav-notifications-list");
     $list.html(`
       <div class="nav-notifications-empty">
-        <img src="../sources/icons/notifications-svgrepo-com.svg" alt="No notifications" />
+        <img src="../sources/icons/notifications-off-svgrepo-com.svg" alt="No notifications" />
         <p>Failed to load notifications</p>
       </div>
     `);
@@ -120,7 +120,7 @@ const NotificationsManager = {
     if (!this.notifications.length) {
       $list.html(`
         <div class="nav-notifications-empty">
-          <img src="../sources/icons/notifications-svgrepo-com.svg" alt="No notifications" />
+          <img src="../sources/icons/notifications-off-svgrepo-com.svg" alt="No notifications" />
           <p>No notifications yet</p>
         </div>
       `);
@@ -234,7 +234,7 @@ const NotificationsManager = {
       case "ArticleShare":
       case "CommentLike":
         if (articleId) {
-          window.location.href = `article.html?id=${articleId}`;
+          window.location.href = `article.html?id=${articleId}#comments-list`;
         }
         break;
       case "FriendRequest":

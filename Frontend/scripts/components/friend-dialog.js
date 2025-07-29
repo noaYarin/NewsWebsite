@@ -1,27 +1,27 @@
-const GlobalFriendDialog = {
-  pendingFriendRequests: new Set(),
-  outgoingFriendRequests: new Set(),
-  currentFriends: new Set(),
-  searchPagination: {
+class GlobalFriendDialog {
+  static currentFriends = new Set();
+  static pendingFriendRequests = new Set();
+  static outgoingFriendRequests = new Set();
+  static searchPagination = {
     currentPage: 1,
-    pageSize: 10,
+    pageSize: CONSTANTS.SEARCH_PAGE_SIZE,
     hasNextPage: false,
     isLoading: false,
     lastSearchTerm: ""
-  },
+  };
 
-  init() {
+  static init() {
     this.loadUserFriendshipData();
-  },
+  }
 
-  reloadFriendshipState() {
+  static reloadFriendshipState() {
     this.loadUserFriendshipData();
     setTimeout(() => this.refreshCurrentSearchResults(), 500);
-  },
+  }
 
-  loadUserFriendshipData() {
+  static loadUserFriendshipData() {
     const currentUser = Utils.getCurrentUser();
-    if (!currentUser || !currentUser.id) return;
+    if (!currentUser?.id) return;
 
     getFriends(currentUser.id, (friends) => {
       this.currentFriends.clear();
@@ -37,10 +37,11 @@ const GlobalFriendDialog = {
       this.outgoingFriendRequests.clear();
       outgoingRequests.forEach((request) => this.outgoingFriendRequests.add(request.id));
     });
-  },
+  }
 
-  showAddFriendDialog() {
+  static showAddFriendDialog() {
     if ($("#add-friend-dialog").length > 0) return;
+
     const dialogHtml = `
       <div id="add-friend-dialog" class="dialog-popup add-friend-dialog">
         <div class="dialog-content-wrapper">
@@ -48,18 +49,22 @@ const GlobalFriendDialog = {
           <div class="add-friend-form">
             <div class="search-input-row">
               <input type="text" id="friendEmailInput" placeholder="Enter email or name..." autocomplete="off" />
-              <button class="search-btn" id="searchUserButton"><img src="../sources/icons/search-svgrepo-com-menu.svg" /></button>
+              <button class="search-btn" id="searchUserButton">
+                <img src="../sources/icons/search-svgrepo-com-menu.svg" />
+              </button>
             </div>
           </div>
           <div id="searchResultsSection" class="search-results-section"></div>
         </div>
       </div>
     `;
+
     $("body").append(dialogHtml);
     $("#friendEmailInput").focus();
-    setTimeout(() => $("#add-friend-dialog").addClass("show"), 10);
+    $("#add-friend-dialog").addClass("show");
 
     $(document).on("click.addFriend", (e) => {
+      // Close dialog if clicked not on dialog or button
       if (!$(e.target).closest("#add-friend-dialog").length && !$(e.target).closest("#addFriendsBtn").length) {
         this.closeAddFriendDialog();
       }
@@ -68,6 +73,7 @@ const GlobalFriendDialog = {
     $("#searchUserButton").on("click", (e) => this.handleUserSearch(e));
     $("#friendEmailInput")
       .on("keypress", (e) => {
+        // Trigger search on Enter key
         if (e.which === 13) {
           e.preventDefault();
           this.handleUserSearch(e);
@@ -76,50 +82,57 @@ const GlobalFriendDialog = {
       .on("input", function () {
         if (!$(this).val().trim()) {
           $("#searchResultsSection").removeClass("show");
+          GlobalFriendDialog.searchPagination.lastSearchTerm = "";
         }
       });
-  },
+  }
 
-  closeAddFriendDialog() {
+  static closeAddFriendDialog() {
     $("#add-friend-dialog").removeClass("show");
     setTimeout(() => {
       $("#add-friend-dialog").remove();
       $(document).off("click.addFriend");
+      this.resetSearchPagination();
+    }, 500);
+  }
 
-      this.searchPagination = {
-        currentPage: 1,
-        pageSize: 10,
-        hasNextPage: false,
-        isLoading: false,
-        lastSearchTerm: ""
-      };
-    }, 400);
-  },
+  static resetSearchPagination() {
+    this.searchPagination = {
+      currentPage: 1,
+      pageSize: CONSTANTS.SEARCH_PAGE_SIZE,
+      hasNextPage: false,
+      isLoading: false,
+      lastSearchTerm: ""
+    };
+  }
 
-  handleUserSearch(e) {
+  static handleUserSearch(e) {
     if (e) e.stopPropagation();
-    const searchTerm = $("#friendEmailInput").val().trim();
 
-    if (searchTerm === this.searchPagination.lastSearchTerm) return;
+    const searchInput = $("#friendEmailInput");
+    const searchTerm = searchInput.val().trim();
 
     if (!searchTerm) {
-      $("#searchResultsSection").removeClass("show");
+      searchInput.addClass("error");
+      searchInput.focus();
+      setTimeout(() => searchInput.removeClass("error"), 2000);
       return;
     }
 
+    if (searchTerm === this.searchPagination.lastSearchTerm) return;
+
     this.searchPagination.currentPage = 1;
     this.performSearch(searchTerm);
-  },
+  }
 
-  performSearch(searchTerm) {
+  static performSearch(searchTerm) {
     const resultsSection = $("#searchResultsSection");
     if (this.searchPagination.isLoading) return;
 
     this.searchPagination.isLoading = true;
     this.searchPagination.lastSearchTerm = searchTerm;
-    resultsSection
-      .html('<div class="sun-loading"><div class="thinking-container"><img src="../sources/images/sun/sun.png" alt="Searching Articles" class="thinking-icon" /></div></div>')
-      .addClass("show");
+
+    resultsSection.html(Utils.createLoadingIndicator()).addClass("show");
 
     searchUsersPaginated(
       searchTerm,
@@ -132,77 +145,82 @@ const GlobalFriendDialog = {
       },
       () => {
         this.searchPagination.isLoading = false;
-        resultsSection.html('<p class="empty-search-message">Error searching for users.</p>');
+        UIManager.showPopup("Error searching for users.", false);
       }
     );
-  },
+  }
 
-  displaySearchResults(users, isNewSearch) {
+  static displaySearchResults(users, isNewSearch) {
     const currentUser = Utils.getCurrentUser();
     const resultsSection = $("#searchResultsSection");
+
     if (isNewSearch) {
       resultsSection.html('<div class="user-search-results"></div>');
       this.setupEventDelegation(resultsSection);
     }
+
     const resultsContainer = resultsSection.find(".user-search-results");
+
     if (isNewSearch && users.length === 0) {
       resultsContainer.html('<p class="empty-search-message">No users found.</p>');
       return;
     }
+
     const userItems = users
       .filter((user) => user.id !== currentUser.id)
       .map((user) => {
-        const btn = this.getButtonState(user);
+        const buttonState = this.getButtonState(user);
         return `
-        <div class="user-search-item" data-user-id="${user.id}">
-          <img src="${user.imageUrl || user.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${user.fullName}" class="user-list-avatar" />
-          <div class="user-info"><span class="user-list-name">${user.fullName}</span><span class="user-email">${user.email}</span></div>
-          <button type="button" class="${btn.cssClass}" data-user-id="${user.id}" data-user-name="${user.fullName}">${btn.text}</button>
-        </div>`;
+          <div class="user-search-item" data-user-id="${user.id}">
+            <img src="${user.imageUrl || CONSTANTS.NO_IMAGE_URL}"
+                 alt="${user.fullName}" class="user-list-avatar" />
+            <div class="user-info">
+              <span class="user-list-name">${user.fullName}</span>
+              <span class="user-email">${user.email}</span>
+            </div>
+            <button type="button" class="${buttonState.cssClass}" 
+                    data-user-id="${user.id}" data-user-name="${user.fullName}">
+              ${buttonState.text}
+            </button>
+          </div>
+        `;
       })
       .join("");
+
     resultsContainer.append(userItems);
     this.setupInfiniteScroll(resultsSection, this.searchPagination.lastSearchTerm);
-  },
+  }
 
-  getButtonState(user) {
-    if (this.currentFriends.has(user.id)) return { text: "Unfriend", cssClass: "unfriend-btn danger-btn" };
-    if (this.outgoingFriendRequests.has(user.id)) return { text: "Cancel Request", cssClass: "cancel-friend-request-btn success-btn" };
-    if (this.pendingFriendRequests.has(user.id)) return { text: "Accept", cssClass: "accept-friend-request-btn primary-btn" };
+  static getButtonState(user) {
+    if (this.currentFriends.has(user.id)) {
+      return { text: "Unfriend", cssClass: "unfriend-btn danger-btn" };
+    }
+    if (this.outgoingFriendRequests.has(user.id)) {
+      return { text: "Cancel Request", cssClass: "cancel-friend-request-btn success-btn" };
+    }
+    if (this.pendingFriendRequests.has(user.id)) {
+      return { text: "Accept", cssClass: "accept-friend-request-btn primary-btn" };
+    }
     return { text: "Send Request", cssClass: "send-friend-request-btn" };
-  },
+  }
 
-  refreshCurrentSearchResults() {
-    const resultsSection = $("#searchResultsSection");
-    if (!resultsSection.is(":visible")) return;
-    resultsSection.find(".user-search-item").each((i, el) => {
-      const item = $(el);
-      const userId = item.data("user-id");
-      const button = item.find("button");
-      const btnState = this.getButtonState({ id: userId });
-      button.text(btnState.text).attr("class", btnState.cssClass);
-    });
-  },
-
-  setupEventDelegation(resultsSection) {
+  static setupEventDelegation(resultsSection) {
     resultsSection.off("click.friendButtons").on("click.friendButtons", "button", (e) => {
       const button = $(e.currentTarget);
-      const handlerMap = {
-        "send-friend-request-btn": this.handleSendFriendRequest,
-        "cancel-friend-request-btn": this.handleCancelFriendRequest,
-        "accept-friend-request-btn": this.handleAcceptFriendRequest,
-        "unfriend-btn": this.handleUnfriend
-      };
-      for (const className in handlerMap) {
-        if (button.hasClass(className)) {
-          handlerMap[className].call(this, e);
-          break;
-        }
+
+      if (button.hasClass("send-friend-request-btn")) {
+        this.handleFriendAction(e, "send");
+      } else if (button.hasClass("cancel-friend-request-btn")) {
+        this.handleFriendAction(e, "cancel");
+      } else if (button.hasClass("accept-friend-request-btn")) {
+        this.handleFriendAction(e, "accept");
+      } else if (button.hasClass("unfriend-btn")) {
+        this.handleFriendAction(e, "unfriend");
       }
     });
-  },
+  }
 
-  setupInfiniteScroll(resultsSection, searchTerm) {
+  static setupInfiniteScroll(resultsSection, searchTerm) {
     resultsSection.off("scroll.infiniteSearch");
     if (!this.searchPagination.hasNextPage) return;
     resultsSection.on("scroll.infiniteSearch", () => {
@@ -210,16 +228,17 @@ const GlobalFriendDialog = {
         this.loadMoreUsers(searchTerm);
       }
     });
-  },
+  }
 
-  loadMoreUsers(searchTerm) {
+  static loadMoreUsers(searchTerm) {
     if (this.searchPagination.isLoading) return;
+
     this.searchPagination.isLoading = true;
     this.searchPagination.currentPage++;
+
     const resultsContainer = $("#searchResultsSection .user-search-results");
-    resultsContainer.append(
-      '<div class="sun-loading"><div class="thinking-container"><img src="../sources/images/sun/sun.png" alt="Searching Articles" class="thinking-icon" /></div></div>'
-    );
+    resultsContainer.append(Utils.createLoadingIndicator());
+
     searchUsersPaginated(
       searchTerm,
       this.searchPagination.currentPage,
@@ -236,98 +255,86 @@ const GlobalFriendDialog = {
         resultsContainer.find(".sun-loading").remove();
       }
     );
-  },
-
-  handleSendFriendRequest(e) {
-    const currentUser = Utils.getCurrentUser();
-    const button = $(e.currentTarget);
-    const userId = button.data("user-id");
-    const userName = button.data("user-name");
-    button.text("Sending...").prop("disabled", true);
-    sendFriendRequest(
-      { SenderId: currentUser.id, RecipientId: userId },
-      () => {
-        UIManager.showPopup(`Friend request sent to ${userName}!`, true);
-        this.outgoingFriendRequests.add(userId);
-        button.text("Cancel Request").prop("disabled", false).removeClass("send-friend-request-btn").addClass("cancel-friend-request-btn success-btn");
-      },
-      () => {
-        button.text("Send Request").prop("disabled", false);
-        UIManager.showPopup("Failed to send friend request.", false);
-      }
-    );
-  },
-
-  handleCancelFriendRequest(e) {
-    const currentUser = Utils.getCurrentUser();
-    const button = $(e.currentTarget);
-    const userId = button.data("user-id");
-    const userName = button.data("user-name");
-    button.text("Canceling...").prop("disabled", true);
-    cancelFriendRequest(
-      { SenderId: currentUser.id, RecipientId: userId },
-      () => {
-        UIManager.showPopup(`Friend request to ${userName} unsent.`, true);
-        this.outgoingFriendRequests.delete(userId);
-        button.text("Send Request").prop("disabled", false).removeClass("cancel-friend-request-btn success-btn").addClass("send-friend-request-btn");
-      },
-      () => {
-        button.text("Cancel Request").prop("disabled", false);
-        UIManager.showPopup("Failed to cancel friend request.", false);
-      }
-    );
-  },
-
-  handleAcceptFriendRequest(e) {
-    const currentUser = Utils.getCurrentUser();
-    const button = $(e.currentTarget);
-    const userId = button.data("user-id");
-    const userName = button.data("user-name");
-    button.text("Accepting...").prop("disabled", true);
-    respondToFriendRequest(
-      { RequesterId: userId, ResponderId: currentUser.id, Response: 1 },
-      () => {
-        UIManager.showPopup(`You are now friends with ${userName}!`, true);
-        this.pendingFriendRequests.delete(userId);
-        this.currentFriends.add(userId);
-        button.text("Unfriend").prop("disabled", false).removeClass("accept-friend-request-btn primary-btn").addClass("unfriend-btn danger-btn");
-        if (window.ProfileFriendsManager) {
-          ProfileFriendsManager.loadAndPopulateFriendsList();
-        }
-      },
-      () => {
-        button.text("Accept").prop("disabled", false);
-        UIManager.showPopup("Failed to accept friend request.", false);
-      }
-    );
-  },
-
-  handleUnfriend(e) {
-    const currentUser = Utils.getCurrentUser();
-    const button = $(e.currentTarget);
-    const userId = button.data("user-id");
-    const userName = button.data("user-name");
-    UIManager.showDialog(`Are you sure you want to unfriend ${userName}?`).then((confirmed) => {
-      if (!confirmed) return;
-      button.text("Unfriending...").prop("disabled", true);
-      removeFriend(
-        { userId: currentUser.id, friendId: userId },
-        () => {
-          UIManager.showPopup(`${userName} has been removed from your friends list.`, true);
-          this.currentFriends.delete(userId);
-          button.text("Send Request").prop("disabled", false).removeClass("unfriend-btn danger-btn").addClass("send-friend-request-btn");
-          if (window.ProfileFriendsManager) {
-            ProfileFriendsManager.loadAndPopulateFriendsList();
-          }
-        },
-        () => {
-          button.text("Unfriend").prop("disabled", false);
-          UIManager.showPopup("Failed to unfriend user.", false);
-        }
-      );
-    });
   }
-};
+
+  static handleFriendAction(e, actionType) {
+    const button = $(e.currentTarget);
+    const userId = button.data("user-id");
+    const userName = button.data("user-name");
+
+    if (actionType === "unfriend") {
+      UIManager.showDialog(`Are you sure you want to unfriend ${userName}?`).then((confirmed) => {
+        if (confirmed) {
+          this.executeFriendAction(button, userId, userName, actionType);
+        }
+      });
+      return;
+    }
+
+    this.executeFriendAction(button, userId, userName, actionType);
+  }
+
+  static executeFriendAction(button, userId, userName, actionType) {
+    const currentUser = Utils.getCurrentUser();
+
+    const actionConfig = {
+      send: {
+        loadingText: "Sending...",
+        apiCall: (successCB, errorCB) => sendFriendRequest({ SenderId: currentUser.id, RecipientId: userId }, successCB, errorCB),
+        successMessage: `Friend request sent to ${userName}!`,
+        successAction: () => this.outgoingFriendRequests.add(userId),
+        successButton: { text: "Cancel Request", classes: "cancel-friend-request-btn success-btn", oldClasses: "send-friend-request-btn" },
+        errorButton: { text: "Send Request" }
+      },
+      cancel: {
+        loadingText: "Canceling...",
+        apiCall: (successCB, errorCB) => cancelFriendRequest({ SenderId: currentUser.id, RecipientId: userId }, successCB, errorCB),
+        successMessage: `Friend request to ${userName} unsent.`,
+        successAction: () => this.outgoingFriendRequests.delete(userId),
+        successButton: { text: "Send Request", classes: "send-friend-request-btn", oldClasses: "cancel-friend-request-btn success-btn" },
+        errorButton: { text: "Cancel Request" }
+      },
+      accept: {
+        loadingText: "Accepting...",
+        apiCall: (successCB, errorCB) => respondToFriendRequest({ RequesterId: userId, ResponderId: currentUser.id, Response: 1 }, successCB, errorCB),
+        successMessage: `You are now friends with ${userName}!`,
+        successAction: () => {
+          this.pendingFriendRequests.delete(userId);
+          this.currentFriends.add(userId);
+          if (window.ProfileFriendsManager) ProfileFriendsManager.loadAndPopulateFriendsList();
+        },
+        successButton: { text: "Unfriend", classes: "unfriend-btn danger-btn", oldClasses: "accept-friend-request-btn primary-btn" },
+        errorButton: { text: "Accept" }
+      },
+      unfriend: {
+        loadingText: "Unfriending...",
+        apiCall: (successCB, errorCB) => removeFriend({ userId: currentUser.id, friendId: userId }, successCB, errorCB),
+        successMessage: `${userName} has been removed from your friends list.`,
+        successAction: () => {
+          this.currentFriends.delete(userId);
+          if (window.ProfileFriendsManager) ProfileFriendsManager.loadAndPopulateFriendsList();
+        },
+        successButton: { text: "Send Request", classes: "send-friend-request-btn", oldClasses: "unfriend-btn danger-btn" },
+        errorButton: { text: "Unfriend" }
+      }
+    };
+
+    const config = actionConfig[actionType];
+    Utils.setButtonLoading(button, config.loadingText);
+
+    config.apiCall(
+      () => {
+        UIManager.showPopup(config.successMessage, true);
+        config.successAction();
+        Utils.updateButtonState(button, config.successButton.text, config.successButton.classes, config.successButton.oldClasses);
+      },
+      () => {
+        Utils.resetButtonState(button, config.errorButton.text);
+        UIManager.showPopup(`Failed to ${actionType} friend request.`, false);
+      }
+    );
+  }
+}
 
 window.GlobalFriendDialog = GlobalFriendDialog;
 $(() => GlobalFriendDialog.init());

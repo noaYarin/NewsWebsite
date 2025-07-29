@@ -7,6 +7,8 @@ const CONSTANTS = {
   DEFAULT_IMAGE: "../sources/images/placeholder.png",
   NO_IMAGE_URL: "../sources/images/no-image.png",
 
+  NAV_CATEGORIES: ["business", "culture", "entertainment", "general", "health", "science", "sports", "technology", "travel"],
+
   PATHS: {
     ICONS: "../sources/icons/",
     IMAGES: "../sources/images/",
@@ -30,5 +32,3 @@ const CONSTANTS = {
     }
   }
 };
-
-window.CONSTANTS = CONSTANTS;

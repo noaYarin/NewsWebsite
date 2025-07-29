@@ -1,15 +1,11 @@
-const HTMLSnippets = {
-  init() {
+class HTMLSnippets {
+  static init() {
     this.loadSnippets();
-  },
+  }
 
-  loadSnippets() {
-    const isAuthPage = window.location.pathname.includes("auth.html");
-    const logoHref = Utils.getNavHref("index");
-    const currentUser = Utils.getCurrentUser();
-    const isLoggedIn = currentUser !== null;
-
-    const snippets = this.generateSnippets(isAuthPage, logoHref, currentUser, isLoggedIn);
+  static loadSnippets() {
+    const pageContext = this.getPageContext();
+    const snippets = this.generateSnippets(pageContext);
 
     for (const id in snippets) {
       const $element = $(`#${id}`);
@@ -17,76 +13,96 @@ const HTMLSnippets = {
         $element.html(snippets[id]);
       }
     }
-  },
+  }
 
-  generateSnippets(isAuthPage, logoHref, currentUser, isLoggedIn) {
+  static getPageContext() {
+    const isAuthPage = window.location.pathname.includes("auth.html");
+    const logoHref = Utils.getNavHref("index");
+    const currentUser = Utils.getCurrentUser();
+    const isLoggedIn = currentUser !== null;
+
+    return { isAuthPage, logoHref, currentUser, isLoggedIn };
+  }
+
+  static generateSnippets(context) {
     return {
-      navbar: this.generateNavbar(isAuthPage, logoHref, currentUser, isLoggedIn),
-      mobileMenu: this.generateMobileMenu(isAuthPage, isLoggedIn),
+      navbar: this.generateNavbar(context),
+      mobileMenu: this.generateMobileMenu(context),
       footer: this.generateFooter(),
-      profileMenu: this.generateProfileMenu(currentUser, isLoggedIn)
+      profileMenu: this.generateProfileMenu(context)
     };
-  },
+  }
 
-  generateNavbar(isAuthPage, logoHref, currentUser, isLoggedIn) {
+  static generateNavbar(context) {
+    const { isAuthPage, logoHref, currentUser, isLoggedIn } = context;
+
     return `
       <div class="nav-left">
-        <button class="mobile-menu-btn">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-        <a href="${logoHref}" class="logo">
-          <div class="logo-icon">
-            <img src="../sources/logo.png" alt="Logo" />
-          </div>
-        </a>
-        <ul class="nav-items">
-          <li><a href="../html/category.html?name=business">Business</a></li>
-          <li><a href="../html/category.html?name=culture">Culture</a></li>
-          <li><a href="../html/category.html?name=entertainment">Entertainment</a></li>
-          <li><a href="../html/category.html?name=general">General</a></li>
-          <li><a href="../html/category.html?name=health">Health</a></li>
-          <li><a href="../html/category.html?name=science">Science</a></li>
-          <li><a href="../html/category.html?name=sports">Sports</a></li>
-          <li><a href="../html/category.html?name=technology">Technology</a></li>
-          <li><a href="../html/category.html?name=travel">Travel</a></li>
-        </ul>
+        ${this.generateNavLeft(logoHref)}
       </div>
       <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
         <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" />
-        ${
-          isLoggedIn
-            ? `
-          <div class="nav-notifications-container">
-            <button class="nav-notifications-btn">
-              <img src="../sources/icons/notifications-svgrepo-com.svg" alt="Notifications" class="nav-notifications-icon" />
-              <span class="nav-notifications-badge" style="display: none;">0</span>
-            </button>
-            <div class="nav-notifications-dropdown">
-              <div class="nav-notifications-header">
-                <h4>Notifications</h4>
-                <a href="../html/notifications.html" class="nav-notifications-view-all">View All</a>
-              </div>
-              <div class="nav-notifications-list">
-                <div class="nav-notifications-loading">
-                  <div class="thinking-container small">
-                    <img src="../sources/images/sun/sun.png" alt="Loading" class="thinking-icon" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="nav-profile-container">
-            <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
-          </div>
-        `
-            : `
-          <button class="login-btn">Log In</button>
-        `
-        }
+        ${this.generateNavRight(currentUser, isLoggedIn)}
         <button class="subscribe-btn"><span>Subscribe</span></button>
       </div>
+      ${this.generateSearchOverlay(logoHref, currentUser, isLoggedIn)}
+    `;
+  }
+
+  static generateNavLeft(logoHref) {
+    const categoryLinks = CONSTANTS.NAV_CATEGORIES.map((category) => `<li><a href="../html/category.html?name=${category}">${Utils.capitalizeFirst(category)}</a></li>`).join("");
+    return `
+      <button class="mobile-menu-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="${logoHref}" class="logo">
+        <div class="logo-icon">
+          <img src="../sources/logo.png" alt="Logo" />
+        </div>
+      </a>
+      <ul class="nav-items">
+        ${categoryLinks}
+      </ul>
+    `;
+  }
+
+  static generateNavRight(currentUser, isLoggedIn) {
+    if (isLoggedIn) {
+      return `
+        ${this.generateNotificationsContainer()}
+        <div class="nav-profile-container">
+          <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
+        </div>
+      `;
+    }
+
+    return `<button class="login-btn">Log In</button>`;
+  }
+
+  static generateNotificationsContainer() {
+    return `
+      <div class="nav-notifications-container">
+        <button class="nav-notifications-btn">
+          <img src="../sources/icons/notifications-svgrepo-com.svg" alt="Notifications" class="nav-notifications-icon" />
+          <span class="nav-notifications-badge" style="display: none;">0</span>
+        </button>
+        <div class="nav-notifications-dropdown">
+          <div class="nav-notifications-header">
+            <h4>Notifications</h4>
+            <a href="../html/notifications.html" class="nav-notifications-view-all">View All</a>
+          </div>
+          <div class="nav-notifications-list">
+            ${Utils.createLoadingIndicator("../sources/images/sun/sun.png", "Loading")}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  static generateSearchOverlay(logoHref, currentUser, isLoggedIn) {
+    return `
       <div class="search-overlay" id="searchOverlay">
         <a href="${logoHref}" class="logo">
           <div class="logo-icon">
@@ -101,98 +117,47 @@ const HTMLSnippets = {
             </button>
           </div>
           <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" style="display: none" />
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Search Here..."
-            autofocus
-          />
+          <input type="text" class="search-input" placeholder="Search Here..." autofocus />
           <button class="close-search">
             <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
           </button>
         </div>
         <div class="nav-right">
-          ${
-            isLoggedIn
-              ? `
-            <div class="nav-notifications-container">
-              <button class="nav-notifications-btn">
-                <img src="../sources/icons/notifications-svgrepo-com.svg" alt="Notifications" class="nav-notifications-icon" />
-                <span class="nav-notifications-badge" style="display: none;">0</span>
-              </button>
-              <div class="nav-notifications-dropdown">
-                <div class="nav-notifications-header">
-                  <h4>Notifications</h4>
-                  <a href="../html/notifications.html" class="nav-notifications-view-all">View All</a>
-                </div>
-                <div class="nav-notifications-list">
-                  <div class="nav-notifications-loading">
-                    <div class="thinking-container small">
-                      <img src="../sources/images/sun/sun.png" alt="Loading" class="thinking-icon" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="nav-profile-container">
-              <img src="${currentUser.imageUrl}" alt="Profile" class="nav-profile-picture" />
-            </div>
-          `
-              : `
-            <button class="login-btn">Log In</button>
-          `
-          }
+          ${this.generateNavRight(currentUser, isLoggedIn)}
           <button class="subscribe-btn"><span>Subscribe</span></button>
         </div>
         <div class="mobile-search-header">
           <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="mobile-search-icon" />
-          <input
-            type="text"
-            class="mobile-search-input"
-            placeholder="Search Here..."
-            autofocus
-          />
+          <input type="text" class="mobile-search-input" placeholder="Search Here..." autofocus />
           <button class="mobile-close-search">
             <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
           </button>
         </div>
       </div>
     `;
-  },
+  }
 
-  generateMobileMenu(isAuthPage, isLoggedIn) {
+  static generateMobileMenu(context) {
+    const { isAuthPage, isLoggedIn } = context;
+    const categoryLinks = CONSTANTS.NAV_CATEGORIES.map((category) => `<li><a href="../html/category.html?name=${category}">${Utils.capitalizeFirst(category)}</a></li>`).join("");
     return `
       <div class="mobile-menu-header">
         <button class="close-btn">
           <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
         </button>
-        <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""}/>
+        <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" ${isAuthPage ? 'style="display: none;"' : ""} />
       </div>
       <ul class="mobile-nav-items">
-        <li><a href="../html/category.html?name=business">Business</a></li>
-        <li><a href="../html/category.html?name=culture">Culture</a></li>
-        <li><a href="../html/category.html?name=entertainment">Entertainment</a></li>
-        <li><a href="../html/category.html?name=general">General</a></li>
-        <li><a href="../html/category.html?name=health">Health</a></li>
-        <li><a href="../html/category.html?name=science">Science</a></li>
-        <li><a href="../html/category.html?name=sports">Sports</a></li>
-        <li><a href="../html/category.html?name=technology">Technology</a></li>
-        <li><a href="../html/category.html?name=travel">Travel</a></li>
+        ${categoryLinks}
       </ul>
       <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
-        ${
-          isLoggedIn
-            ? ``
-            : `
-          <button class="mobile-login-btn">LOG IN</button>
-        `
-        }
+        ${isLoggedIn ? "" : '<button class="mobile-login-btn">LOG IN</button>'}
         <button class="mobile-subscribe-btn">SUBSCRIBE</button>
       </div>
     `;
-  },
+  }
 
-  generateFooter() {
+  static generateFooter() {
     return `
       <div class="footer-content">
         <div class="footer-logo">
@@ -205,59 +170,17 @@ const HTMLSnippets = {
         </div>
       </div>
     `;
-  },
+  }
 
-  generateProfileMenu(currentUser, isLoggedIn) {
+  static generateProfileMenu(context) {
+    const { currentUser, isLoggedIn } = context;
+
     return `
       <div class="nav-profile-menu-header">
-        <div class="nav-profile-info">
-          <img src="${isLoggedIn ? currentUser.imageUrl : ""}" alt="Profile" class="nav-profile-menu-picture" />
-          <div class="nav-profile-details">
-            <h3>${isLoggedIn ? currentUser.firstName + " " + currentUser.lastName : ""}</h3>
-            <p>${isLoggedIn ? currentUser.email : ""}</p>
-          </div>
-        </div>
-        <button class="nav-profile-menu-close">
-          <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
-        </button>
+        ${this.generateProfileHeader(currentUser, isLoggedIn)}
       </div>
       <div class="nav-profile-menu-content">
-        <ul class="nav-profile-menu-items">
-          <li><a href="${Utils.getNavHref("index")}" class="nav-profile-menu-item">
-            <img class="nav-profile-menu-icon" src="../sources/icons/home-svgrepo-com.svg"></img>
-            <span>Home</span>
-          </a></li>
-          <li><a href="#" class="nav-profile-menu-item nav-profile-menu-search">
-            <img class="nav-profile-menu-icon" src="../sources/icons/search-svgrepo-com-menu.svg"></img>
-            <span>Search</span>
-          </a></li>
-          <li><a href="${Utils.getNavHref("notifications")}" class="nav-profile-menu-item">
-            <img class="nav-profile-menu-icon" src="../sources/icons/notifications-svgrepo-com.svg"></img>
-            <span>Notifications</span>
-          </a></li>
-          <li><a href="#" class="nav-profile-menu-item nav-profile-menu-add-friend">
-            <img class="nav-profile-menu-icon" src="../sources/icons/profile-plus-round-1324-svgrepo-com.svg"></img>
-            <span>Add Friend</span>
-          </a></li>
-          <li><a href="${Utils.getNavHref("bookmarks")}" class="nav-profile-menu-item">
-            <img class="nav-profile-menu-icon" src="../sources/icons/bookmarks-svgrepo-com.svg"></img>
-            <span>Bookmarks</span>
-          </a></li>
-          <li><a href="${Utils.getNavHref("profile")}" class="nav-profile-menu-item">
-            <img class="nav-profile-menu-icon" src="../sources/icons/user-svgrepo-com.svg"></img>
-            <span>Profile Settings</span>
-          </a></li>
-          ${
-            isLoggedIn && currentUser.isAdmin
-              ? `
-          <li><a href="${Utils.getNavHref("admin")}" class="nav-profile-menu-item nav-profile-menu-admin">
-            <img class="nav-profile-menu-icon" src="../sources/icons/dashboard-1-svgrepo-com.svg"></img>
-            <span>Admin Dashboard</span>
-          </a></li>
-          `
-              : ""
-          }
-        </ul>
+        ${this.generateProfileMenuItems(currentUser, isLoggedIn)}
       </div>
       <div class="nav-profile-menu-footer">
         <button class="nav-profile-logout-btn">
@@ -266,6 +189,63 @@ const HTMLSnippets = {
       </div>
     `;
   }
-};
+
+  static generateProfileHeader(currentUser, isLoggedIn) {
+    return `
+      <div class="nav-profile-info">
+        <img src="${isLoggedIn ? currentUser.imageUrl : ""}" alt="Profile" class="nav-profile-menu-picture" />
+        <div class="nav-profile-details">
+          <h3>${isLoggedIn ? `${currentUser.firstName} ${currentUser.lastName}` : ""}</h3>
+          <p>${isLoggedIn ? currentUser.email : ""}</p>
+        </div>
+      </div>
+      <button class="nav-profile-menu-close">
+        <img src="../sources/icons/close-1511-svgrepo-com.svg" alt="Close" />
+      </button>
+    `;
+  }
+
+  static generateProfileMenuItems(currentUser, isLoggedIn) {
+    const menuItems = [
+      { href: Utils.getNavHref("index"), icon: "home-svgrepo-com.svg", text: "Home" },
+      { href: "#", icon: "search-svgrepo-com-menu.svg", text: "Search", class: "nav-profile-menu-search" },
+      { href: Utils.getNavHref("notifications"), icon: "notifications-svgrepo-com.svg", text: "Notifications" },
+      { href: "#", icon: "profile-plus-round-1324-svgrepo-com.svg", text: "Add Friend", class: "nav-profile-menu-add-friend" },
+      { href: Utils.getNavHref("bookmarks"), icon: "bookmarks-svgrepo-com.svg", text: "Bookmarks" },
+      { href: Utils.getNavHref("profile"), icon: "user-svgrepo-com.svg", text: "Profile Settings" }
+    ];
+
+    const menuItemsHTML = menuItems.map((item) => this.generateMenuItem(item)).join("");
+
+    const adminItem =
+      isLoggedIn && currentUser.isAdmin
+        ? this.generateMenuItem({
+            href: Utils.getNavHref("admin"),
+            icon: "dashboard-1-svgrepo-com.svg",
+            text: "Admin Dashboard",
+            class: "nav-profile-menu-admin"
+          })
+        : "";
+
+    return `
+      <ul class="nav-profile-menu-items">
+        ${menuItemsHTML}
+        ${adminItem}
+      </ul>
+    `;
+  }
+
+  static generateMenuItem(item) {
+    const cssClass = item.class ? ` ${item.class}` : "";
+    return `
+      <li>
+        <a href="${item.href}" class="nav-profile-menu-item${cssClass}">
+          <img class="nav-profile-menu-icon" src="../sources/icons/${item.icon}" />
+          <span>${item.text}</span>
+        </a>
+      </li>
+    `;
+  }
+}
 
 window.HTMLSnippets = HTMLSnippets;

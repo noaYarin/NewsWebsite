@@ -1,5 +1,5 @@
 export const SCRIPT_BUNDLES = {
-  core: ["./core/constants.js", "./core/helpers.js", "./api/api.js"],
+  core: ["./core/constants.js", "./core/utils.js", "./api/api.js"],
 
   ui: [
     "./components/ui-manager.js",
