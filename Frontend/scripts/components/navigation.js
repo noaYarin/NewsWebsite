@@ -1,75 +1,88 @@
-const Navigation = {
-  init() {
+class Navigation {
+  static init() {
     this.setupEventHandlers();
     this.setupAuthNavLinks();
     this.setupProfileMenu();
     this.checkUserLockStatus();
-  },
+  }
 
-  checkUserLockStatus() {
-    const storedUser = localStorage.getItem("currentUser");
-    if (!storedUser) return;
+  static checkUserLockStatus() {
+    const currentUser = Utils.getCurrentUser();
+    if (!currentUser) return;
 
-    try {
-      const currentUser = JSON.parse(storedUser);
-
-      getProfile(
-        currentUser.id,
-        (freshProfile) => {
-          if (freshProfile && freshProfile.isLocked) {
-            localStorage.removeItem("currentUser");
-            UIManager.showPopup("Your account has been locked by an administrator.", false);
-            setTimeout(() => (window.location.href = Utils.getNavHref("auth")), 3000);
-          }
-        },
-        (error) => {
-          if (error.status === 404) {
-            localStorage.removeItem("currentUser");
-            window.location.reload();
-          }
+    getProfile(
+      currentUser.id,
+      (freshProfile) => {
+        if (freshProfile?.isLocked) {
+          Navigation.invalidateSession("Your account has been locked by an administrator.");
         }
-      );
-    } catch (e) {
-      localStorage.removeItem("currentUser");
-    }
-  },
+      },
+      (error) => {
+        if (error.status === 404) {
+          Navigation.invalidateSession("Invalid user profile. Please log in again.");
+        }
+      }
+    );
+  }
 
-  setupEventHandlers() {
+  static invalidateSession(message) {
+    localStorage.removeItem("currentUser");
+    UIManager.showPopup(message, false);
+    setTimeout(() => (window.location.href = Utils.getNavHref("auth")), 2000);
+  }
+
+  static setupEventHandlers() {
     $(document).on("keydown", (e) => {
       if (e.key === "Escape") {
-        if ($("#searchOverlay").hasClass("active")) SearchManager.toggle();
-        if ($("#mobileMenu").hasClass("active")) this.toggleMobileMenu();
-        if ($("#profileMenu").hasClass("active")) this.toggleProfileMenu();
-        if (typeof NotificationsManager !== "undefined" && NotificationsManager.isDropdownOpen) {
-          NotificationsManager.closeDropdown();
-        }
+        this.handleEscapeKey();
       }
     });
 
     $(window).on("resize", () => {
       if ($(window).width() > CONSTANTS.MOBILE_BREAKPOINT) {
-        if ($("#mobileMenu").hasClass("active")) this.toggleMobileMenu();
-        if ($("#profileMenu").hasClass("active")) this.toggleProfileMenu();
+        this.closeMobileMenus();
       }
     });
 
     $(document).on("click", ".mobile-menu-btn, .mobile-menu-header .close-btn", () => {
       this.toggleMobileMenu();
     });
-  },
+  }
 
-  toggleMobileMenu() {
+  static handleEscapeKey() {
+    if ($("#searchOverlay").hasClass("active")) {
+      SearchManager.toggle();
+    } else if ($("#mobileMenu").hasClass("active")) {
+      this.toggleMobileMenu();
+    } else if ($("#profileMenu").hasClass("active")) {
+      this.toggleProfileMenu();
+    } else if (typeof NotificationsManager !== "undefined" && NotificationsManager.isDropdownOpen) {
+      NotificationsManager.closeDropdown();
+    }
+  }
+
+  static closeMobileMenus() {
+    if ($("#mobileMenu").hasClass("active")) {
+      this.toggleMobileMenu();
+    }
+    if ($("#profileMenu").hasClass("active")) {
+      this.toggleProfileMenu();
+    }
+  }
+
+  static toggleMobileMenu() {
     const $mobileMenu = $("#mobileMenu");
     const $searchIcon = $("#navbar .search-icon");
+
     if (!$mobileMenu.length) return;
 
     $mobileMenu.toggleClass("active");
     if ($searchIcon.length) {
       $searchIcon.toggleClass("hide");
     }
-  },
+  }
 
-  setupProfileMenu() {
+  static setupProfileMenu() {
     $(document).on("click", ".nav-profile-picture", (e) => {
       e.preventDefault();
       this.toggleProfileMenu();
@@ -83,43 +96,50 @@ const Navigation = {
       this.logout();
     });
 
+    // Click outside to close profile menu
     $(document).on("click", (e) => {
-      if ($("#profileMenu").hasClass("active") && !$(e.target).closest("#profileMenu").length && !$(e.target).closest(".nav-profile-picture").length) {
+      const isProfileMenuActive = $("#profileMenu").hasClass("active");
+      const isClickInsideMenu = $(e.target).closest("#profileMenu").length;
+      const isClickOnProfilePicture = $(e.target).closest(".nav-profile-picture").length;
+
+      if (isProfileMenuActive && !isClickInsideMenu && !isClickOnProfilePicture) {
         this.toggleProfileMenu();
       }
     });
-  },
+  }
 
-  toggleProfileMenu() {
+  static toggleProfileMenu() {
     const $profileMenu = $("#profileMenu");
     if (!$profileMenu.length) return;
 
+    // Close notifications if open (mutual exclusion)
     if (typeof NotificationsManager !== "undefined" && NotificationsManager.isDropdownOpen) {
       NotificationsManager.closeDropdown();
     }
 
     $profileMenu.toggleClass("active");
-  },
+  }
 
-  logout() {
+  static logout() {
     try {
       localStorage.removeItem("currentUser");
       UIManager.showPopup("Logged out successfully!", true);
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.reload(), 2000);
     } catch (error) {
       UIManager.showPopup("Error during logout. Please try again.", false);
     }
-  },
+  }
 
-  setupAuthNavLinks() {
+  static setupAuthNavLinks() {
     $(document).on("click", ".login-btn, .mobile-login-btn", () => {
       window.location.href = Utils.getNavHref("auth");
     });
 
+    // TODO: Subscribe button handlers
     $(document).on("click", ".subscribe-btn, .mobile-subscribe-btn", () => {
       UIManager.showPopup("Subscribe functionality coming soon!", "muted");
     });
   }
-};
+}
 
 window.Navigation = Navigation;

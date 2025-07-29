@@ -73,8 +73,7 @@ class GlobalFriendDialog {
     $("#searchUserButton").on("click", (e) => this.handleUserSearch(e));
     $("#friendEmailInput")
       .on("keypress", (e) => {
-        // Trigger search on Enter key
-        if (e.which === 13) {
+        if (e.key === "Enter") {
           e.preventDefault();
           this.handleUserSearch(e);
         }

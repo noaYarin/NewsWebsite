@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  const userJson = localStorage.getItem("currentUser");
+  const userJson = Utils.getCurrentUser();
   if (!userJson) {
     window.location.href = "auth.html";
     return;
