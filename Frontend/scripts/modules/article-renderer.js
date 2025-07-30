@@ -1,5 +1,5 @@
-const ArticleRenderer = {
-  renderListItem(article) {
+class ArticleRenderer {
+  static renderListItem(article) {
     return `
       <a href="../html/article.html?id=${article.id}" class="article-list-item">
         <div class="article-item-image">
@@ -11,9 +11,9 @@ const ArticleRenderer = {
           <span class="article-item-author">${article.author || "Unknown Author"}</span>
         </div>
       </a>`;
-  },
+  }
 
-  updateArticleElement(element, article) {
+  static updateArticleElement(element, article) {
     element.data("article-object", article);
 
     const linkElement = element.is("a") ? element : element.find("a");
@@ -31,14 +31,14 @@ const ArticleRenderer = {
     element.find("[data-title-target]").text(article.title);
     element.find("[data-author-target]").text(article.author);
     element.find("[data-description-target]").text(article.description);
-  },
+  }
 
-  displayArticleList(container, articles) {
+  static displayArticleList(container, articles) {
     container.empty();
     articles.forEach((article) => {
       container.append(this.renderListItem(article));
     });
   }
-};
+}
 
 window.ArticleRenderer = ArticleRenderer;
