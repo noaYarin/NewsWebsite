@@ -1,36 +1,36 @@
-const AdminDataManager = {
-  statistics: {
+class AdminDataManager {
+  static statistics = {
     general: null,
     daily: null,
     dailyLogins: null,
     dailyArticlePulls: null,
     dailyArticleInserts: null
-  },
+  };
 
-  currentDateRange: {
+  static currentDateRange = {
     startDate: null,
     endDate: null
-  },
+  };
 
-  init() {
+  static init() {
     this.setDefaultDateRange();
-  },
+  }
 
-  setDefaultDateRange() {
+  static setDefaultDateRange() {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
 
     this.currentDateRange.startDate = this.formatDateForInput(startDate);
     this.currentDateRange.endDate = this.formatDateForInput(endDate);
-  },
+  }
 
-  setDateRange(startDate, endDate) {
+  static setDateRange(startDate, endDate) {
     this.currentDateRange.startDate = startDate || null;
     this.currentDateRange.endDate = endDate || null;
-  },
+  }
 
-  formatDateForInput(date) {
+  static formatDateForInput(date) {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
       return "";
     }
@@ -39,9 +39,9 @@ const AdminDataManager = {
     } catch (error) {
       return "";
     }
-  },
+  }
 
-  formatDateForDisplay(dateString) {
+  static formatDateForDisplay(dateString) {
     if (!dateString) return "Unknown Date";
 
     try {
@@ -58,13 +58,15 @@ const AdminDataManager = {
     } catch (error) {
       return "Invalid Date";
     }
-  },
+  }
 
-  loadAllStatistics() {
+  // ========== Data Loading Methods ==========
+
+  static loadAllStatistics() {
     return Promise.all([this.loadGeneralStatistics(), this.loadDailyStatistics(), this.loadDailyLogins(), this.loadDailyArticlePulls(), this.loadDailyArticleInserts()]);
-  },
+  }
 
-  loadGeneralStatistics() {
+  static loadGeneralStatistics() {
     return new Promise((resolve, reject) => {
       getGeneralStatistics(
         (data) => {
@@ -76,9 +78,9 @@ const AdminDataManager = {
         }
       );
     });
-  },
+  }
 
-  loadDailyStatistics() {
+  static loadDailyStatistics() {
     return new Promise((resolve, reject) => {
       getDailyStatistics(
         this.currentDateRange.startDate,
@@ -92,9 +94,9 @@ const AdminDataManager = {
         }
       );
     });
-  },
+  }
 
-  loadDailyLogins() {
+  static loadDailyLogins() {
     return new Promise((resolve, reject) => {
       getDailyLogins(
         this.currentDateRange.startDate,
@@ -108,9 +110,9 @@ const AdminDataManager = {
         }
       );
     });
-  },
+  }
 
-  loadDailyArticlePulls() {
+  static loadDailyArticlePulls() {
     return new Promise((resolve, reject) => {
       getDailyArticlePulls(
         this.currentDateRange.startDate,
@@ -124,9 +126,9 @@ const AdminDataManager = {
         }
       );
     });
-  },
+  }
 
-  loadDailyArticleInserts() {
+  static loadDailyArticleInserts() {
     return new Promise((resolve, reject) => {
       getDailyArticleInserts(
         this.currentDateRange.startDate,
@@ -140,56 +142,110 @@ const AdminDataManager = {
         }
       );
     });
-  },
+  }
 
-  extractLabelsFromData(data) {
+  static extractLabelsFromData(data) {
     if (!data || !Array.isArray(data)) return [];
     return data.map((item) => {
-      if (!item) return "Unknown Date";
-      const dateValue = item.date || item.StatDate || item.statDate;
-      if (!dateValue) return "Unknown Date";
-      return this.formatDateForDisplay(dateValue);
+      if (!item || !item.statDate) return "Unknown Date";
+      return this.formatDateForDisplay(item.statDate);
     });
-  },
+  }
 
-  extractDataFromStatistics(data, field) {
+  /**
+   * Extract numeric values from statistics data based on field type
+   * Mathematical function: f: (data, field) → numeric array
+   * Implements context-aware property mapping using reference equality
+   *
+   * For field='count': Uses dataset reference to determine appropriate count property
+   * - dailyLogins → userLoginCount
+   * - dailyArticlePulls → articlesPulledCount
+   * - dailyArticleInserts → articlesInsertedCount
+   *
+   * @param {Array} data - Statistics data array
+   * @param {string} field - Field name to extract ('count', 'logins', 'pulls', 'inserts', 'comments')
+   * @returns {Array<number>} Array of integer values
+   */
+  static extractDataFromStatistics(data, field) {
     if (!data || !Array.isArray(data)) return [];
+
     return data.map((item) => {
       if (!item) return 0;
 
-      let value;
+      let value = 0;
+
+      // If field is 'count', determine which count to use based on which data array this is
       if (field === "count") {
-        value =
-          item.count ||
-          item.Count ||
-          item.userLoginCount ||
-          item.UserLoginCount ||
-          item.articlesPulledCount ||
-          item.ArticlesPulledCount ||
-          item.articlesInsertedCount ||
-          item.ArticlesInsertedCount ||
-          item.commentsPostedCount ||
-          item.CommentsPostedCount ||
-          0;
+        if (data === this.statistics.dailyLogins) {
+          value = item.userLoginCount;
+        } else if (data === this.statistics.dailyArticlePulls) {
+          value = item.articlesPulledCount;
+        } else if (data === this.statistics.dailyArticleInserts) {
+          value = item.articlesInsertedCount;
+        } else {
+          // For daily statistics or unknown data, use the first non-zero count
+          value = item.userLoginCount || item.articlesPulledCount || item.articlesInsertedCount || item.commentsPostedCount || 0;
+        }
       } else {
-        value = item[field] || item[field.charAt(0).toUpperCase() + field.slice(1)] || 0;
+        // Map specific field names to actual property names
+        switch (field) {
+          case "logins":
+            value = item.userLoginCount;
+            break;
+          case "pulls":
+            value = item.articlesPulledCount;
+            break;
+          case "inserts":
+            value = item.articlesInsertedCount;
+            break;
+          case "comments":
+            value = item.commentsPostedCount;
+            break;
+          default:
+            // Direct property access
+            value = item[field];
+        }
       }
 
       const parsedValue = parseInt(value);
       return isNaN(parsedValue) ? 0 : parsedValue;
     });
-  },
+  }
 
-  getProcessedStatistics() {
+  /**
+   * Get processed statistics object
+   * Simple accessor method following encapsulation principle
+   * @returns {Object} Current statistics state
+   */
+  static getProcessedStatistics() {
     return this.statistics;
-  },
+  }
 
-  calculateSummaryMetrics() {
-    const loginsData = this.extractDataFromStatistics(this.statistics.dailyLogins, "count");
-    const pullsData = this.extractDataFromStatistics(this.statistics.dailyArticlePulls, "count");
-    const insertsData = this.extractDataFromStatistics(this.statistics.dailyArticleInserts, "count");
+  /**
+   * Calculate summary metrics from time series data
+   * Mathematical operations:
+   * - Average: μ = (1/n) × Σ(xi) for i=1 to n
+   * - Total: Σ(xi) for all data points
+   *
+   * Computes:
+   * - avgLogins: Mean daily login count
+   * - avgArticles: Mean daily article pull count
+   * - totalLogins: Sum of all logins in period
+   * - totalArticles: Sum of (pulls + inserts) in period
+   *
+   * @returns {Object} Summary statistics object
+   */
+  static calculateSummaryMetrics() {
+    const loginsData = this.extractDataFromStatistics(this.statistics.dailyLogins, "logins");
+    const pullsData = this.extractDataFromStatistics(this.statistics.dailyArticlePulls, "pulls");
+    const insertsData = this.extractDataFromStatistics(this.statistics.dailyArticleInserts, "inserts");
+
+    console.log("Summary metrics - logins:", loginsData);
+    console.log("Summary metrics - pulls:", pullsData);
+    console.log("Summary metrics - inserts:", insertsData);
 
     const avgLogins = loginsData.length > 0 ? Math.round(loginsData.reduce((a, b) => a + b, 0) / loginsData.length) : 0;
+
     const avgArticles = pullsData.length > 0 ? Math.round(pullsData.reduce((a, b) => a + b, 0) / pullsData.length) : 0;
 
     const totalLogins = loginsData.reduce((a, b) => a + b, 0);
@@ -201,59 +257,40 @@ const AdminDataManager = {
       totalLogins,
       totalArticles
     };
-  },
+  }
 
-  getTableData() {
-    if (!this.statistics.dailyLogins || this.statistics.dailyLogins.length === 0) {
+  /**
+   * Generate table data from daily statistics
+   * Mathematical transformation: Time series data → Tabular representation
+   *
+   * Process:
+   * 1. Sort by date descending: O(n log n) complexity
+   * 2. Map to display format with calculated totals
+   * 3. Total = logins + pulls + inserts (activity aggregation)
+   *
+   * Uses daily statistics as single source of truth for efficiency
+   * Avoids redundant data processing from multiple endpoints
+   * Since all data has the same structure, we can use the daily statistics
+   * which contains all the data in one place
+   *
+   * @returns {Array<Object>} Array of table row objects
+   */
+  static getTableData() {
+    if (!this.statistics.daily || this.statistics.daily.length === 0) {
       return [];
     }
 
-    const loginsMap = new Map();
-    const pullsMap = new Map();
-    const insertsMap = new Map();
-
-    this.statistics.dailyLogins?.forEach((item) => {
-      if (item) {
-        const date = item.date || item.StatDate || item.statDate;
-        const count = item.count || item.Count || item.userLoginCount || item.UserLoginCount || 0;
-        if (date) {
-          loginsMap.set(date, parseInt(count) || 0);
-        }
-      }
+    const sortedData = [...this.statistics.daily].sort((a, b) => new Date(b.statDate) - new Date(a.statDate));
+    return sortedData.map((item) => {
+      return {
+        date: this.formatDateForDisplay(item.statDate),
+        logins: parseInt(item.userLoginCount) || 0,
+        pulls: parseInt(item.articlesPulledCount) || 0,
+        inserts: parseInt(item.articlesInsertedCount) || 0,
+        total: (parseInt(item.userLoginCount) || 0) + (parseInt(item.articlesPulledCount) || 0) + (parseInt(item.articlesInsertedCount) || 0)
+      };
     });
-
-    this.statistics.dailyArticlePulls?.forEach((item) => {
-      if (item) {
-        const date = item.date || item.StatDate || item.statDate;
-        const count = item.count || item.Count || item.articlesPulledCount || item.ArticlesPulledCount || 0;
-        if (date) {
-          pullsMap.set(date, parseInt(count) || 0);
-        }
-      }
-    });
-
-    this.statistics.dailyArticleInserts?.forEach((item) => {
-      if (item) {
-        const date = item.date || item.StatDate || item.statDate;
-        const count = item.count || item.Count || item.articlesInsertedCount || item.ArticlesInsertedCount || 0;
-        if (date) {
-          insertsMap.set(date, parseInt(count) || 0);
-        }
-      }
-    });
-
-    const allDates = new Set([...Array.from(loginsMap.keys()), ...Array.from(pullsMap.keys()), ...Array.from(insertsMap.keys())]);
-
-    const sortedDates = Array.from(allDates).sort((a, b) => new Date(b) - new Date(a));
-
-    return sortedDates.map((date) => ({
-      date: this.formatDateForDisplay(date),
-      logins: loginsMap.get(date) || 0,
-      pulls: pullsMap.get(date) || 0,
-      inserts: insertsMap.get(date) || 0,
-      total: (loginsMap.get(date) || 0) + (pullsMap.get(date) || 0) + (insertsMap.get(date) || 0)
-    }));
   }
-};
+}
 
 window.AdminDataManager = AdminDataManager;

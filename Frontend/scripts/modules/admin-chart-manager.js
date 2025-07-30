@@ -10,11 +10,10 @@ class AdminChartManager {
     SUCCESS_ALPHA: "rgba(40, 167, 69, 0.1)",
     SUCCESS_SOLID: "rgba(255, 115, 0, 0.8)",
 
-    WARNING: "#ffc107",
+    WARNING: "#ff4107ff",
     WARNING_ALPHA: "rgba(255, 193, 7, 0.1)",
-    WARNING_SOLID: "rgba(255, 193, 7, 0.8)",
+    WARNING_SOLID: "rgba(255, 65, 7, 0.8)",
 
-    // UI Colors
     BACKGROUND_DARK: "rgba(0, 0, 0, 0.9)",
     TEXT_PRIMARY: "#000000",
     TEXT_SECONDARY: "#666666",
