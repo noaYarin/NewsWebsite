@@ -315,7 +315,7 @@
   }
 
   .notification-header {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     gap: 0.5rem;
   }
@@ -330,9 +330,7 @@
   }
 
   .notification-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    flex-direction: row;
   }
 
   .notification-body {

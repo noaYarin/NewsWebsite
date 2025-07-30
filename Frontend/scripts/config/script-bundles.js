@@ -1,14 +1,7 @@
 export const SCRIPT_BUNDLES = {
   core: ["./core/constants.js", "./core/utils.js", "./api/api.js"],
 
-  ui: [
-    "./components/ui-manager.js",
-    "./components/html-snippets.js",
-    "./components/navigation.js",
-    "./components/search-manager.js",
-    "./components/friend-dialog.js",
-    "./components/notifications-manager.js"
-  ],
+  ui: ["./components/ui-manager.js", "./components/html-snippets.js", "./components/navigation.js", "./components/search-manager.js", "./components/friend-dialog.js"],
 
   modules: {
     validation: "./modules/validation.js",
