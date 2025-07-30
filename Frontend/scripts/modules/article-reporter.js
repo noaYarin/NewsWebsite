@@ -1,18 +1,18 @@
-const ArticleReporter = {
-  currentUser: null,
-  currentArticle: null,
+class ArticleReporter {
+  static currentUser = null;
+  static currentArticle = null;
 
-  init(user, article) {
+  static init(user, article) {
     this.currentUser = user;
     this.currentArticle = article;
     this.setupEventHandlers();
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
     $(document).on("click", "#report-article-btn", (e) => this.handleReport(e));
-  },
+  }
 
-  handleReport(e) {
+  static handleReport(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to report articles.", false);
       return;
@@ -36,6 +36,6 @@ const ArticleReporter = {
       }
     });
   }
-};
+}
 
 window.ArticleReporter = ArticleReporter;
