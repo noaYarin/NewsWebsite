@@ -20,6 +20,17 @@ class ReportDialog {
       $dialog.append($reportControls);
       $reportControls.hide().fadeIn(200);
       $dialog.addClass("expanded");
+
+      this.setupOutsideClickHandler(closeDialog);
+    });
+  }
+
+  static setupOutsideClickHandler(closeDialog) {
+    $(document).off("click.dialog");
+    $(document).on("click.dialog", (event) => {
+      if (!$(event.target).closest("#dialog-popup").length) {
+        closeDialog(false);
+      }
     });
   }
 

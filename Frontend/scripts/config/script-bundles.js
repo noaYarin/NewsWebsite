@@ -10,7 +10,7 @@ export const SCRIPT_BUNDLES = {
     comments: "./modules/comment-manager.js",
     bookmarks: "./modules/bookmark-manager.js",
     articleReporter: "./modules/article-reporter.js",
-    shareManager: "./modules/share-manager.js",
+    shareManager: "./components/share-manager.js",
     backToTop: "./components/back-to-top.js",
     reportDialog: "./components/report-dialog.js",
     profileFormManager: "./modules/profile-form-manager.js",
