@@ -1,15 +1,15 @@
-const BookmarkManager = {
-  currentUser: null,
-  currentArticle: null,
+class BookmarkManager {
+  static currentUser = null;
+  static currentArticle = null;
 
-  init(user, article) {
+  static init(user, article) {
     this.currentUser = user;
     this.currentArticle = article;
     this.checkStatus();
     this.setupEventHandlers();
-  },
+  }
 
-  checkStatus() {
+  static checkStatus() {
     if (!this.currentUser || !this.currentArticle) return;
 
     isArticleBookmarked(
@@ -18,9 +18,9 @@ const BookmarkManager = {
       (response) => this.updateButton(response.isBookmarked),
       () => {}
     );
-  },
+  }
 
-  updateButton(isBookmarked) {
+  static updateButton(isBookmarked) {
     const $button = $("#bookmark-btn");
     if (isBookmarked) {
       $button.addClass("bookmarked").attr("title", "Remove from Bookmarks");
@@ -29,13 +29,13 @@ const BookmarkManager = {
       $button.removeClass("bookmarked").attr("title", "Save Article");
       $button.find("span").text("Save");
     }
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
     $(document).on("click", "#bookmark-btn", (e) => this.handleToggle(e));
-  },
+  }
 
-  handleToggle(e) {
+  static handleToggle(e) {
     if (!this.currentUser || !this.currentArticle) {
       UIManager.showPopup("Please log in to save articles.", false);
       return;
@@ -53,6 +53,6 @@ const BookmarkManager = {
       () => UIManager.showPopup("An error occurred. Please try again.", false)
     );
   }
-};
+}
 
 window.BookmarkManager = BookmarkManager;
