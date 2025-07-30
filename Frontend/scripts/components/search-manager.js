@@ -1,19 +1,21 @@
-const SearchManager = {
-  scope: null,
-  currentPage: 1,
-  isLoading: false,
-  allResultsLoaded: false,
-  lastQuery: "",
+class SearchManager {
+  static scope = null;
+  static currentPage = 1;
+  static isLoading = false;
+  static allResultsLoaded = false;
+  static lastQuery = "";
 
-  init() {
+  static init() {
     this.setupEventHandlers();
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
+    // Toggle search overlay on various clicks
     $(document).on("click", ".nav-right .search-icon, .close-search, .mobile-close-search", () => {
       this.toggle(false);
     });
 
+    // Toggle search on mobile menu icon click
     $(document).on("click", ".mobile-menu-header .search-icon", () => {
       if ($("#mobileMenu").hasClass("active")) {
         Navigation.toggleMobileMenu();
@@ -21,12 +23,21 @@ const SearchManager = {
       this.toggle(true);
     });
 
+    // Toggle search from profile menu
     $(document).on("click", ".nav-profile-menu-search", (e) => {
       e.preventDefault();
+
+      // Close profile menu first
       if ($("#profileMenu").hasClass("active")) {
         Navigation.toggleProfileMenu();
       }
-      this.toggle(true);
+
+      // If search is already open, focus instead of closing
+      if ($("#searchOverlay").hasClass("active")) {
+        this.focusSearchInput();
+      } else {
+        this.toggle(true);
+      }
     });
 
     const debouncedSearch = Utils.debounce((query) => {
@@ -47,51 +58,56 @@ const SearchManager = {
     });
 
     $(window).on("scroll", () => {
-      if ($("#search-results-container").length && $("#search-results-container").is(":visible")) {
-        const scrollTop = $(window).scrollTop();
-        const windowHeight = $(window).height();
-        const documentHeight = $(document).height();
-
-        if (scrollTop + windowHeight > documentHeight - 400) {
-          if (!this.isLoading && !this.allResultsLoaded && this.lastQuery) {
-            this.performSearch(this.lastQuery, false);
-          }
-        }
-      }
+      this.handleInfiniteScroll();
     });
 
     $(document).on("click", ".remove-scope", () => {
       this.removeScope();
     });
-  },
+  }
 
-  toggle(removeFilter = false) {
+  static handleInfiniteScroll() {
+    const $container = $("#search-results-container");
+    if (!$container.length || !$container.is(":visible")) return;
+
+    const scrollTop = $(window).scrollTop();
+    const windowHeight = $(window).height();
+    const documentHeight = $(document).height();
+
+    if (scrollTop + windowHeight > documentHeight - 400) {
+      if (!this.isLoading && !this.allResultsLoaded && this.lastQuery) {
+        this.performSearch(this.lastQuery, false);
+      }
+    }
+  }
+
+  static toggle(removeFilter = false) {
     const $overlay = $("#searchOverlay");
     $overlay.toggleClass("active");
 
     if ($overlay.hasClass("active")) {
-      if (removeFilter) {
-        this.clearScope();
-      } else {
-        this.setScope();
-      }
-
-      setTimeout(() => {
-        const inputToFocus = $(window).width() <= CONSTANTS.MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
-        $(inputToFocus).focus();
-      }, 100);
+      removeFilter ? this.clearScope() : this.setScope();
+      this.focusSearchInput();
     } else {
       this.cleanup();
     }
-  },
+  }
 
-  clearScope() {
+  static focusSearchInput() {
+    setTimeout(() => {
+      const inputSelector = $(window).width() <= CONSTANTS.MOBILE_BREAKPOINT ? ".mobile-search-input" : ".search-input";
+      $(inputSelector).focus();
+    }, 100);
+  }
+
+  // === Search Scope Management ===
+  static clearScope() {
     this.scope = null;
     $(".search-scope-indicator").hide();
     $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...");
-  },
+  }
 
-  setScope() {
+  static setScope() {
     const pathname = window.location.pathname;
 
     if (pathname.includes("category.html")) {
@@ -107,69 +123,44 @@ const SearchManager = {
     }
 
     if (this.scope) {
-      const scopeText = this.formatScopeText(this.scope);
-      const $scopeIndicator = $(".search-scope-indicator");
-      const $scopeSpan = $scopeIndicator.find("span");
-
-      $scopeSpan.text(scopeText).attr("title", this.getFullCategoryName(this.scope));
-      this.applyScopeClasses(scopeText, $scopeIndicator);
-      $scopeIndicator.show();
-
-      const placeholder = `Search in ${scopeText}`;
-      $(".search-input, .mobile-search-input").addClass("scoped").attr("placeholder", placeholder);
+      this.applyScopeToUI();
     }
-  },
+  }
 
-  formatScopeText(scope) {
-    const categoryNames = {
-      business: "Business",
-      entertainment: "Entertainment",
-      general: "General",
-      health: "Health",
-      science: "Science",
-      sports: "Sports",
-      technology: "Technology",
-      travel: "Travel",
-      bookmarks: "Bookmarks"
-    };
+  static applyScopeToUI() {
+    const scopeText = this.formatScopeText(this.scope);
+    const fullName = this.getFullCategoryName(this.scope);
 
-    const fullName = categoryNames[scope.toLowerCase()] || scope.charAt(0).toUpperCase() + scope.slice(1);
+    const $scopeIndicator = $(".search-scope-indicator");
+    const $scopeSpan = $scopeIndicator.find("span");
 
-    if ($(window).width() <= 768 && fullName.length > 10) {
-      const abbreviations = {
-        Entertainment: "Entertain.",
-        Technology: "Tech",
-        Business: "Business",
-        General: "General",
-        Health: "Health",
-        Science: "Science",
-        Sports: "Sports",
-        Travel: "Travel",
-        Bookmarks: "Saved"
-      };
-      return abbreviations[fullName] || fullName.substring(0, 8) + "...";
+    $scopeSpan.text(scopeText).attr("title", fullName);
+    this.applyScopeClasses(scopeText, $scopeIndicator);
+    $scopeIndicator.show();
+
+    const placeholder = `Search in ${scopeText}`;
+    $(".search-input, .mobile-search-input").addClass("scoped").attr("placeholder", placeholder);
+  }
+
+  static formatScopeText(scope) {
+    return this.getFullCategoryName(scope);
+  }
+
+  static getFullCategoryName(scope) {
+    if (scope === "bookmarks") {
+      return "Bookmarks";
     }
 
-    return fullName;
-  },
+    // Check if it's a valid nav category, otherwise just capitalize
+    const lowerScope = scope.toLowerCase();
+    if (CONSTANTS.NAV_CATEGORIES.includes(lowerScope)) {
+      return Utils.capitalizeFirst(lowerScope);
+    }
 
-  getFullCategoryName(scope) {
-    const categoryNames = {
-      business: "Business",
-      entertainment: "Entertainment",
-      general: "General",
-      health: "Health",
-      science: "Science",
-      sports: "Sports",
-      technology: "Technology",
-      travel: "Travel",
-      bookmarks: "Bookmarks"
-    };
+    return Utils.capitalizeFirst(scope);
+  }
 
-    return categoryNames[scope.toLowerCase()] || scope.charAt(0).toUpperCase() + scope.slice(1);
-  },
-
-  applyScopeClasses(scopeText, $scopeIndicator) {
+  static applyScopeClasses(scopeText, $scopeIndicator) {
     const $container = $(".search-container");
 
     $scopeIndicator.removeClass("two-line with-icon");
@@ -183,12 +174,14 @@ const SearchManager = {
     } else if (isLongText) {
       $scopeIndicator.addClass("with-icon");
     }
-  },
+  }
 
-  removeScope() {
+  static removeScope() {
     this.scope = null;
     $(".search-scope-indicator").hide();
+
     const $input = $(window).width() <= CONSTANTS.MOBILE_BREAKPOINT ? $(".mobile-search-input") : $(".search-input");
+
     $input.removeClass("scoped").attr("placeholder", "Search Here...").focus();
 
     const currentQuery = $input.val().trim();
@@ -197,24 +190,30 @@ const SearchManager = {
     } else {
       this.clearSearchResults();
     }
-  },
+  }
 
-  cleanup() {
+  // === Search Cleanup ===
+  static cleanup() {
     this.clearSearchResults();
     this.scope = null;
     $(".search-scope-indicator").hide();
-    $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...");
-  },
+    $(".search-input, .mobile-search-input").removeClass("scoped").attr("placeholder", "Search Here...").val("");
+  }
 
-  clearSearchResults() {
+  static clearSearchResults() {
     $("#search-results-container").remove();
     $("main").show();
+    this.resetPaginationState();
+  }
+
+  static resetPaginationState() {
     this.lastQuery = "";
     this.currentPage = 1;
     this.allResultsLoaded = false;
-  },
+  }
 
-  handleSearch(query, isNewSearch) {
+  // === Search Handling ===
+  static handleSearch(query, isNewSearch) {
     if (query.length > 2) {
       if (query !== this.lastQuery || isNewSearch) {
         this.lastQuery = query;
@@ -225,30 +224,15 @@ const SearchManager = {
     } else {
       this.clearSearchResults();
     }
-  },
+  }
 
-  async performSearch(query, isNewSearch) {
+  static async performSearch(query, isNewSearch) {
     if (this.isLoading || (this.allResultsLoaded && !isNewSearch)) return;
 
     this.isLoading = true;
 
     if (isNewSearch) {
-      $("main").hide();
-      $("#search-results-container").remove();
-      const searchContainerHtml = `
-        <div id="search-results-container">
-          <div class="search-results-content">
-            <div id="search-results-list" class="articles-list"></div>
-            <div id="search-loading-message" class="loading-message">
-              <div class="sun-loading">
-                <div class="thinking-container">
-                  <img src="../sources/images/sun/sun.png" alt="Searching Articles" class="thinking-icon" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      $("#footer").before(searchContainerHtml);
+      this.setupSearchResultsContainer();
     } else {
       $("#search-loading-message").show();
     }
@@ -259,86 +243,141 @@ const SearchManager = {
     } catch (error) {
       this.handleSearchError();
     }
-  },
+  }
 
-  async fetchSearchResults(query) {
+  static setupSearchResultsContainer() {
+    $("main").hide();
+    $("#search-results-container").remove();
+
+    const searchContainerHtml = `
+      <div id="search-results-container">
+        <div class="search-results-content">
+          <div id="search-results-list" class="articles-list"></div>
+          <div id="search-loading-message" class="loading-message">
+            ${Utils.createLoadingIndicator("../sources/images/sun/sun.png", "Searching Articles")}
+          </div>
+        </div>
+      </div>
+    `;
+
+    $("#footer").before(searchContainerHtml);
+  }
+
+  // === Search Results Fetching ===
+  static async fetchSearchResults(query) {
     const currentUser = Utils.getCurrentUser();
 
     if (this.scope === "bookmarks" && currentUser) {
-      return new Promise((resolve, reject) => {
-        searchBookmarks(currentUser.id, query, this.currentPage, CONSTANTS.SEARCH_PAGE_SIZE, resolve, reject);
-      });
+      return this.fetchBookmarkResults(currentUser.id, query);
     } else {
-      await this.fetchAndSyncFromAPI(query);
-
-      return new Promise((resolve) => {
-        searchDatabaseArticles(
-          query,
-          this.currentPage,
-          CONSTANTS.SEARCH_PAGE_SIZE,
-          (articles) => {
-            let filteredArticles = articles || [];
-
-            if (this.scope && this.scope !== "bookmarks") {
-              filteredArticles = filteredArticles.filter((article) => article.category && article.category.toLowerCase() === this.scope.toLowerCase());
-            }
-
-            resolve(filteredArticles);
-          },
-          () => resolve([])
-        );
-      });
+      return this.fetchArticleResults(query);
     }
-  },
+  }
 
-  async fetchAndSyncFromAPI(query) {
+  static fetchBookmarkResults(userId, query) {
+    return new Promise((resolve, reject) => {
+      searchBookmarks(userId, query, this.currentPage, CONSTANTS.SEARCH_PAGE_SIZE, resolve, reject);
+    });
+  }
+
+  static async fetchArticleResults(query) {
+    const databaseResults = await this.searchDatabase(query);
+
+    // Try to enhance with API results only on first page
+    if (this.currentPage === 1) {
+      try {
+        await this.fetchAndSyncFromAPI(query);
+        // Re-search database to get any newly synced articles
+        return await this.searchDatabase(query);
+      } catch (error) {
+        return databaseResults;
+      }
+    }
+
+    return databaseResults;
+  }
+
+  static searchDatabase(query) {
+    return new Promise((resolve) => {
+      searchDatabaseArticles(
+        query,
+        this.currentPage,
+        CONSTANTS.SEARCH_PAGE_SIZE,
+        (articles) => {
+          let filteredArticles = articles || [];
+
+          if (this.scope && this.scope !== "bookmarks") {
+            filteredArticles = filteredArticles.filter((article) => article.category && article.category.toLowerCase() === this.scope.toLowerCase());
+          }
+
+          resolve(filteredArticles);
+        },
+        () => resolve([])
+      );
+    });
+  }
+
+  static async fetchAndSyncFromAPI(query) {
     if (this.currentPage !== 1) {
       return Promise.resolve();
     }
 
     return new Promise((resolve) => {
+      // Failsafe timeout to prevent hanging
+      const timeout = setTimeout(() => {
+        resolve();
+      }, 10000);
+
       searchNews(
         query,
         1,
         (response) => {
-          if (response && response.data && response.data.length > 0) {
+          clearTimeout(timeout);
+          if (response?.data?.length > 0) {
             const articles = this.mapAPIArticles(response.data);
             syncArticles(
               articles,
-              () => resolve(),
-              () => resolve()
+              () => {
+                resolve();
+              },
+              () => {
+                resolve();
+              }
             );
           } else {
             resolve();
           }
         },
-        () => resolve()
+        () => {
+          clearTimeout(timeout);
+          resolve(); // Don't reject. just continue without API results
+        }
       );
     });
-  },
+  }
 
-  mapAPIArticles(articles) {
+  static mapAPIArticles(articles) {
     return articles.map((article) => ({
       title: article.title,
       url: article.url,
       imageUrl: article.urlToImage,
       description: article.description || "",
       author: article.author || "Unknown Author",
-      sourceName: (article.source && article.source.name) || "Unknown Source",
+      sourceName: article.source?.name || "Unknown Source",
       publishedAt: article.publishedAt,
-      category: article.category || (this.scope ? this.scope.charAt(0).toUpperCase() + this.scope.slice(1) : "General")
+      category: article.category || (this.scope ? Utils.capitalizeFirst(this.scope) : "General")
     }));
-  },
+  }
 
-  handleSearchResults(articles, query) {
+  // === UI Management ===
+  static handleSearchResults(articles, query) {
     $("#search-loading-message").hide();
     this.isLoading = false;
 
-    if (!articles || articles.length === 0) {
+    if (!articles?.length) {
       this.allResultsLoaded = true;
       if (this.currentPage === 1) {
-        const message = this.scope ? `No articles found for "${query}" in ${this.scope}.` : `No articles found for "${query}".`;
-        $("#search-results-list").html(`<p class="error-message">${message}</p>`);
+        this.showNoResultsMessage(query);
       }
       return;
     }
@@ -347,41 +386,59 @@ const SearchManager = {
       this.allResultsLoaded = true;
     }
 
-    const uniqueArticles = Array.from(new Map(articles.map((article) => [article.url, article])).values());
-    uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-
-    this.displayResults(uniqueArticles);
+    const processedArticles = this.processSearchResults(articles);
+    this.displayResults(processedArticles);
     this.currentPage++;
-  },
+  }
 
-  handleSearchError() {
+  static showNoResultsMessage(query) {
+    const message = this.scope ? `No articles found for "${query}" in ${this.scope}.` : `No articles found for "${query}".`;
+    $("#search-results-list").html(`<p class="error-message">${message}</p>`);
+  }
+
+  static processSearchResults(articles) {
+    const uniqueArticles = Array.from(new Map(articles.map((article) => [article.url, article])).values());
+    return uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  }
+
+  static handleSearchError() {
     $("#search-loading-message").hide();
     this.isLoading = false;
     this.allResultsLoaded = true;
-    $("#search-results-list").append(`<p class="error-message">An error occurred while searching.</p>`);
-  },
+    $("#search-results-list").append('<p class="error-message">An error occurred while searching.</p>');
+  }
 
-  displayResults(articles) {
+  static displayResults(articles) {
     const $listContainer = $("#search-results-list");
+
     if (this.currentPage === 1 && $listContainer.is(":empty")) {
       $listContainer.empty();
     }
 
     articles.forEach((article) => {
-      const articleHtml = `
-        <a href="../html/article.html?id=${article.id}" class="article-list-item">
-          <div class="article-item-image">
-            <img src="${article.imageUrl || CONSTANTS.PLACEHOLDER_IMAGE_URL}" alt="${article.title}" />
-          </div>
-          <div class="article-item-content">
-            <span class="category-tag">${article.category || "News"}</span>
-            <h3 class="article-item-title">${article.title}</h3>
-            <span class="article-item-author">${article.author || "Unknown Author"}</span>
-          </div>
-        </a>`;
+      const articleHtml = this.createArticleHTML(article);
       $listContainer.append(articleHtml);
     });
   }
-};
+
+  static createArticleHTML(article) {
+    const imageUrl = article.imageUrl || CONSTANTS.PLACEHOLDER_IMAGE_URL;
+    const category = article.category || "News";
+    const author = article.author || "Unknown Author";
+
+    return `
+      <a href="../html/article.html?id=${article.id}" class="article-list-item">
+        <div class="article-item-image">
+          <img src="${imageUrl}" alt="${article.title}" />
+        </div>
+        <div class="article-item-content">
+          <span class="category-tag">${category}</span>
+          <h3 class="article-item-title">${article.title}</h3>
+          <span class="article-item-author">${author}</span>
+        </div>
+      </a>
+    `;
+  }
+}
 
 window.SearchManager = SearchManager;
