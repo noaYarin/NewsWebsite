@@ -1,10 +1,10 @@
-const AdminReportManager = {
-  init() {
+class AdminReportManager {
+  static init() {
     this.loadPendingReports();
     this.setupEventHandlers();
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
     $(document).on("click", ".update-report-status-btn", (e) => {
       e.stopPropagation();
       this.handleUpdateReportStatus(e);
@@ -13,9 +13,9 @@ const AdminReportManager = {
     $(document).on("click", ".report-item-link", (e) => {
       e.stopPropagation();
     });
-  },
+  }
 
-  loadPendingReports() {
+  static loadPendingReports() {
     const tableBody = $("#reportsTableBody");
     tableBody.html('<tr><td colspan="7" class="text-center">Loading reports...</td></tr>');
 
@@ -27,9 +27,9 @@ const AdminReportManager = {
         tableBody.html('<tr><td colspan="7" class="text-center text-danger">Failed to load reports.</td></tr>');
       }
     );
-  },
+  }
 
-  displayReports(reports) {
+  static displayReports(reports) {
     const tableBody = $("#reportsTableBody");
     tableBody.empty();
 
@@ -94,9 +94,9 @@ const AdminReportManager = {
       tableBody.append(summaryRow);
       tableBody.append(detailsRow);
     });
-  },
+  }
 
-  handleUpdateReportStatus(e) {
+  static handleUpdateReportStatus(e) {
     const reportId = $(e.currentTarget).data("report-id");
     const adminNotes = $(`#notes-${reportId}`).val();
     const statusSelect = $(`#status-select-${reportId}`);
@@ -120,6 +120,6 @@ const AdminReportManager = {
       );
     });
   }
-};
+}
 
 window.AdminReportManager = AdminReportManager;

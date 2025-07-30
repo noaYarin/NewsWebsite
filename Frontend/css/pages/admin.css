@@ -156,6 +156,11 @@
   color: var(--dark);
 }
 
+.btn-primary:active {
+  background-color: var(--c-primary-light) !important;
+  border-color: var(--c-primary-light) !important;
+}
+
 .btn-outline-secondary {
   border: 2px solid var(--c-border-medium);
   color: var(--c-text-muted);
@@ -238,62 +243,6 @@
   border: none;
   font-weight: 500;
   padding: 1rem;
-}
-
-/* ===== REPORTS TABLE SPECIFIC STYLES ===== */
-/* Override Bootstrap hover for reports table */
-#reportsTable tbody tr:hover {
-  background-color: inherit !important;
-}
-
-/* Counter for alternating colors - only count summary rows */
-#reportsTable tbody {
-  counter-reset: summary-row;
-}
-
-#reportsTable tbody tr.report-summary-row {
-  counter-increment: summary-row;
-  cursor: pointer;
-}
-
-/* Alternating colors using counter */
-#reportsTable tbody tr.report-summary-row:nth-of-type(odd) {
-  background-color: #ffffff !important;
-}
-
-#reportsTable tbody tr.report-summary-row:nth-of-type(even) {
-  background-color: #f8f9fa !important;
-}
-
-/* Hover effect only for summary rows */
-#reportsTable tbody tr.report-summary-row:hover {
-  background-color: var(--c-primary-bg) !important;
-}
-
-/* Detail rows - always gray background, no hover, no interaction */
-#reportsTable tbody tr.report-details-row {
-  background-color: #f8f9fa !important;
-  cursor: default;
-}
-
-#reportsTable tbody tr.report-details-row:hover {
-  background-color: #f8f9fa !important;
-}
-
-#reportsTable tbody tr.report-details-row td {
-  background-color: #f8f9fa !important;
-}
-
-#reportsTable tbody tr.report-details-row:hover td {
-  background-color: #f8f9fa !important;
-}
-
-#reportsTable tbody tr.report-details-row * {
-  background-color: #f8f9fa !important;
-}
-
-#reportsTable tbody tr.report-details-row:hover * {
-  background-color: #f8f9fa !important;
 }
 
 /* Expand icon styling */

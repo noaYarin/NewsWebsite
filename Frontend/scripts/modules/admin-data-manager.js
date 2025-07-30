@@ -240,12 +240,7 @@ class AdminDataManager {
     const pullsData = this.extractDataFromStatistics(this.statistics.dailyArticlePulls, "pulls");
     const insertsData = this.extractDataFromStatistics(this.statistics.dailyArticleInserts, "inserts");
 
-    console.log("Summary metrics - logins:", loginsData);
-    console.log("Summary metrics - pulls:", pullsData);
-    console.log("Summary metrics - inserts:", insertsData);
-
     const avgLogins = loginsData.length > 0 ? Math.round(loginsData.reduce((a, b) => a + b, 0) / loginsData.length) : 0;
-
     const avgArticles = pullsData.length > 0 ? Math.round(pullsData.reduce((a, b) => a + b, 0) / pullsData.length) : 0;
 
     const totalLogins = loginsData.reduce((a, b) => a + b, 0);
