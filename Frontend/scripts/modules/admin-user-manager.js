@@ -1,18 +1,18 @@
-const AdminUserManager = {
-  init() {
+class AdminUserManager {
+  static init() {
     this.setupEventHandlers();
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
     $("#userSearchForm").on("submit", (e) => {
       e.preventDefault();
       this.handleUserSearch();
     });
     $(document).on("click", ".toggle-ban-btn", (e) => this.handleToggleBan(e));
     $(document).on("click", ".toggle-admin-btn", (e) => this.handleToggleAdmin(e));
-  },
+  }
 
-  handleUserSearch() {
+  static handleUserSearch() {
     const searchTerm = $("#userSearchInput").val().trim();
     if (!searchTerm) return;
 
@@ -28,9 +28,9 @@ const AdminUserManager = {
         resultsContainer.html('<p class="text-center text-danger">Failed to search for users.</p>');
       }
     );
-  },
+  }
 
-  displayUsers(users) {
+  static displayUsers(users) {
     const resultsContainer = $("#userSearchResults");
     resultsContainer.empty();
 
@@ -77,9 +77,9 @@ const AdminUserManager = {
       `;
       resultsContainer.append(userHtml);
     });
-  },
+  }
 
-  handleToggleBan(e) {
+  static handleToggleBan(e) {
     const button = $(e.currentTarget);
     const userId = button.data("user-id");
     const userName = button.data("user-name");
@@ -100,9 +100,9 @@ const AdminUserManager = {
         }
       );
     });
-  },
+  }
 
-  handleToggleAdmin(e) {
+  static handleToggleAdmin(e) {
     const button = $(e.currentTarget);
     const userId = button.data("user-id");
     const userName = button.data("user-name");
@@ -124,6 +124,6 @@ const AdminUserManager = {
       );
     });
   }
-};
+}
 
 window.AdminUserManager = AdminUserManager;
