@@ -154,6 +154,11 @@ class Utils {
   static capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+
+  static showInputError($element, duration = 2000) {
+    $element.focus().addClass("error");
+    setTimeout(() => $element.removeClass("error"), duration);
+  }
 }
 
 window.Utils = Utils;

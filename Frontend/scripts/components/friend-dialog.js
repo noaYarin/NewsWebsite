@@ -112,9 +112,7 @@ class GlobalFriendDialog {
     const searchTerm = searchInput.val().trim();
 
     if (!searchTerm) {
-      searchInput.addClass("error");
-      searchInput.focus();
-      setTimeout(() => searchInput.removeClass("error"), 2000);
+      Utils.showInputError(searchInput);
       return;
     }
 
