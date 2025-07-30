@@ -1,20 +1,19 @@
-const ShareManager = {
-  currentUser: null,
-  currentArticle: null,
-  friends: [],
+class ShareManager {
+  static currentUser = null;
+  static currentArticle = null;
+  static friends = [];
 
-  init(user, article) {
+  static init(user, article) {
     this.currentUser = user;
     this.currentArticle = article;
     this.setupEventHandlers();
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
     $(document).on("click", "#share-article-btn", (e) => this.handleShare(e));
-    $(document).on("click", ".article-share-btn", (e) => this.handleShareFromElement(e));
-  },
+  }
 
-  handleShare(e) {
+  static handleShare(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to share articles.", false);
       return;
@@ -24,33 +23,9 @@ const ShareManager = {
     this.loadFriends(() => {
       this.showShareDialog();
     });
-  },
+  }
 
-  handleShareFromElement(e) {
-    e.preventDefault();
-    const $button = $(e.currentTarget);
-    const articleData = $button.data("article") || $button.closest("[data-article]").data("article");
-
-    if (!this.currentUser) {
-      UIManager.showPopup("Please log in to share articles.", false);
-      return;
-    }
-
-    if (!articleData) return;
-
-    // Temporarily set the article for sharing
-    const originalArticle = this.currentArticle;
-    this.currentArticle = articleData;
-
-    this.loadFriends(() => {
-      this.showShareDialog(() => {
-        // Restore original article after dialog closes
-        this.currentArticle = originalArticle;
-      });
-    });
-  },
-
-  loadFriends(callback) {
+  static loadFriends(callback) {
     getFriends(
       this.currentUser.id,
       (friends) => {
@@ -65,9 +40,9 @@ const ShareManager = {
         UIManager.showPopup("Failed to load friends list. Please try again.", false);
       }
     );
-  },
+  }
 
-  showShareDialog(onCloseCallback = null) {
+  static showShareDialog(onCloseCallback = null) {
     if ($("#share-article-dialog").length > 0) return;
 
     const dialogHtml = `
@@ -104,60 +79,49 @@ const ShareManager = {
     `;
 
     $("body").append(dialogHtml);
-
     setTimeout(() => $("#share-article-dialog").addClass("show"), 10);
-
     this.setupDialogEventHandlers(onCloseCallback);
-  },
+  }
 
-  renderFriendsList() {
+  static renderFriendsList() {
     return this.friends
       .map(
         (friend) => `
-      <div class="friend-item">
-        <label class="friend-checkbox-label">
-          <input type="checkbox" class="friend-checkbox" data-friend-id="${friend.id}" data-friend-name="${friend.fullName}">
-          <span class="checkmark"></span>
-          <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="friend-avatar" />
-          <span class="friend-name">${friend.fullName}</span>
-        </label>
-      </div>
-    `
+        <div class="friend-item">
+          <label class="friend-checkbox-label">
+            <input type="checkbox" class="friend-checkbox" data-friend-id="${friend.id}" data-friend-name="${friend.fullName}">
+            <span class="checkmark"></span>
+            <img src="${friend.avatar || CONSTANTS.NO_IMAGE_URL}" alt="${friend.fullName}" class="friend-avatar" />
+            <span class="friend-name">${friend.fullName}</span>
+          </label>
+        </div>
+      `
       )
       .join("");
-  },
+  }
 
-  setupDialogEventHandlers(onCloseCallback = null) {
-    // Close dialog handlers
+  static setupDialogEventHandlers(onCloseCallback = null) {
+    // Close dialog on outside click
     $(document).on("click.shareDialog", (e) => {
       if (!$(e.target).closest("#share-article-dialog .dialog-content-wrapper").length) {
         this.closeShareDialog(onCloseCallback);
       }
     });
 
-    $("#closeShareDialog, #cancelShare").on("click", () => this.closeShareDialog(onCloseCallback));
-
     // Friend selection handlers
     $(document).on("change", ".friend-checkbox", () => this.updateShareButton());
-
-    // Message character count
-    $("#shareMessage").on("input", (e) => {
-      const charCount = e.target.value.length;
-      $("#messageCharCount").text(charCount);
-    });
 
     // Share button handler
     $("#confirmShare").on("click", () => this.processShare(onCloseCallback));
 
-    // ESC key to close
     $(document).on("keydown.shareDialog", (e) => {
       if (e.key === "Escape") {
         this.closeShareDialog(onCloseCallback);
       }
     });
-  },
+  }
 
-  updateShareButton() {
+  static updateShareButton() {
     const selectedFriends = $(".friend-checkbox:checked").length;
     const shareButton = $("#confirmShare");
 
@@ -166,16 +130,10 @@ const ShareManager = {
     } else {
       shareButton.prop("disabled", true).addClass("disabled");
     }
-  },
+  }
 
-  processShare(onCloseCallback = null) {
-    const selectedFriends = [];
-    $(".friend-checkbox:checked").each(function () {
-      selectedFriends.push({
-        id: parseInt($(this).data("friend-id")),
-        name: $(this).data("friend-name")
-      });
-    });
+  static processShare(onCloseCallback = null) {
+    const selectedFriends = this.getSelectedFriends();
 
     if (selectedFriends.length === 0) {
       UIManager.showPopup("Please select at least one friend to share with.", false);
@@ -183,14 +141,25 @@ const ShareManager = {
     }
 
     const message = $("#shareMessage").val().trim();
+    Utils.setButtonLoading($("#confirmShare"), "Sharing...");
+    this.sendSharesToFriends(selectedFriends, message, onCloseCallback);
+  }
 
-    // Show loading state
-    $("#confirmShare").prop("disabled", true).text("Sharing...");
+  static getSelectedFriends() {
+    const selectedFriends = [];
+    $(".friend-checkbox:checked").each(function () {
+      selectedFriends.push({
+        id: parseInt($(this).data("friend-id")),
+        name: $(this).data("friend-name")
+      });
+    });
+    return selectedFriends;
+  }
 
-    // Send shares to each selected friend
+  static sendSharesToFriends(selectedFriends, message, onCloseCallback) {
     let sharesSent = 0;
-    let sharesTotal = selectedFriends.length;
-    let errors = [];
+    const sharesTotal = selectedFriends.length;
+    const errors = [];
 
     selectedFriends.forEach((friend) => {
       const shareData = {
@@ -217,9 +186,9 @@ const ShareManager = {
         }
       );
     });
-  },
+  }
 
-  handleShareComplete(total, errors, onCloseCallback = null) {
+  static handleShareComplete(total, errors, onCloseCallback = null) {
     this.closeShareDialog(onCloseCallback);
 
     if (errors.length === 0) {
@@ -232,9 +201,9 @@ const ShareManager = {
       const friendText = successCount === 1 ? "friend" : "friends";
       UIManager.showPopup(`Article shared with ${successCount} ${friendText}. Some shares failed.`, true);
     }
-  },
+  }
 
-  closeShareDialog(onCloseCallback = null) {
+  static closeShareDialog(onCloseCallback = null) {
     $("#share-article-dialog").removeClass("show");
     setTimeout(() => {
       $("#share-article-dialog").remove();
@@ -245,6 +214,6 @@ const ShareManager = {
       }
     }, 400);
   }
-};
+}
 
 window.ShareManager = ShareManager;
