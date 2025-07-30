@@ -1,7 +1,7 @@
-const AdminChartManager = {
-  charts: {},
+class AdminChartManager {
+  static charts = {};
 
-  COLORS: {
+  static COLORS = {
     PRIMARY: "#ffcc00",
     PRIMARY_ALPHA: "rgba(255, 204, 0, 0.1)",
     PRIMARY_SOLID: "rgba(255, 204, 0, 0.8)",
@@ -20,186 +20,191 @@ const AdminChartManager = {
     TEXT_SECONDARY: "#666666",
     GRID_COLOR: "#eeeeee",
     WHITE: "#ffffff"
-  },
+  };
 
-  init() {
+  static init() {
     if (typeof Chart !== "undefined") {
       Chart.defaults.font.family = "GeographWeb, sans-serif";
     }
-  },
+  }
 
-  destroyAllCharts() {
+  static destroyAllCharts() {
     Object.values(this.charts).forEach((chart) => {
       if (chart && typeof chart.destroy === "function") {
         chart.destroy();
       }
     });
     this.charts = {};
-  },
+  }
 
-  renderAllCharts(statistics) {
+  static renderAllCharts(statistics) {
     this.renderDailyStatsChart(statistics);
     this.renderDailyLoginsChart(statistics);
     this.renderDailyArticlePullsChart(statistics);
     this.renderDailyArticleInsertsChart(statistics);
-  },
+  }
 
-  renderDailyStatsChart(statistics) {
+  /**
+   * Render combined daily statistics line chart
+   * Mathematical visualization: Multi-variate time series analysis
+   * @param {Object} statistics - Statistics data object
+   */
+  static renderDailyStatsChart(statistics) {
     const ctx = $("#dailyStatsChart")[0];
-    if (!ctx) {
-      return;
-    }
+    if (!ctx) return;
 
     if (this.charts.dailyStats) {
       this.charts.dailyStats.destroy();
     }
 
+    const chartData = this.prepareMultiLineChartData(statistics);
+
+    this.charts.dailyStats = new Chart(ctx.getContext("2d"), {
+      type: "line",
+      data: chartData,
+      options: this.getLineChartOptions("Date", "Count")
+    });
+  }
+
+  /**
+   * Prepare data for multi-line chart
+   * @param {Object} statistics - Statistics data object
+   * @returns {Object} Chart.js data configuration
+   */
+  static prepareMultiLineChartData(statistics) {
     const labels = AdminDataManager.extractLabelsFromData(statistics.daily);
     const loginsData = AdminDataManager.extractDataFromStatistics(statistics.dailyLogins, "count");
     const pullsData = AdminDataManager.extractDataFromStatistics(statistics.dailyArticlePulls, "count");
     const insertsData = AdminDataManager.extractDataFromStatistics(statistics.dailyArticleInserts, "count");
 
-    this.charts.dailyStats = new Chart(ctx.getContext("2d"), {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Daily Logins",
-            data: loginsData,
-            borderColor: this.COLORS.PRIMARY,
-            backgroundColor: this.COLORS.PRIMARY_ALPHA,
-            tension: 0.4,
-            fill: false,
-            pointBackgroundColor: this.COLORS.PRIMARY,
-            pointBorderColor: this.COLORS.TEXT_PRIMARY,
-            pointBorderWidth: 2
-          },
-          {
-            label: "Article Pulls",
-            data: pullsData,
-            borderColor: this.COLORS.SUCCESS,
-            backgroundColor: this.COLORS.SUCCESS_ALPHA,
-            tension: 0.4,
-            fill: false,
-            pointBackgroundColor: this.COLORS.SUCCESS,
-            pointBorderColor: this.COLORS.TEXT_PRIMARY,
-            pointBorderWidth: 2
-          },
-          {
-            label: "Article Inserts",
-            data: insertsData,
-            borderColor: this.COLORS.WARNING,
-            backgroundColor: this.COLORS.WARNING_ALPHA,
-            tension: 0.4,
-            fill: false,
-            pointBackgroundColor: this.COLORS.WARNING,
-            pointBorderColor: this.COLORS.TEXT_PRIMARY,
-            pointBorderWidth: 2
-          }
-        ]
-      },
-      options: this.getLineChartOptions("Date", "Count")
-    });
-  },
+    return {
+      labels: labels,
+      datasets: [
+        this.createLineDataset("Daily Logins", loginsData, this.COLORS.PRIMARY),
+        this.createLineDataset("Article Pulls", pullsData, this.COLORS.SUCCESS),
+        this.createLineDataset("Article Inserts", insertsData, this.COLORS.WARNING)
+      ]
+    };
+  }
 
-  renderDailyLoginsChart(statistics) {
+  /**
+   * Create line chart dataset configuration
+   * @param {string} label - Dataset label
+   * @param {Array} data - Data points
+   * @param {string} color - Primary color
+   * @returns {Object} Dataset configuration
+   */
+  static createLineDataset(label, data, color) {
+    return {
+      label: label,
+      data: data,
+      borderColor: color,
+      backgroundColor: color.replace("1)", "0.1)"), // Convert to alpha
+      tension: 0.4,
+      fill: false,
+      pointBackgroundColor: color,
+      pointBorderColor: this.COLORS.TEXT_PRIMARY,
+      pointBorderWidth: 2
+    };
+  }
+
+  /**
+   * Render daily logins bar chart
+   * @param {Object} statistics - Statistics data object
+   */
+  static renderDailyLoginsChart(statistics) {
     const ctx = $("#dailyLoginsChart")[0];
-    if (!ctx) {
-      return;
-    }
+    if (!ctx) return;
 
     if (this.charts.dailyLogins) {
       this.charts.dailyLogins.destroy();
     }
 
-    const labels = AdminDataManager.extractLabelsFromData(statistics.dailyLogins);
-    const data = AdminDataManager.extractDataFromStatistics(statistics.dailyLogins, "count");
+    const chartData = this.prepareSingleBarChartData(statistics.dailyLogins, "Daily Logins", this.COLORS.PRIMARY_SOLID, this.COLORS.PRIMARY);
 
     this.charts.dailyLogins = new Chart(ctx.getContext("2d"), {
       type: "bar",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Daily Logins",
-            data: data,
-            backgroundColor: this.COLORS.PRIMARY_SOLID,
-            borderColor: this.COLORS.PRIMARY,
-            borderWidth: 2,
-            borderRadius: 0
-          }
-        ]
-      },
+      data: chartData,
       options: this.getBarChartOptions("Number of Logins")
     });
-  },
+  }
 
-  renderDailyArticlePullsChart(statistics) {
+  /**
+   * Render daily article pulls bar chart
+   * @param {Object} statistics - Statistics data object
+   */
+  static renderDailyArticlePullsChart(statistics) {
     const ctx = $("#dailyArticlePullsChart")[0];
-    if (!ctx) {
-      return;
-    }
+    if (!ctx) return;
 
     if (this.charts.dailyArticlePulls) {
       this.charts.dailyArticlePulls.destroy();
     }
 
-    const labels = AdminDataManager.extractLabelsFromData(statistics.dailyArticlePulls);
-    const data = AdminDataManager.extractDataFromStatistics(statistics.dailyArticlePulls, "count");
+    const chartData = this.prepareSingleBarChartData(statistics.dailyArticlePulls, "Daily Article Pulls", this.COLORS.SUCCESS_SOLID, this.COLORS.SUCCESS);
 
     this.charts.dailyArticlePulls = new Chart(ctx.getContext("2d"), {
       type: "bar",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Daily Article Pulls",
-            data: data,
-            backgroundColor: this.COLORS.SUCCESS_SOLID,
-            borderColor: this.COLORS.SUCCESS,
-            borderWidth: 2,
-            borderRadius: 0
-          }
-        ]
-      },
+      data: chartData,
       options: this.getBarChartOptions("Number of Pulls")
     });
-  },
+  }
 
-  renderDailyArticleInsertsChart(statistics) {
+  /**
+   * Render daily article inserts bar chart
+   * @param {Object} statistics - Statistics data object
+   */
+  static renderDailyArticleInsertsChart(statistics) {
     const ctx = $("#dailyArticleInsertsChart")[0];
-    if (!ctx) {
-      return;
-    }
+    if (!ctx) return;
 
     if (this.charts.dailyArticleInserts) {
       this.charts.dailyArticleInserts.destroy();
     }
 
-    const labels = AdminDataManager.extractLabelsFromData(statistics.dailyArticleInserts);
-    const data = AdminDataManager.extractDataFromStatistics(statistics.dailyArticleInserts, "count");
+    const chartData = this.prepareSingleBarChartData(statistics.dailyArticleInserts, "Daily Article Inserts", this.COLORS.WARNING_SOLID, this.COLORS.WARNING);
 
     this.charts.dailyArticleInserts = new Chart(ctx.getContext("2d"), {
       type: "bar",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Daily Article Inserts",
-            data: data,
-            backgroundColor: this.COLORS.WARNING_SOLID,
-            borderColor: this.COLORS.WARNING,
-            borderWidth: 2,
-            borderRadius: 0
-          }
-        ]
-      },
+      data: chartData,
       options: this.getBarChartOptions("Number of Inserts")
     });
-  },
+  }
 
-  getLineChartOptions(xAxisLabel, yAxisLabel) {
+  /**
+   * Prepare data for single bar chart
+   * @param {Array} statisticsData - Raw statistics data
+   * @param {string} label - Dataset label
+   * @param {string} backgroundColor - Bar background color
+   * @param {string} borderColor - Bar border color
+   * @returns {Object} Chart.js data configuration
+   */
+  static prepareSingleBarChartData(statisticsData, label, backgroundColor, borderColor) {
+    const labels = AdminDataManager.extractLabelsFromData(statisticsData);
+    const data = AdminDataManager.extractDataFromStatistics(statisticsData, "count");
+
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: label,
+          data: data,
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
+          borderWidth: 2,
+          borderRadius: 0
+        }
+      ]
+    };
+  }
+
+  /**
+   * Get line chart configuration options
+   * @param {string} xAxisLabel - X-axis label
+   * @param {string} yAxisLabel - Y-axis label
+   * @returns {Object} Chart.js options configuration
+   */
+  static getLineChartOptions(xAxisLabel, yAxisLabel) {
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -218,70 +223,21 @@ const AdminChartManager = {
             color: this.COLORS.TEXT_PRIMARY
           }
         },
-        tooltip: {
-          backgroundColor: "rgba(0, 0, 0, 0.9)",
-          titleColor: this.COLORS.PRIMARY,
-          bodyColor: "#ffffff",
-          borderColor: this.COLORS.PRIMARY,
-          borderWidth: 2,
-          titleFont: {
-            family: "GeographWeb, sans-serif",
-            weight: "600"
-          },
-          bodyFont: {
-            family: "GeographWeb, sans-serif"
-          }
-        }
+        tooltip: this.getTooltipConfig()
       },
       scales: {
-        x: {
-          display: true,
-          title: {
-            display: true,
-            text: xAxisLabel,
-            font: {
-              family: "GeographWeb, sans-serif",
-              weight: "600"
-            },
-            color: this.COLORS.TEXT_PRIMARY
-          },
-          ticks: {
-            font: {
-              family: "GeographWeb, sans-serif"
-            },
-            color: this.COLORS.TEXT_SECONDARY
-          },
-          grid: {
-            color: this.COLORS.GRID_COLOR
-          }
-        },
-        y: {
-          display: true,
-          title: {
-            display: true,
-            text: yAxisLabel,
-            font: {
-              family: "GeographWeb, sans-serif",
-              weight: "600"
-            },
-            color: this.COLORS.TEXT_PRIMARY
-          },
-          beginAtZero: true,
-          ticks: {
-            font: {
-              family: "GeographWeb, sans-serif"
-            },
-            color: this.COLORS.TEXT_SECONDARY
-          },
-          grid: {
-            color: this.COLORS.GRID_COLOR
-          }
-        }
+        x: this.getXAxisConfig(xAxisLabel),
+        y: this.getYAxisConfig(yAxisLabel)
       }
     };
-  },
+  }
 
-  getBarChartOptions(yAxisLabel) {
+  /**
+   * Get bar chart configuration options
+   * @param {string} yAxisLabel - Y-axis label
+   * @returns {Object} Chart.js options configuration
+   */
+  static getBarChartOptions(yAxisLabel) {
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -291,41 +247,96 @@ const AdminChartManager = {
         }
       },
       scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: yAxisLabel,
-            font: {
-              family: "GeographWeb, sans-serif",
-              weight: "600"
-            },
-            color: this.COLORS.TEXT_PRIMARY
-          },
-          ticks: {
-            font: {
-              family: "GeographWeb, sans-serif"
-            },
-            color: this.COLORS.TEXT_SECONDARY
-          },
-          grid: {
-            color: this.COLORS.GRID_COLOR
-          }
-        },
-        x: {
-          ticks: {
-            font: {
-              family: "GeographWeb, sans-serif"
-            },
-            color: this.COLORS.TEXT_SECONDARY
-          },
-          grid: {
-            color: this.COLORS.GRID_COLOR
-          }
-        }
+        y: this.getYAxisConfig(yAxisLabel),
+        x: this.getXAxisConfig()
       }
     };
   }
-};
+
+  /**
+   * Get tooltip configuration for charts
+   * @returns {Object} Tooltip configuration
+   */
+  static getTooltipConfig() {
+    return {
+      backgroundColor: this.COLORS.BACKGROUND_DARK,
+      titleColor: this.COLORS.PRIMARY,
+      bodyColor: this.COLORS.WHITE,
+      borderColor: this.COLORS.PRIMARY,
+      borderWidth: 2,
+      titleFont: {
+        family: "GeographWeb, sans-serif",
+        weight: "600"
+      },
+      bodyFont: {
+        family: "GeographWeb, sans-serif"
+      }
+    };
+  }
+
+  /**
+   * Get X-axis configuration
+   * @param {string} label - Axis label (optional)
+   * @returns {Object} X-axis configuration
+   */
+  static getXAxisConfig(label = null) {
+    const config = {
+      ticks: {
+        font: {
+          family: "GeographWeb, sans-serif"
+        },
+        color: this.COLORS.TEXT_SECONDARY
+      },
+      grid: {
+        color: this.COLORS.GRID_COLOR
+      }
+    };
+
+    if (label) {
+      config.display = true;
+      config.title = {
+        display: true,
+        text: label,
+        font: {
+          family: "GeographWeb, sans-serif",
+          weight: "600"
+        },
+        color: this.COLORS.TEXT_PRIMARY
+      };
+    }
+
+    return config;
+  }
+
+  /**
+   * Get Y-axis configuration
+   * @param {string} label - Axis label
+   * @returns {Object} Y-axis configuration
+   */
+  static getYAxisConfig(label) {
+    return {
+      display: true,
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: label,
+        font: {
+          family: "GeographWeb, sans-serif",
+          weight: "600"
+        },
+        color: this.COLORS.TEXT_PRIMARY
+      },
+      ticks: {
+        font: {
+          family: "GeographWeb, sans-serif"
+        },
+        color: this.COLORS.TEXT_SECONDARY
+      },
+      grid: {
+        color: this.COLORS.GRID_COLOR
+      }
+    };
+  }
+}
 
 window.AdminChartManager = AdminChartManager;
