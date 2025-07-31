@@ -365,6 +365,10 @@ class Navigation {
   static handleNotificationClick(type, articleId) {
     switch (type) {
       case "ArticleShare":
+        if (articleId) {
+          window.location.href = `article.html?id=${articleId}`;
+        }
+        break;
       case "CommentLike":
         if (articleId) {
           window.location.href = `article.html?id=${articleId}#comments-list`;

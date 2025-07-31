@@ -1,24 +1,26 @@
-const CommentManager = {
-  currentUser: null,
-  currentArticle: null,
-  currentFriends: new Set(),
-  outgoingFriendRequests: new Set(),
-  pendingFriendRequests: new Set(),
-  lastCommentsData: null,
+class CommentManager {
+  static currentUser = null;
+  static currentArticle = null;
+  static currentFriends = new Set();
+  static outgoingFriendRequests = new Set();
+  static pendingFriendRequests = new Set();
+  static lastCommentsData = null;
 
-  init(user, article) {
+  static init(user, article) {
     this.currentUser = user;
     this.currentArticle = article;
     if (this.currentUser) {
       this.loadFriendshipData().then(() => {
+        // If comments were already loaded while we were loading friendship data,
+        // re-display them now that we have friendship info (fixes race condition sometimes).
         if (this.lastCommentsData) {
           this.display(this.lastCommentsData);
         }
       });
     }
-  },
+  }
 
-  loadFriendshipData() {
+  static loadFriendshipData() {
     if (!this.currentUser || !this.currentUser.id) return Promise.resolve();
 
     const promises = [];
@@ -61,9 +63,9 @@ const CommentManager = {
 
     promises.push(friendsPromise, pendingPromise, outgoingPromise);
     return Promise.all(promises);
-  },
+  }
 
-  setup() {
+  static setup() {
     if (this.currentUser) {
       $("#comment-form").show();
       $("#comment-form-avatar").attr("src", this.currentUser.imageUrl || CONSTANTS.NO_IMAGE_URL);
@@ -77,9 +79,9 @@ const CommentManager = {
       $("#comment-form").hide();
       $("#comments-list").html('<p class="comment-prompt">Please log in to view and post comments.</p>');
     }
-  },
+  }
 
-  load() {
+  static load() {
     if (!this.currentArticle.id) {
       $("#comments-list").html('<p class="comment-prompt">No comments available for this article.</p>');
       return;
@@ -106,9 +108,9 @@ const CommentManager = {
       },
       () => $("#comments-list").html('<p class="comment-prompt">Could not load comments.</p>')
     );
-  },
+  }
 
-  display(comments) {
+  static display(comments) {
     const commentsList = $("#comments-list");
     commentsList.empty();
 
@@ -123,9 +125,9 @@ const CommentManager = {
       const commentHtml = this.generateHtml(comment, blockedUsers);
       commentsList.append(commentHtml);
     });
-  },
+  }
 
-  generateHtml(comment, blockedUsers) {
+  static generateHtml(comment, blockedUsers) {
     const isAuthorBlocked = blockedUsers.some((user) => user.id == comment.authorId);
     const isLiked = comment.isLikedByCurrentUser;
     const likeCount = comment.likeCount;
@@ -213,9 +215,9 @@ const CommentManager = {
     }
 
     return fullCommentHtml;
-  },
+  }
 
-  setupEventHandlers() {
+  static setupEventHandlers() {
     $(document)
       .off("click", ".show-comment-btn")
       .on("click", ".show-comment-btn", (e) => {
@@ -243,9 +245,9 @@ const CommentManager = {
       .on("click", ".accept-friend-request-btn", (e) => this.handleAcceptFriendRequest(e))
       .on("click", ".ban-user-admin-btn", (e) => this.handleAdminBan(e))
       .on("click", ".unban-user-admin-btn", (e) => this.handleAdminUnban(e));
-  },
+  }
 
-  handleAdminBan(e) {
+  static handleAdminBan(e) {
     const button = $(e.target).closest(".ban-user-admin-btn");
     const authorId = button.data("author-id");
     const authorName = button.data("author-name");
@@ -263,9 +265,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to ban user. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleAdminUnban(e) {
+  static handleAdminUnban(e) {
     const button = $(e.target).closest(".unban-user-admin-btn");
     const authorId = button.data("author-id");
     const authorName = button.data("author-name");
@@ -283,9 +285,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to unban user. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleSubmit(e) {
+  static handleSubmit(e) {
     e.preventDefault();
     const textarea = $(e.target).find("textarea");
     const commentText = textarea.val().trim();
@@ -314,23 +316,23 @@ const CommentManager = {
         this.load();
       }
     );
-  },
+  }
 
-  handleEdit(e) {
+  static handleEdit(e) {
     const commentItem = $(e.target).closest(".comment-item");
     commentItem.find(".comment-text").hide();
     commentItem.find(".comment-edit-form").show();
-  },
+  }
 
-  handleCancelEdit(e) {
+  static handleCancelEdit(e) {
     const commentItem = $(e.target).closest(".comment-item");
     commentItem.find(".comment-edit-form").hide();
     commentItem.find(".comment-text").show();
     const originalText = commentItem.find(".comment-text").text();
     commentItem.find(".comment-edit-textarea").val(originalText);
-  },
+  }
 
-  handleSaveEdit(e) {
+  static handleSaveEdit(e) {
     const commentItem = $(e.target).closest(".comment-item");
     const commentId = commentItem.data("comment-id");
     const textarea = commentItem.find(".comment-edit-textarea");
@@ -353,16 +355,16 @@ const CommentManager = {
       },
       () => UIManager.showPopup("Failed to update comment. Please try again.", false)
     );
-  },
+  }
 
-  handleDelete(e) {
+  static handleDelete(e) {
     const commentItem = $(e.target).closest(".comment-item");
     const commentId = commentItem.data("comment-id");
     const authorId = parseInt(commentItem.data("author-id"), 10);
 
     const comment = this.lastCommentsData.find((c) => c.id == commentId);
     if (!comment) {
-      UIManager.showPopup("Could not verify user status, please try again.", false);
+      UIManager.showPopup("Comment not found.", false);
       return;
     }
 
@@ -404,9 +406,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to delete comment. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleLike(e) {
+  static handleLike(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to like comments.", false);
       return;
@@ -437,9 +439,9 @@ const CommentManager = {
         button.toggleClass("liked", wasLiked);
       }
     );
-  },
+  }
 
-  handleReport(e) {
+  static handleReport(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to report comments.", false);
       return;
@@ -465,9 +467,9 @@ const CommentManager = {
         );
       }
     });
-  },
+  }
 
-  handleBlock(e) {
+  static handleBlock(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to block users.", false);
       return;
@@ -490,9 +492,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to block user. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleUnblock(e) {
+  static handleUnblock(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in.", false);
       return;
@@ -515,9 +517,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to unblock user. Please try again.", false)
       );
     });
-  },
+  }
 
-  updateBlockedUsersList(userId, isBlocking) {
+  static updateBlockedUsersList(userId, isBlocking) {
     if (!this.currentUser.blockedUsers) {
       this.currentUser.blockedUsers = [];
     }
@@ -529,9 +531,9 @@ const CommentManager = {
     }
 
     localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
-  },
+  }
 
-  createLikeParticles(button) {
+  static createLikeParticles(button) {
     for (let i = 0; i < 7; i++) {
       const particle = $('<span class="like-particle">♥</span>');
       button.append(particle);
@@ -544,9 +546,9 @@ const CommentManager = {
       });
       setTimeout(() => particle.remove(), 1000);
     }
-  },
+  }
 
-  handleSendFriendRequest(e) {
+  static handleSendFriendRequest(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in to send friend requests.", false);
       return;
@@ -574,9 +576,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to send friend request. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleUnfriend(e) {
+  static handleUnfriend(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in.", false);
       return;
@@ -604,9 +606,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to remove friend. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleCancelFriendRequest(e) {
+  static handleCancelFriendRequest(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in.", false);
       return;
@@ -634,9 +636,9 @@ const CommentManager = {
         () => UIManager.showPopup("Failed to cancel friend request. Please try again.", false)
       );
     });
-  },
+  }
 
-  handleAcceptFriendRequest(e) {
+  static handleAcceptFriendRequest(e) {
     if (!this.currentUser) {
       UIManager.showPopup("Please log in.", false);
       return;
@@ -667,6 +669,6 @@ const CommentManager = {
       );
     });
   }
-};
+}
 
 window.CommentManager = CommentManager;
