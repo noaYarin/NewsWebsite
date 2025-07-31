@@ -1,28 +1,28 @@
-const ValidationManager = {
-  rules: {
+class ValidationManager {
+  static rules = {
     email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     name: /^[a-zA-Z\s'-]{2,30}$/,
     passwordLetterAndNumber: /^(?=.*[a-zA-Z])(?=.*\d)/,
     passwordLetterAndSpecial: /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
     passwordUpperLower: /^(?=.*[a-z])(?=.*[A-Z])/,
     url: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
-  },
+  };
 
-  interests: ["Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology", "Travel", "Culture"],
+  static interests = ["Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology", "Travel", "Culture"];
 
-  validateEmail(val) {
+  static validateEmail(val) {
     if (!val) return { valid: false, message: "Email is required" };
     if (!this.rules.email.test(val)) return { valid: false, message: "Please enter a valid email address" };
     return { valid: true };
-  },
+  }
 
-  validateName(name, fieldName) {
+  static validateName(name, fieldName) {
     if (!name) return { valid: false, message: `${fieldName} is required` };
     if (!this.rules.name.test(name)) return { valid: false, message: `${fieldName} must be 2-30 letters, spaces, hyphens, or apostrophes` };
     return { valid: true };
-  },
+  }
 
-  validatePassword(val) {
+  static validatePassword(val) {
     const constants = window.CONSTANTS || { VALIDATION: { PASSWORD_REQUIREMENTS: { MIN_LENGTH: 8 } } };
     const hasLetterAndNumber = this.rules.passwordLetterAndNumber.test(val) || this.rules.passwordLetterAndSpecial.test(val);
     const hasMixedCase = this.rules.passwordUpperLower.test(val);
@@ -35,9 +35,9 @@ const ValidationManager = {
     if (!hasLetterAndNumber) return { valid: false, message: "Password must contain letters with a number or special character" };
 
     return { valid: true };
-  },
+  }
 
-  validateBirthdate(val) {
+  static validateBirthdate(val) {
     const constants = window.CONSTANTS || { VALIDATION: { AGE_LIMITS: { MIN_AGE: 18, MAX_AGE: 120 } } };
     if (!val) return { valid: false, message: "Birthdate is required" };
 
@@ -53,9 +53,9 @@ const ValidationManager = {
     if (age > constants.VALIDATION.AGE_LIMITS.MAX_AGE) return { valid: false, message: "Please enter a valid birthdate" };
 
     return { valid: true };
-  },
+  }
 
-  validateImageUrl(url) {
+  static validateImageUrl(url) {
     if (!url) return { valid: false };
 
     const pattern = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg)$/i;
@@ -65,30 +65,30 @@ const ValidationManager = {
       valid: isValid,
       message: isValid ? "" : "Image URL cannot contain parameters. Please use a direct link."
     };
-  },
+  }
 
-  cleanImageUrl(url) {
+  static cleanImageUrl(url) {
     if (!url) return "";
     const queryIndex = url.indexOf("?");
     if (queryIndex !== -1) {
       return url.substring(0, queryIndex);
     }
     return url;
-  },
+  }
 
-  showError(input, message) {
+  static showError(input, message) {
     const formGroup = input.closest(".form-group");
     formGroup.find(".error-message").text(message).show();
     input.addClass("input-error");
-  },
+  }
 
-  clearValidationState(input) {
+  static clearValidationState(input) {
     const formGroup = input.closest(".form-group");
     formGroup.find(".error-message").hide();
     input.removeClass("input-error");
-  },
+  }
 
-  populateInterestsList() {
+  static populateInterestsList() {
     const listContainer = $("#interestsList");
     if (!listContainer.length) return;
 
@@ -101,9 +101,9 @@ const ValidationManager = {
       `;
       listContainer.append(item);
     });
-  },
+  }
 
-  populateInterestsGrid() {
+  static populateInterestsGrid() {
     const grid = $("#interestsGrid");
     if (!grid.length) return;
 
@@ -119,9 +119,9 @@ const ValidationManager = {
       `;
       grid.append(card);
     });
-  },
+  }
 
-  updateInterestSubtitle(selectedCount, isError = false) {
+  static updateInterestSubtitle(selectedCount, isError = false) {
     const remaining = 3 - selectedCount;
     const subtitle = $(".interests-subtitle");
     if (!subtitle.length) return;
@@ -139,9 +139,9 @@ const ValidationManager = {
     } else {
       subtitle.text(`You've selected ${selectedCount} interests. You're all set!`).addClass("is-valid");
     }
-  },
+  }
 
-  handleInterestSelection(e) {
+  static handleInterestSelection(e) {
     const card = $(e.currentTarget);
     const interest = card.data("interest");
     const title = card.find(".interest-card-title");
@@ -150,24 +150,24 @@ const ValidationManager = {
     title.toggleClass("selected");
 
     return interest;
-  },
+  }
 
-  showPasswordCriteria() {
+  static showPasswordCriteria() {
     $(".password-criteria").addClass("show");
-  },
+  }
 
-  resetPasswordCriteria() {
+  static resetPasswordCriteria() {
     $(".password-criteria").removeClass("show");
     $(".password-progress-fill").removeClass("weak medium strong");
-  },
+  }
 
-  updatePasswordProgress(validCount) {
+  static updatePasswordProgress(validCount) {
     const strengthLevels = { 0: "", 1: "weak", 2: "medium", 3: "strong" };
     const level = strengthLevels[validCount];
     $(".password-progress-fill").removeClass("weak medium strong").addClass(level);
-  },
+  }
 
-  updatePasswordCriteria(password) {
+  static updatePasswordCriteria(password) {
     const constants = window.CONSTANTS || { VALIDATION: { PASSWORD_REQUIREMENTS: { MIN_LENGTH: 8 } } };
     const requirements = {
       length: $('.password-requirement[data-requirement="length"]'),
@@ -188,6 +188,6 @@ const ValidationManager = {
     const validCount = Object.values(validations).filter(Boolean).length;
     this.updatePasswordProgress(validCount);
   }
-};
+}
 
 window.ValidationManager = ValidationManager;
