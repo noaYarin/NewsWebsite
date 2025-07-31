@@ -81,6 +81,10 @@ class NewsSectionManager {
     }
   }
 
+  /**
+   * Calculates the total number of articles required for each category across all sections.
+   * @returns {Object.<string, number>} An object mapping category names to the number of articles needed.
+   */
   static calculateCategoryCounts() {
     const counts = {};
     this.sectionRequirements.forEach((section) => {
@@ -99,6 +103,10 @@ class NewsSectionManager {
     await this.loadLatestFromDatabase();
   }
 
+  /**
+   * Gathers all unique API queries from the section requirements.
+   * (!) This implementation collects queries but doesn't execute a fetch.
+   */
   static async fetchAndSyncFromAPI() {
     const apiQueries = new Set();
     this.sectionRequirements.forEach((section) => {
@@ -110,6 +118,10 @@ class NewsSectionManager {
     });
   }
 
+  /**
+   * Loads articles from the local cache based on calculated category needs,
+   * then remove duplicates and sorts them by date.
+   */
   static async loadLatestFromDatabase() {
     const categoryCounts = this.calculateCategoryCounts();
     const cachePromises = Object.entries(categoryCounts).map(([category, count]) => {
@@ -125,7 +137,6 @@ class NewsSectionManager {
       }
     });
 
-    // Remove duplicates based on URL
     const uniqueArticles = new Map();
     this.allArticles.forEach((article) => {
       if (article.url && !uniqueArticles.has(article.url)) {
@@ -134,7 +145,6 @@ class NewsSectionManager {
     });
     this.allArticles = Array.from(uniqueArticles.values());
 
-    // Sort by newest first
     this.allArticles.sort((a, b) => {
       const dateA = new Date(a.publishedAt || 0);
       const dateB = new Date(b.publishedAt || 0);
@@ -142,6 +152,9 @@ class NewsSectionManager {
     });
   }
 
+  /**
+   * Resets tracking of used articles and populates all defined sections with content.
+   */
   static fillAllSections() {
     this.usedArticleIds.clear();
     this.sectionRequirements.forEach((section) => {
@@ -149,6 +162,10 @@ class NewsSectionManager {
     });
   }
 
+  /**
+   * Fills a single section with articles and marks them as used to prevent duplication.
+   * @param {object} section - The configuration object for the section to fill.
+   */
   static fillSection(section) {
     const availableArticles = this.getArticlesForSection(section);
 
@@ -159,6 +176,12 @@ class NewsSectionManager {
     this.fillContainer(section.container, availableArticles.slice(0, section.count), section.title);
   }
 
+  /**
+   * Retrieves a list of articles matching a section's source requirements.
+   * It prioritizes specified sources and falls back to general articles if needed.
+   * @param {object} section - The section's configuration object.
+   * @returns {object[]} An array of article objects for the section.
+   */
   static getArticlesForSection(section) {
     const articles = [];
     const uniqueUrls = new Set();
@@ -197,6 +220,12 @@ class NewsSectionManager {
     return articles;
   }
 
+  /**
+   * Renders a list of articles into a specified container.
+   * @param {string} containerSelector - The CSS selector for the container element.
+   * @param {object[]} articles - The articles to render.
+   * @param {string | null} title - The title to display for the section.
+   */
   static fillContainer(containerSelector, articles, title) {
     const container = $(containerSelector);
     if (!container.length) return;
@@ -219,6 +248,11 @@ class NewsSectionManager {
     });
   }
 
+  /**
+   * Creates a placeholder article object for use when real content is unavailable.
+   * @param {number} index - The index for creating a unique fallback ID.
+   * @returns {object} A fallback article object.
+   */
   static createFallbackArticle(index) {
     return {
       id: `fallback-${index}-${Date.now()}`,
@@ -233,6 +267,11 @@ class NewsSectionManager {
     };
   }
 
+  /**
+   * Updates the title of a section in the DOM, with special handling for certain sections.
+   * @param {jQuery} container - The jQuery object for the section's container.
+   * @param {string} title - The new title text.
+   */
   static updateSectionTitle(container, title) {
     if (title && title.includes("TOP STORIES IN")) {
       $("#month-title").text(title);
@@ -246,6 +285,10 @@ class NewsSectionManager {
     }
   }
 
+  /**
+   * Initializes the page using only locally cached articles.
+   * If the cache is empty, it populates the UI with fallback content.
+   */
   static async loadFromCacheOnly() {
     await this.loadLatestFromDatabase();
 
@@ -256,6 +299,10 @@ class NewsSectionManager {
     }
   }
 
+  /**
+   * Generates a full page of placeholder content when no articles can be loaded.
+   * This ensures the UI is never empty.
+   */
   static createFallbackContent() {
     const totalNeeded = this.sectionRequirements.reduce((sum, section) => sum + section.count, 0);
     this.allArticles = Array.from({ length: totalNeeded }, (_, index) => ({
