@@ -1,110 +1,266 @@
-class BookmarksPageManager {
-  static currentUser = null;
+class CategoryPageManager {
+  static currentPage = 1;
+  static pageSize = 10;
+  static currentCategory = "";
+  static isLoading = false;
+  static allArticlesLoaded = false;
+  static pagination = null;
 
   static SELECTORS = {
-    bookmarksList: "#bookmarks-list",
-    loadingMessage: "#bookmarks-loading-message"
+    categoryTitle: ".category-title",
+    categoryBanner: ".category-banner",
+    articlesList: "#category-articles-list",
+    loadingMessage: "#category-loading-message",
+    infiniteScrollLoader: "#infinite-scroll-loader"
+  };
+
+  static PAGINATION_CONFIG = {
+    pageSize: 10,
+    threshold: 300
   };
 
   static TEMPLATES = {
-    loading: `
+    initialLoading: `
       <div class="sun-loading">
         <div class="thinking-container">
-          <img src="../sources/images/sun/sun.png" alt="Loading Bookmarks" class="thinking-icon" />
+          <img src="../sources/images/sun/sun.png" alt="Loading Articles" class="thinking-icon" />
         </div>
       </div>
     `,
-    emptyState: `
-      <div class="empty-state">
-        <img src="../sources/images/not-found.png" alt="No bookmarks" class="empty-state-icon" />
-        <h3>No saved articles yet</h3>
-        <p>Articles you bookmark will appear here for easy access later.</p>
-        <a href="../html/index.html" class="highlight">Browse Articles</a>
+    infiniteLoading: `
+      <div class="sun-loading">
+        <div class="thinking-container">
+          <img src="../sources/images/sun/sun.png" alt="Loading More Articles" class="thinking-icon" />
+        </div>
       </div>
     `,
-    errorState: `
+    emptyState: (categoryName) => `
+      <div class="empty-state">
+        <img src="../sources/images/not-found.png" alt="No articles" class="empty-state-icon" />
+        <h3>No articles found</h3>
+        <p>No articles found in the ${categoryName} category.</p>
+        <a href="../html/index.html" class="highlight">Browse All Articles</a>
+      </div>
+    `,
+    errorState: (message) => `
       <div class="error-state">
         <img src="../sources/images/not-found.png" alt="Error" class="error-state-icon" />
-        <h3>Could not load your bookmarks</h3>
-        <p>There was an error loading your saved articles.</p>
-        <button onclick="BookmarksPageManager.loadBookmarks()" class="retry-btn highlight">Try Again</button>
+        <h3>Oops! Something went wrong</h3>
+        <p>${message}</p>
+        <button onclick="CategoryPageManager.retry()" class="retry-btn highlight">Try Again</button>
       </div>
     `
   };
 
   static init() {
-    this.currentUser = Utils.getCurrentUser();
+    this.currentCategory = Utils.getUrlParam("name");
 
-    if (!this.currentUser) {
-      window.location.href = "auth.html";
-      return;
+    if (this.currentCategory) {
+      this.setupPage();
+      this.setupPagination();
+      this.loadArticles();
+    } else {
+      this.showError("No category specified.");
     }
-
-    this.loadBookmarks();
   }
 
-  static loadBookmarks() {
-    this.showLoadingState();
-    this.clearBookmarksList();
+  static setupPage() {
+    const formattedTitle = this.formatCategoryName(this.currentCategory);
 
-    getUserBookmarks(
-      this.currentUser.id,
-      (articles) => this.handleBookmarksLoadSuccess(articles),
-      () => this.handleBookmarksLoadError()
-    );
+    document.title = `HORIZON / ${formattedTitle}`;
+    $(this.SELECTORS.categoryTitle).text(formattedTitle);
+
+    this.setupCategoryBanner(formattedTitle);
+  }
+
+  static formatCategoryName(category) {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  }
+
+  static setupCategoryBanner(formattedTitle) {
+    const bannerImageUrl = `${CONSTANTS.PATHS.CATEGORIES}${formattedTitle}.jpg`;
+    $(this.SELECTORS.categoryBanner).css("background-image", `url('${bannerImageUrl}')`);
+  }
+
+  static setupPagination() {
+    this.pagination = new PaginationManager({
+      pageSize: this.PAGINATION_CONFIG.pageSize,
+      threshold: this.PAGINATION_CONFIG.threshold,
+      loadMore: () => this.loadArticles()
+    });
+    this.pagination.init();
+  }
+
+  static async loadArticles() {
+    if (this.isLoading || this.allArticlesLoaded) return;
+
+    this.isLoading = true;
+    this.showLoadingState();
+
+    try {
+      if (this.currentPage === 1) {
+        await this.fetchAndSyncFromAPI();
+      }
+
+      this.fetchArticlesFromDatabase();
+    } catch (error) {
+      this.handleLoadError();
+    }
   }
 
   static showLoadingState() {
-    const $loadingMessage = $(this.SELECTORS.loadingMessage);
-    $loadingMessage.html(this.TEMPLATES.loading).show();
-  }
+    const $initialLoadingMessage = $(this.SELECTORS.loadingMessage);
+    const $infiniteScrollLoader = $(this.SELECTORS.infiniteScrollLoader);
 
-  static clearBookmarksList() {
-    $(this.SELECTORS.bookmarksList).empty();
-  }
-
-  static handleBookmarksLoadSuccess(articles) {
-    this.hideLoadingMessage();
-
-    if (articles && articles.length > 0) {
-      this.displayBookmarks(articles);
+    if (this.currentPage === 1) {
+      $initialLoadingMessage.html(this.TEMPLATES.initialLoading).show();
     } else {
-      this.showEmptyState();
+      $infiniteScrollLoader.html(this.TEMPLATES.infiniteLoading).show();
     }
   }
 
-  static handleBookmarksLoadError() {
-    this.hideLoadingMessage();
-    this.showErrorState();
+  static fetchArticlesFromDatabase() {
+    getArticlesByCategoryPaged(
+      this.currentCategory,
+      this.currentPage,
+      this.pageSize,
+      (articles) => this.handleLoadSuccess(articles),
+      () => this.handleLoadError()
+    );
   }
 
-  static hideLoadingMessage() {
+  static async fetchAndSyncFromAPI() {
+    return new Promise((resolve) => {
+      getTopHeadlines(
+        this.currentCategory,
+        1,
+        (response) => {
+          if (response && response.data && response.data.length > 0) {
+            const articles = this.mapAPIArticles(response.data);
+            this.syncArticlesToDatabase(articles, resolve);
+          } else {
+            resolve();
+          }
+        },
+        () => resolve()
+      );
+    });
+  }
+
+  static syncArticlesToDatabase(articles, callback) {
+    syncArticles(
+      articles,
+      () => callback(),
+      () => callback()
+    );
+  }
+
+  static mapAPIArticles(articles) {
+    return articles.map((article) => ({
+      title: article.title,
+      url: article.url,
+      imageUrl: article.urlToImage,
+      description: article.description || "",
+      author: article.author || "Unknown Author",
+      sourceName: (article.source && article.source.name) || "Unknown Source",
+      publishedAt: article.publishedAt,
+      category: article.category || this.formatCategoryName(this.currentCategory)
+    }));
+  }
+
+  static handleLoadSuccess(articles) {
+    this.hideLoadingIndicators();
+
+    if (articles && articles.length > 0) {
+      this.displayArticles(articles);
+      this.currentPage++;
+      this.pagination.nextPage();
+    }
+
+    this.checkIfAllArticlesLoaded(articles);
+    this.updateLoadingState();
+  }
+
+  static handleLoadError() {
+    this.hideLoadingIndicators();
+    this.showError("Could not load articles.");
+    this.setLoadingComplete();
+  }
+
+  static hideLoadingIndicators() {
     $(this.SELECTORS.loadingMessage).hide();
+    $(this.SELECTORS.infiniteScrollLoader).hide();
   }
 
-  static displayBookmarks(articles) {
-    const container = $(this.SELECTORS.bookmarksList);
-    container.empty();
-
+  static displayArticles(articles) {
+    const container = $(this.SELECTORS.articlesList);
     articles.forEach((article) => {
       const articleHtml = ArticleRenderer.renderListItem(article);
       container.append(articleHtml);
     });
   }
 
-  static showEmptyState() {
-    const container = $(this.SELECTORS.bookmarksList);
-    container.html(this.TEMPLATES.emptyState);
+  static checkIfAllArticlesLoaded(articles) {
+    if (!articles || articles.length < this.pageSize) {
+      this.allArticlesLoaded = true;
+      this.pagination.setAllLoaded(true);
+
+      const container = $(this.SELECTORS.articlesList);
+      if (container.is(":empty")) {
+        this.showEmptyState();
+      }
+    }
   }
 
-  static showErrorState() {
-    const container = $(this.SELECTORS.bookmarksList);
-    container.html(this.TEMPLATES.errorState);
+  static updateLoadingState() {
+    this.isLoading = false;
+    this.pagination.setLoading(false);
+  }
+
+  static setLoadingComplete() {
+    this.isLoading = false;
+    this.allArticlesLoaded = true;
+    this.pagination.setLoading(false);
+    this.pagination.setAllLoaded(true);
+  }
+
+  static showEmptyState() {
+    const container = $(this.SELECTORS.articlesList);
+    const categoryName = this.formatCategoryName(this.currentCategory);
+    container.html(this.TEMPLATES.emptyState(categoryName));
+  }
+
+  static showError(message) {
+    this.allArticlesLoaded = true;
+    const container = $(this.SELECTORS.articlesList);
+    container.html(this.TEMPLATES.errorState(message));
+  }
+
+  static retry() {
+    this.resetPaginationState();
+    this.clearArticlesList();
+    this.showInitialLoading();
+    this.loadArticles();
+  }
+
+  static resetPaginationState() {
+    this.currentPage = 1;
+    this.isLoading = false;
+    this.allArticlesLoaded = false;
+    this.pagination.reset();
+  }
+
+  static clearArticlesList() {
+    $(this.SELECTORS.articlesList).empty();
+  }
+
+  static showInitialLoading() {
+    $(this.SELECTORS.loadingMessage).show();
   }
 }
 
 $(document).ready(() => {
-  BookmarksPageManager.init();
+  CategoryPageManager.init();
 });
 
-window.BookmarksPageManager = BookmarksPageManager;
+window.CategoryPageManager = CategoryPageManager;

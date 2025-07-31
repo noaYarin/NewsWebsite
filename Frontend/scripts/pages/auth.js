@@ -3,7 +3,6 @@ let userEmail = "";
 let signupData = {};
 let selectedInterests = [];
 
-// Form management helpers
 const AuthFormManager = {
   validationMap: {
     email: (val) => {
@@ -85,7 +84,6 @@ const AuthFormManager = {
   }
 };
 
-// Email verification handlers
 const EmailHandler = {
   handleSubmit(e) {
     e.preventDefault();
@@ -118,7 +116,6 @@ const EmailHandler = {
   }
 };
 
-// Sign in handlers
 const SigninHandler = {
   handleSubmit(e) {
     e.preventDefault();
@@ -160,7 +157,6 @@ const SigninHandler = {
   }
 };
 
-// Sign up handlers
 const SignupHandler = {
   handleFormSubmit(e) {
     e.preventDefault();
@@ -218,7 +214,6 @@ const SignupHandler = {
   }
 };
 
-// Password handling
 const PasswordHandler = {
   handleToggle(e) {
     const button = $(e.target).closest(".password-toggle-btn");
@@ -232,7 +227,6 @@ const PasswordHandler = {
     passwordInput.focus();
     passwordInput[0].setSelectionRange(cursorPosition, cursorPosition);
 
-    // Trigger sun animation
     setTimeout(() => {
       if (isPassword && window.animatePasswordShow) window.animatePasswordShow();
       if (!isPassword && window.animatePasswordHide) window.animatePasswordHide();
@@ -240,7 +234,6 @@ const PasswordHandler = {
   }
 };
 
-// Event handler setup
 function setupAuthHandlers() {
   $(document)
     .on("submit", "#emailFormData", (e) => EmailHandler.handleSubmit(e))
