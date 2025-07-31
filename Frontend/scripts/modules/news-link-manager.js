@@ -1,5 +1,5 @@
-const NewsLinkManager = {
-  setupCategoryLinks() {
+class NewsLinkManager {
+  static setupCategoryLinks() {
     const interests = NewsSectionManager.getUserInterests();
 
     $("#see-more-latest").attr("href", `../html/category.html?name=general`);
@@ -10,4 +10,4 @@ const NewsLinkManager = {
       $("#see-more-interest1").attr("href", `../html/category.html?name=${interests[0]}`);
     }
   }
-};
+}

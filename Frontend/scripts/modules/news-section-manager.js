@@ -1,9 +1,9 @@
-const NewsSectionManager = {
-  allArticles: [],
-  usedArticleIds: new Set(),
-  userInterests: [],
+class NewsSectionManager {
+  static allArticles = [];
+  static usedArticleIds = new Set();
+  static userInterests = [];
 
-  sectionRequirements: [
+  static sectionRequirements = [
     {
       id: "latest",
       container: "#container",
@@ -12,17 +12,17 @@ const NewsSectionManager = {
       sources: ["api:breaking news world", "api:latest news", "category:general"]
     },
     {
-      id: "main_interest",
-      container: "#secondary-container .col-lg-8",
+      id: "travel",
+      container: ".discover-articles-section",
       title: null,
-      count: 3,
-      sources: []
+      count: 5,
+      sources: ["api:travel destination", "api:adventure tourism", "category:travel"]
     },
     {
-      id: "sidebar_month",
-      container: "#secondary-container .today-picks-sidebar",
+      id: "main_interest",
+      container: "#secondary-container",
       title: null,
-      count: 6,
+      count: 9,
       sources: []
     },
     {
@@ -40,22 +40,15 @@ const NewsSectionManager = {
       sources: []
     },
     {
-      id: "travel",
-      container: ".discover-articles-section",
-      title: null,
-      count: 5,
-      sources: ["api:travel destination", "api:adventure tourism", "category:general"]
-    },
-    {
       id: "trending",
       container: "#fourth-container",
       title: null,
       count: 6,
       sources: []
     }
-  ],
+  ];
 
-  getUserInterests() {
+  static getUserInterests() {
     if (this.userInterests.length === 0) {
       try {
         const currentUser = Utils.getCurrentUser() || {};
@@ -65,22 +58,30 @@ const NewsSectionManager = {
       }
     }
     return this.userInterests;
-  },
+  }
 
-  initializeSectionRequirements() {
+  static initializeSectionRequirements() {
     const interests = this.getUserInterests();
 
-    this.sectionRequirements[1].title = `TOP STORIES IN ${interests[0].toUpperCase()}`;
-    this.sectionRequirements[1].sources = [`category:${interests[0]}`];
+    const mainInterestSection = this.sectionRequirements.find((section) => section.id === "main_interest");
+    if (mainInterestSection) {
+      mainInterestSection.title = `TOP STORIES IN ${interests[0].toUpperCase()}`;
+      mainInterestSection.sources = [`category:${interests[0]}`];
+    }
 
-    this.sectionRequirements[2].sources = [`category:${interests[0]}`, "category:general"];
-    this.sectionRequirements[4].sources = [`category:${interests[1]}`, "category:general"];
+    const beyondHeadlinesSection = this.sectionRequirements.find((section) => section.id === "beyond_headlines");
+    if (beyondHeadlinesSection) {
+      beyondHeadlinesSection.sources = [`category:${interests[1]}`, "category:general"];
+    }
 
-    this.sectionRequirements[6].title = `TRENDING IN ${interests[2].toUpperCase()}`;
-    this.sectionRequirements[6].sources = [`category:${interests[2]}`, "category:general"];
-  },
+    const trendingSection = this.sectionRequirements.find((section) => section.id === "trending");
+    if (trendingSection) {
+      trendingSection.title = `TRENDING IN ${interests[2].toUpperCase()}`;
+      trendingSection.sources = [`category:${interests[2]}`, "category:general"];
+    }
+  }
 
-  calculateCategoryCounts() {
+  static calculateCategoryCounts() {
     const counts = {};
     this.sectionRequirements.forEach((section) => {
       section.sources.forEach((source) => {
@@ -91,25 +92,31 @@ const NewsSectionManager = {
       });
     });
     return counts;
-  },
+  }
 
-  async collectAllArticles() {
-    const apiSources = new Set();
+  static async collectAllArticles() {
+    await this.fetchAndSyncFromAPI();
+    await this.loadLatestFromDatabase();
+  }
+
+  static async fetchAndSyncFromAPI() {
+    const apiQueries = new Set();
     this.sectionRequirements.forEach((section) => {
       section.sources.forEach((source) => {
         if (source.startsWith("api:")) {
-          apiSources.add(source.split(":")[1]);
+          apiQueries.add(source.split(":")[1]);
         }
       });
     });
+  }
 
+  static async loadLatestFromDatabase() {
     const categoryCounts = this.calculateCategoryCounts();
+    const cachePromises = Object.entries(categoryCounts).map(([category, count]) => {
+      return NewsAPIManager.fetchFromCache(category, count);
+    });
 
-    const apiPromises = Array.from(apiSources).map((query) => NewsAPIManager.fetchFromAPI(null, query));
-    const cachePromises = Object.entries(categoryCounts).map(([category, count]) => NewsAPIManager.fetchFromCache(category, count));
-
-    const fetchPromises = [...apiPromises, ...cachePromises];
-    const results = await Promise.allSettled(fetchPromises);
+    const results = await Promise.allSettled(cachePromises);
 
     this.allArticles = [];
     results.forEach((result) => {
@@ -118,7 +125,7 @@ const NewsSectionManager = {
       }
     });
 
-    // Remove duplicate articles based on URL
+    // Remove duplicates based on URL
     const uniqueArticles = new Map();
     this.allArticles.forEach((article) => {
       if (article.url && !uniqueArticles.has(article.url)) {
@@ -126,32 +133,33 @@ const NewsSectionManager = {
       }
     });
     this.allArticles = Array.from(uniqueArticles.values());
-  },
 
-  fillAllSections() {
+    // Sort by newest first
+    this.allArticles.sort((a, b) => {
+      const dateA = new Date(a.publishedAt || 0);
+      const dateB = new Date(b.publishedAt || 0);
+      return dateB - dateA;
+    });
+  }
+
+  static fillAllSections() {
     this.usedArticleIds.clear();
     this.sectionRequirements.forEach((section) => {
       this.fillSection(section);
     });
-  },
+  }
 
-  fillSection(section) {
+  static fillSection(section) {
     const availableArticles = this.getArticlesForSection(section);
-
-    if (availableArticles.length < section.count) {
-      const additionalNeeded = section.count - availableArticles.length;
-      const fillerArticles = this.allArticles.filter((article) => !this.usedArticleIds.has(article.id)).slice(0, additionalNeeded);
-      availableArticles.push(...fillerArticles);
-    }
 
     availableArticles.slice(0, section.count).forEach((article) => {
       this.usedArticleIds.add(article.id);
     });
 
     this.fillContainer(section.container, availableArticles.slice(0, section.count), section.title);
-  },
+  }
 
-  getArticlesForSection(section) {
+  static getArticlesForSection(section) {
     const articles = [];
     const uniqueUrls = new Set();
 
@@ -179,10 +187,17 @@ const NewsSectionManager = {
 
       if (articles.length >= section.count) break;
     }
-    return articles;
-  },
 
-  fillContainer(containerSelector, articles, title) {
+    if (articles.length < section.count) {
+      const generalArticles = this.allArticles.filter((article) => !this.usedArticleIds.has(article.id) && !uniqueUrls.has(article.url));
+      const needed = section.count - articles.length;
+      articles.push(...generalArticles.slice(0, needed));
+    }
+
+    return articles;
+  }
+
+  static fillContainer(containerSelector, articles, title) {
     const container = $(containerSelector);
     if (!container.length) return;
 
@@ -202,9 +217,9 @@ const NewsSectionManager = {
         $element.css("visibility", "visible");
       }
     });
-  },
+  }
 
-  createFallbackArticle(index) {
+  static createFallbackArticle(index) {
     return {
       id: `fallback-${index}-${Date.now()}`,
       title: "Breaking News Update",
@@ -216,9 +231,9 @@ const NewsSectionManager = {
       publishedAt: new Date().toISOString(),
       category: "general"
     };
-  },
+  }
 
-  updateSectionTitle(container, title) {
+  static updateSectionTitle(container, title) {
     if (title && title.includes("TOP STORIES IN")) {
       $("#month-title").text(title);
     } else if (title && title.includes("TRENDING IN")) {
@@ -229,28 +244,19 @@ const NewsSectionManager = {
         titleElement.text(title);
       }
     }
-  },
+  }
 
-  async loadFromCacheOnly() {
-    const categoryCounts = this.calculateCategoryCounts();
-    const cachePromises = Object.entries(categoryCounts).map(([category, count]) => NewsAPIManager.fetchFromCache(category, count));
-
-    const results = await Promise.allSettled(cachePromises);
-    this.allArticles = [];
-    results.forEach((result) => {
-      if (result.status === "fulfilled" && result.value) {
-        this.allArticles.push(...result.value);
-      }
-    });
+  static async loadFromCacheOnly() {
+    await this.loadLatestFromDatabase();
 
     if (this.allArticles.length === 0) {
       this.createFallbackContent();
     } else {
       this.fillAllSections();
     }
-  },
+  }
 
-  createFallbackContent() {
+  static createFallbackContent() {
     const totalNeeded = this.sectionRequirements.reduce((sum, section) => sum + section.count, 0);
     this.allArticles = Array.from({ length: totalNeeded }, (_, index) => ({
       id: `fallback-${index}`,
@@ -265,4 +271,4 @@ const NewsSectionManager = {
     }));
     this.fillAllSections();
   }
-};
+}
