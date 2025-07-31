@@ -56,14 +56,14 @@ class ValidationManager {
   }
 
   static validateImageUrl(url) {
-    if (!url) return { valid: false };
+    if (!url) return { valid: true };
 
     const pattern = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg)$/i;
 
     const isValid = pattern.test(url);
     return {
       valid: isValid,
-      message: isValid ? "" : "Image URL cannot contain parameters. Please use a direct link."
+      message: isValid ? "" : "Image URL must be a valid image link without parameters"
     };
   }
 
