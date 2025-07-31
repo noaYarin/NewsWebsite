@@ -28,7 +28,7 @@ const CategoryPage = {
   },
 
   setupPagination() {
-    this.pagination = PaginationManager.create({
+    this.pagination = new PaginationManager({
       pageSize: this.pageSize,
       threshold: 300,
       loadMore: () => this.loadArticles()
