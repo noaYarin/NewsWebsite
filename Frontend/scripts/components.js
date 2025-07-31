@@ -1,75 +1,128 @@
-const ComponentsManager = {
-  init() {
-    if (typeof HTMLSnippets !== "undefined") {
-      HTMLSnippets.init();
-    }
+class ComponentsManager {
+  static CONFIG = {
+    MOBILE_BREAKPOINT: 1024,
+    KEYBOARD_VISIBILITY_THRESHOLD: 0.9
+  };
 
+  static SELECTORS = {
+    profileMenuAddFriend: ".nav-profile-menu-add-friend"
+  };
+
+  static COMPONENTS = ["HTMLSnippets", "Navigation", "SearchManager", "GlobalFriendDialog", "NotificationsManager", "BackToTop"];
+
+  static init() {
+    this.initializeComponents();
     this.setupImageErrorHandling();
     this.setupKeyboardWatcher();
     this.setupProfileMenuHandlers();
+    this.initializeBackToTop();
+  }
 
-    if (typeof Navigation !== "undefined") {
-      Navigation.init();
+  static initializeComponents() {
+    this.COMPONENTS.forEach((componentName) => {
+      if (componentName === "BackToTop") return; // Handle separately
+      this.initializeComponent(componentName);
+    });
+  }
+
+  static initializeComponent(componentName) {
+    if (typeof window[componentName] !== "undefined" && window[componentName].init) {
+      window[componentName].init();
     }
+  }
 
-    if (typeof SearchManager !== "undefined") {
-      SearchManager.init();
+  static initializeBackToTop() {
+    const isAuthPage = this.isAuthPage();
+    const isDesktop = this.isDesktop();
+
+    if (!isAuthPage && isDesktop) {
+      this.initializeComponent("BackToTop");
     }
+  }
 
-    if (typeof GlobalFriendDialog !== "undefined") {
-      GlobalFriendDialog.init();
-    }
+  static isAuthPage() {
+    return window.location.pathname.includes("auth.html");
+  }
 
-    if (typeof NotificationsManager !== "undefined") {
-      NotificationsManager.init();
-    }
+  static isDesktop() {
+    const breakpoint = window.CONSTANTS?.MOBILE_BREAKPOINT || this.CONFIG.MOBILE_BREAKPOINT;
+    return $(window).width() > breakpoint;
+  }
 
-    const isAuthPage = window.location.pathname.includes("auth.html");
-    if (!isAuthPage && $(window).width() > (window.CONSTANTS ? CONSTANTS.MOBILE_BREAKPOINT : 1024)) {
-      if (typeof BackToTop !== "undefined") {
-        BackToTop.init();
-      }
-    }
-  },
-
-  setupImageErrorHandling() {
+  static setupImageErrorHandling() {
     $(document).on("error", "img", function () {
-      const fallbackUrl = window.CONSTANTS ? CONSTANTS.PLACEHOLDER_IMAGE_URL : "../sources/images/placeholder.png";
-      if ($(this).attr("src") !== fallbackUrl) {
+      const fallbackUrl = ComponentsManager.getFallbackImageUrl();
+      const currentSrc = $(this).attr("src");
+
+      if (currentSrc !== fallbackUrl) {
         $(this).attr("src", fallbackUrl);
       }
     });
-  },
+  }
 
-  setupProfileMenuHandlers() {
-    $(document).on("click", ".nav-profile-menu-add-friend", (e) => {
+  static getFallbackImageUrl() {
+    return window.CONSTANTS?.PLACEHOLDER_IMAGE_URL || "../sources/images/placeholder.png";
+  }
+
+  static setupProfileMenuHandlers() {
+    $(document).on("click", this.SELECTORS.profileMenuAddFriend, (e) => {
       e.preventDefault();
-
-      if (typeof Navigation !== "undefined" && Navigation.toggleProfileMenu) {
-        Navigation.toggleProfileMenu();
-      }
-
-      if (typeof GlobalFriendDialog !== "undefined" && GlobalFriendDialog.showAddFriendDialog) {
-        GlobalFriendDialog.showAddFriendDialog();
-      }
+      this.handleProfileMenuAddFriend();
     });
-  },
-  setupKeyboardWatcher() {
+  }
+
+  static handleProfileMenuAddFriend() {
+    this.closeProfileMenu();
+    this.openFriendDialog();
+  }
+
+  static closeProfileMenu() {
+    if (typeof Navigation !== "undefined" && Navigation.toggleProfileMenu) {
+      Navigation.toggleProfileMenu();
+    }
+  }
+
+  static openFriendDialog() {
+    if (typeof GlobalFriendDialog !== "undefined" && GlobalFriendDialog.showAddFriendDialog) {
+      GlobalFriendDialog.showAddFriendDialog();
+    }
+  }
+
+  static setupKeyboardWatcher() {
     if (!window.visualViewport) return;
 
     const initialHeight = window.visualViewport.height;
+
     window.visualViewport.addEventListener("resize", () => {
-      const currentHeight = window.visualViewport.height;
-      if (currentHeight < initialHeight * 0.9) {
-        const keyboardHeight = window.innerHeight - currentHeight;
-        document.documentElement.style.setProperty("--keyboard-inset", `${keyboardHeight}px`);
-        document.body.classList.add("keyboard-active");
-      } else {
-        document.documentElement.style.setProperty("--keyboard-inset", "0px");
-        document.body.classList.remove("keyboard-active");
-      }
+      this.handleViewportResize(initialHeight);
     });
   }
-};
 
-$(document).ready(() => ComponentsManager.init());
+  static handleViewportResize(initialHeight) {
+    const currentHeight = window.visualViewport.height;
+    const heightRatio = currentHeight / initialHeight;
+
+    if (heightRatio < this.CONFIG.KEYBOARD_VISIBILITY_THRESHOLD) {
+      this.showKeyboard(currentHeight);
+    } else {
+      this.hideKeyboard();
+    }
+  }
+
+  static showKeyboard(currentHeight) {
+    const keyboardHeight = window.innerHeight - currentHeight;
+    document.documentElement.style.setProperty("--keyboard-inset", `${keyboardHeight}px`);
+    document.body.classList.add("keyboard-active");
+  }
+
+  static hideKeyboard() {
+    document.documentElement.style.setProperty("--keyboard-inset", "0px");
+    document.body.classList.remove("keyboard-active");
+  }
+}
+
+$(document).ready(() => {
+  ComponentsManager.init();
+});
+
+window.ComponentsManager = ComponentsManager;
