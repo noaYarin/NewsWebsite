@@ -1,31 +1,82 @@
-const AdminDashboard = {
-  init() {
+class AdminDashboard {
+  static CONFIG = {
+    ANIMATION_DELAY: 100,
+    NUMBER_ANIMATION_DURATION: 2000,
+    PAGE_LOADER_DELAY: 1000,
+    LOADER_FADE_DURATION: 600,
+    DEFAULT_DATE_RANGE_DAYS: 30
+  };
+
+  static SELECTORS = {
+    pageLoader: "#page-loader",
+    mainContent: "#main-content",
+    loadingIndicator: "#loadingIndicator",
+    errorMessage: "#errorMessage",
+    errorText: "#errorText",
+    startDate: "#startDate",
+    endDate: "#endDate",
+    applyDateFilter: "#applyDateFilter",
+    clearDateFilter: "#clearDateFilter",
+    totalUsers: "#totalUsers",
+    totalArticles: "#totalArticles",
+    totalComments: "#totalComments",
+    avgDailyLogins: "#avgDailyLogins",
+    avgDailyArticles: "#avgDailyArticles",
+    totalPeriodLogins: "#totalPeriodLogins",
+    totalPeriodArticles: "#totalPeriodArticles",
+    dailyStatsTableBody: "#dailyStatsTableBody",
+    statCard: ".stat-card",
+    card: ".card"
+  };
+
+  static init() {
     const currentUser = Utils.checkUserAccess(true);
     if (!currentUser) {
       return;
     }
 
     try {
-      AdminDataManager.init();
-      AdminChartManager.init();
-      AdminReportManager.init();
-      AdminUserManager.init();
-
+      this.initializeManagers();
       this.setupEventListeners();
       this.initializeDateInputs();
       this.loadAllStatistics();
 
       setTimeout(() => {
         this.hidePageLoader();
-      }, 1000);
+      }, this.CONFIG.PAGE_LOADER_DELAY);
     } catch (error) {
       this.showError("Failed to initialize dashboard: " + error.message);
     }
-  },
+  }
 
-  hidePageLoader() {
-    const $loader = $("#page-loader");
-    const $mainContent = $("#main-content");
+  static initializeManagers() {
+    AdminDataManager.init();
+    AdminChartManager.init();
+    AdminReportManager.init();
+    AdminUserManager.init();
+  }
+
+  static setupEventListeners() {
+    $(this.SELECTORS.applyDateFilter).on("click", () => this.applyDateFilter());
+    $(this.SELECTORS.clearDateFilter).on("click", () => this.clearDateFilter());
+
+    $(`${this.SELECTORS.startDate}, ${this.SELECTORS.endDate}`).on("keypress", (e) => {
+      if (e.which === 13) this.applyDateFilter();
+    });
+  }
+
+  static initializeDateInputs() {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - this.CONFIG.DEFAULT_DATE_RANGE_DAYS);
+
+    $(this.SELECTORS.endDate).val(AdminDataManager.formatDateForInput(endDate));
+    $(this.SELECTORS.startDate).val(AdminDataManager.formatDateForInput(startDate));
+  }
+
+  static hidePageLoader() {
+    const $loader = $(this.SELECTORS.pageLoader);
+    const $mainContent = $(this.SELECTORS.mainContent);
 
     if ($loader.length && $mainContent.length) {
       $loader.addClass("fade-out");
@@ -33,46 +84,28 @@ const AdminDashboard = {
 
       setTimeout(() => {
         $loader.remove();
-      }, 600);
+      }, this.CONFIG.LOADER_FADE_DURATION);
     }
-  },
+  }
 
-  setupEventListeners() {
-    $("#applyDateFilter").on("click", () => this.applyDateFilter());
-    $("#clearDateFilter").on("click", () => this.clearDateFilter());
+  static showLoading() {
+    $(this.SELECTORS.loadingIndicator).show();
+    $(this.SELECTORS.errorMessage).hide();
+    $(this.SELECTORS.statCard).addClass("loading");
+  }
 
-    $("#startDate, #endDate").on("keypress", (e) => {
-      if (e.which === 13) this.applyDateFilter();
-    });
-  },
+  static hideLoading() {
+    $(this.SELECTORS.loadingIndicator).hide();
+    $(this.SELECTORS.statCard).removeClass("loading");
+  }
 
-  initializeDateInputs() {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
-
-    $("#endDate").val(AdminDataManager.formatDateForInput(endDate));
-    $("#startDate").val(AdminDataManager.formatDateForInput(startDate));
-  },
-
-  showLoading() {
-    $("#loadingIndicator").show();
-    $("#errorMessage").hide();
-    $(".stat-card").addClass("loading");
-  },
-
-  hideLoading() {
-    $("#loadingIndicator").hide();
-    $(".stat-card").removeClass("loading");
-  },
-
-  showError(message) {
-    $("#errorText").text(message);
-    $("#errorMessage").show();
+  static showError(message) {
+    $(this.SELECTORS.errorText).text(message);
+    $(this.SELECTORS.errorMessage).show();
     this.hideLoading();
-  },
+  }
 
-  loadAllStatistics() {
+  static loadAllStatistics() {
     this.showLoading();
 
     AdminDataManager.loadAllStatistics()
@@ -84,33 +117,33 @@ const AdminDashboard = {
       .catch((error) => {
         this.showError("Failed to load statistics. Please check your connection and try again.");
       });
-  },
+  }
 
-  updateUI() {
+  static updateUI() {
     const statistics = AdminDataManager.getProcessedStatistics();
 
     this.updateGeneralStatisticsCards(statistics.general);
     AdminChartManager.renderAllCharts(statistics);
     this.updateSummaryMetrics();
     this.populateDataTable();
-  },
+  }
 
-  updateGeneralStatisticsCards(data) {
+  static updateGeneralStatisticsCards(data) {
     if (!data) return;
 
-    const totalUsers = data.totalUsers || data.TotalUsers || 0;
-    const totalArticles = data.totalArticles || data.TotalArticles || 0;
-    const totalComments = data.totalComments || data.TotalComments || 0;
+    const totalUsers = data.totalUsers || 0;
+    const totalArticles = data.totalArticles || 0;
+    const totalComments = data.totalComments || 0;
 
-    this.animateNumber("#totalUsers", totalUsers);
-    this.animateNumber("#totalArticles", totalArticles);
-    this.animateNumber("#totalComments", totalComments);
-  },
+    this.animateNumber(this.SELECTORS.totalUsers, totalUsers);
+    this.animateNumber(this.SELECTORS.totalArticles, totalArticles);
+    this.animateNumber(this.SELECTORS.totalComments, totalComments);
+  }
 
-  animateNumber(selector, finalValue) {
+  static animateNumber(selector, finalValue) {
     const element = $(selector);
     const startValue = 0;
-    const duration = 2000;
+    const duration = this.CONFIG.NUMBER_ANIMATION_DURATION;
     const startTime = Date.now();
 
     const updateNumber = () => {
@@ -130,19 +163,19 @@ const AdminDashboard = {
     };
 
     updateNumber();
-  },
+  }
 
-  updateSummaryMetrics() {
+  static updateSummaryMetrics() {
     const metrics = AdminDataManager.calculateSummaryMetrics();
 
-    $("#avgDailyLogins").text(metrics.avgLogins.toLocaleString());
-    $("#avgDailyArticles").text(metrics.avgArticles.toLocaleString());
-    $("#totalPeriodLogins").text(metrics.totalLogins.toLocaleString());
-    $("#totalPeriodArticles").text(metrics.totalArticles.toLocaleString());
-  },
+    $(this.SELECTORS.avgDailyLogins).text(metrics.avgLogins.toLocaleString());
+    $(this.SELECTORS.avgDailyArticles).text(metrics.avgArticles.toLocaleString());
+    $(this.SELECTORS.totalPeriodLogins).text(metrics.totalLogins.toLocaleString());
+    $(this.SELECTORS.totalPeriodArticles).text(metrics.totalArticles.toLocaleString());
+  }
 
-  populateDataTable() {
-    const tableBody = $("#dailyStatsTableBody");
+  static populateDataTable() {
+    const tableBody = $(this.SELECTORS.dailyStatsTableBody);
     tableBody.empty();
 
     const tableData = AdminDataManager.getTableData();
@@ -164,11 +197,11 @@ const AdminDashboard = {
       `;
       tableBody.append(tableRow);
     });
-  },
+  }
 
-  applyDateFilter() {
-    const startDate = $("#startDate").val();
-    const endDate = $("#endDate").val();
+  static applyDateFilter() {
+    const startDate = $(this.SELECTORS.startDate).val();
+    const endDate = $(this.SELECTORS.endDate).val();
 
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
       this.showError("Start date cannot be after end date.");
@@ -177,23 +210,23 @@ const AdminDashboard = {
 
     AdminDataManager.setDateRange(startDate, endDate);
     this.loadAllStatistics();
-  },
+  }
 
-  clearDateFilter() {
-    $("#startDate").val("");
-    $("#endDate").val("");
+  static clearDateFilter() {
+    $(this.SELECTORS.startDate).val("");
+    $(this.SELECTORS.endDate).val("");
     AdminDataManager.setDateRange(null, null);
     this.loadAllStatistics();
-  },
+  }
 
-  animateCards() {
-    $(".stat-card, .card").each((index, element) => {
+  static animateCards() {
+    $(`${this.SELECTORS.statCard}, ${this.SELECTORS.card}`).each((index, element) => {
       setTimeout(() => {
         $(element).addClass("slide-up");
-      }, index * 100);
+      }, index * this.CONFIG.ANIMATION_DELAY);
     });
   }
-};
+}
 
 $(document).ready(() => {
   if (typeof getGeneralStatistics === "undefined") {
@@ -202,3 +235,5 @@ $(document).ready(() => {
 
   AdminDashboard.init();
 });
+
+window.AdminDashboard = AdminDashboard;
