@@ -14,6 +14,22 @@ namespace Horizon.BL
         public string AdminNotes { get; set; } = "";
         public DateTime CreatedAt { get; set; }
 
+        public Report() { }
+
+        public Report(int id, int reporterUserId, int? reportedCommentId, int? reportedArticleId, ReportReason reason,
+                      string details, ReportStatus status, string adminNotes, DateTime createdAt)
+        {
+            Id = id;
+            ReporterUserId = reporterUserId;
+            ReportedCommentId = reportedCommentId;
+            ReportedArticleId = reportedArticleId;
+            Reason = reason;
+            Details = details;
+            Status = status;
+            AdminNotes = adminNotes;
+            CreatedAt = createdAt;
+        }
+
         public bool Create()
         {
             var reportService = new ReportService();
