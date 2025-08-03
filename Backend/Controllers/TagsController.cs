@@ -2,22 +2,23 @@
 using Horizon.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Horizon.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class TagsController : ControllerBase
+namespace Horizon.Controllers
 {
-    [HttpPost]
-    public IActionResult AddTag([FromBody] AddTagRequestDto request)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class TagsController : ControllerBase
     {
-        var tag = new Tag { Name = request.Name, ImageUrl = request.ImageUrl };
-        bool success = Tag.AddTag(tag);
-
-        if (!success)
+        [HttpPost]
+        public IActionResult AddTag([FromBody] AddTagRequestDto request)
         {
-            return Conflict("A tag with this name already exists.");
+            var tag = new Tag { Name = request.Name, ImageUrl = request.ImageUrl };
+            bool success = Tag.AddTag(tag);
+
+            if (!success)
+            {
+                return Conflict("A tag with this name already exists.");
+            }
+            return Ok(tag);
         }
-        return Ok(tag);
     }
 }
