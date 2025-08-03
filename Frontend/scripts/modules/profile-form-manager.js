@@ -1,15 +1,21 @@
 class ProfileFormManager {
   static selectedInterests = [];
   static originalFormState = null;
+  static validationMap = null;
 
-  static validationMap = {
-    firstName: (val) => ValidationManager.validateName(val, "First name"),
-    lastName: (val) => ValidationManager.validateName(val, "Last name"),
-    birthdate: ValidationManager.validateBirthdate,
-    imageUrl: ValidationManager.validateImageUrl,
-    newPassword: (val) => (val ? ValidationManager.validatePassword(val) : { valid: true }),
-    confirmPassword: () => this.validatePasswordConfirmation()
-  };
+  static getValidationMap() {
+    if (!this.validationMap) {
+      this.validationMap = {
+        firstName: (val) => ValidationManager.validateName(val, "First name"),
+        lastName: (val) => ValidationManager.validateName(val, "Last name"),
+        birthdate: ValidationManager.validateBirthdate,
+        imageUrl: ValidationManager.validateImageUrl,
+        newPassword: (val) => (val ? ValidationManager.validatePassword(val) : { valid: true }),
+        confirmPassword: () => this.validatePasswordConfirmation()
+      };
+    }
+    return this.validationMap;
+  }
 
   static selectors = {
     form: "#profileForm",
@@ -315,7 +321,7 @@ class ProfileFormManager {
 
     fieldsToValidate.forEach((fieldName) => {
       const input = form.find(`input[name="${fieldName}"]`);
-      const validator = this.validationMap[fieldName];
+      const validator = this.getValidationMap()[fieldName];
 
       if (validator) {
         const result = validator(input.val().trim());
@@ -335,13 +341,13 @@ class ProfileFormManager {
 
     let isValid = true;
 
-    const newPasswordResult = this.validationMap.newPassword(newPassword);
+    const newPasswordResult = this.getValidationMap().newPassword(newPassword);
     if (!newPasswordResult.valid) {
       isValid = false;
       ValidationManager.showError($(this.selectors.newPassword), newPasswordResult.message);
     }
 
-    const confirmPasswordResult = this.validationMap.confirmPassword();
+    const confirmPasswordResult = this.getValidationMap().confirmPassword();
     if (!confirmPasswordResult.valid) {
       isValid = false;
       ValidationManager.showError($(this.selectors.confirmPassword), confirmPasswordResult.message);
