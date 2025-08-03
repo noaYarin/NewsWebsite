@@ -252,25 +252,6 @@ class NewsSectionManager {
   }
 
   /**
-   * Creates a placeholder article object for use when real content is unavailable.
-   * @param {number} index - The index for creating a unique fallback ID.
-   * @returns {object} A fallback article object.
-   */
-  static createFallbackArticle(index) {
-    return {
-      id: `fallback-${index}-${Date.now()}`,
-      title: "Breaking News Update",
-      url: "#",
-      description: "Stay tuned for the latest developments in this ongoing story.",
-      imageUrl: CONSTANTS.DEFAULT_IMAGE,
-      author: "Horizon News Team",
-      sourceName: "Horizon News",
-      publishedAt: new Date().toISOString(),
-      category: "general"
-    };
-  }
-
-  /**
    * Updates the title of a section in the DOM, with special handling for certain sections.
    * @param {jQuery} container - The jQuery object for the section's container.
    * @param {string} title - The new title text.
@@ -300,6 +281,25 @@ class NewsSectionManager {
     } else {
       this.fillAllSections();
     }
+  }
+
+  /**
+   * Creates a placeholder article object for use when real content is unavailable.
+   * @param {number} index - The index for creating a unique fallback ID.
+   * @returns {object} A fallback article object.
+   */
+  static createFallbackArticle(index) {
+    return {
+      id: `fallback-${index}-${Date.now()}`,
+      title: "Breaking News Update",
+      url: "#",
+      description: "Stay tuned for the latest developments in this ongoing story.",
+      imageUrl: CONSTANTS.DEFAULT_IMAGE,
+      author: "Horizon News Team",
+      sourceName: "Horizon News",
+      publishedAt: new Date().toISOString(),
+      category: "general"
+    };
   }
 
   /**
