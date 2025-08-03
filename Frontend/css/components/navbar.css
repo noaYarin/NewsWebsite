@@ -178,7 +178,7 @@
 }
 
 .nav-profile-menu-header {
-  max-height: 60px;
+  max-height: 65px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -514,6 +514,10 @@
   .nav-notifications-dropdown {
     width: 300px;
     right: -50px;
+  }
+
+  .nav-profile-menu-header {
+    max-height: 60px;
   }
 }
 
