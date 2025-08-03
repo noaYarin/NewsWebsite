@@ -1,6 +1,6 @@
 class ProfilePageManager {
   static SCROLL_CONFIG = {
-    OFFSET: 450,
+    OFFSET: -100,
     DURATION: 400
   };
 
