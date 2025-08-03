@@ -24,7 +24,7 @@ class NewsAPIManager {
             resolve([]);
           }
         },
-        (error) => {
+        () => {
           resolve([]);
         }
       );
@@ -58,7 +58,7 @@ class NewsAPIManager {
         author: a.author || "",
         sourceName: a.sourceName || "Unknown Source",
         publishedAt: a.publishedAt,
-        category: a.category || category || "general" // fallback to category from parameter
+        category: a.category || category || "General" // fallback to category from parameter
       }));
     return mapped;
   }

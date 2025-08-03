@@ -54,6 +54,7 @@ router.get("/", async (req, res) => {
         if (!textToClassify) {
           return { ...article, category: "General" };
         }
+
         const result = await manager.process("en", textToClassify);
         const rawCategory = result.intent && result.intent !== "None" ? result.intent : "General";
         const finalCategory = formatCategory(rawCategory);

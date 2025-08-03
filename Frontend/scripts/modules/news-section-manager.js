@@ -104,8 +104,8 @@ class NewsSectionManager {
   }
 
   /**
-   * Gathers all unique API queries from the section requirements.
-   * (!) This implementation collects queries but doesn't execute a fetch.
+   * Fetches fresh articles from the API and syncs them to the database.
+   * Collects all unique API queries from section requirements and fetches them.
    */
   static async fetchAndSyncFromAPI() {
     const apiQueries = new Set();
@@ -116,6 +116,9 @@ class NewsSectionManager {
         }
       });
     });
+
+    const fetchPromises = Array.from(apiQueries).map((query) => NewsAPIManager.fetchFromAPI(null, query));
+    await Promise.allSettled(fetchPromises);
   }
 
   /**
