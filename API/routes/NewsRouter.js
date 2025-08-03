@@ -22,15 +22,68 @@ function cleanArticleTitle(title) {
 }
 
 async function trainNlp() {
+  // Business
   manager.addDocument("en", "market earnings profit stocks company", "Business");
+  manager.addDocument("en", "economy finance investment banking trading", "Business");
+  manager.addDocument("en", "startup entrepreneur business model revenue", "Business");
+  manager.addDocument("en", "cryptocurrency bitcoin blockchain financial", "Business");
+  manager.addDocument("en", "oil prices inflation recession economic", "Business");
+
+  // Entertainment
   manager.addDocument("en", "movie film actor actress celebrity", "Entertainment");
+  manager.addDocument("en", "music concert album artist singer", "Entertainment");
+  manager.addDocument("en", "television show series streaming netflix", "Entertainment");
+  manager.addDocument("en", "fashion designer model runway style", "Entertainment");
+  manager.addDocument("en", "book author novel bestseller publishing", "Entertainment");
+
+  // General
   manager.addDocument("en", "government world news today people", "General");
+  manager.addDocument("en", "politics election president congress parliament", "General");
+  manager.addDocument("en", "crime police investigation court trial", "General");
+  manager.addDocument("en", "social community public opinion society", "General");
+  manager.addDocument("en", "education school university student teacher", "General");
+
+  // Health
   manager.addDocument("en", "doctor hospital medicine vaccine diet", "Health");
+  manager.addDocument("en", "mental health depression anxiety therapy", "Health");
+  manager.addDocument("en", "fitness exercise workout nutrition wellness", "Health");
+  manager.addDocument("en", "disease outbreak pandemic virus symptoms", "Health");
+  manager.addDocument("en", "surgery treatment patient medical research", "Health");
+
+  // Science
   manager.addDocument("en", "space galaxy planet research experiment", "Science");
+  manager.addDocument("en", "climate change environment global warming", "Science");
+  manager.addDocument("en", "genetics DNA biology evolution discovery", "Science");
+  manager.addDocument("en", "physics quantum theory relativity particle", "Science");
+  manager.addDocument("en", "artificial intelligence machine learning AI", "Science");
+
+  // Sports
   manager.addDocument("en", "game score team champion player", "Sports");
+  manager.addDocument("en", "football soccer basketball baseball hockey", "Sports");
+  manager.addDocument("en", "olympics competition athlete medal record", "Sports");
+  manager.addDocument("en", "coach training season tournament league", "Sports");
+  manager.addDocument("en", "injury transfer contract professional sport", "Sports");
+
+  // Technology
   manager.addDocument("en", "computer phone software code data", "Technology");
+  manager.addDocument("en", "internet website app mobile application", "Technology");
+  manager.addDocument("en", "cybersecurity hack privacy security breach", "Technology");
+  manager.addDocument("en", "electric vehicle autonomous self-driving car", "Technology");
+  manager.addDocument("en", "virtual reality VR augmented reality AR", "Technology");
+
+  // Travel
   manager.addDocument("en", "flight vacation trip tourism destination", "Travel");
+  manager.addDocument("en", "hotel accommodation booking reservation travel", "Travel");
+  manager.addDocument("en", "airline airport passenger transport journey", "Travel");
+  manager.addDocument("en", "cruise ship voyage adventure expedition", "Travel");
+  manager.addDocument("en", "visa passport border immigration travel ban", "Travel");
+
+  // Culture
   manager.addDocument("en", "art museum history tradition food", "Culture");
+  manager.addDocument("en", "festival celebration cultural event ceremony", "Culture");
+  manager.addDocument("en", "religion faith spiritual church temple", "Culture");
+  manager.addDocument("en", "language heritage ancestry indigenous culture", "Culture");
+  manager.addDocument("en", "cuisine restaurant chef cooking culinary", "Culture");
 
   await manager.train();
 }
