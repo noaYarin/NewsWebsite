@@ -196,11 +196,6 @@ class Navigation {
     $(document).on("click", ".login-btn, .mobile-login-btn", () => {
       window.location.href = Utils.getNavHref("auth");
     });
-
-    // TODO: Implement subscription functionality
-    $(document).on("click", ".subscribe-btn, .mobile-subscribe-btn", () => {
-      UIManager.showPopup("Subscribe functionality coming soon!", "muted");
-    });
   }
 
   static loadInitialNotificationsData() {

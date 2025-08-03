@@ -63,56 +63,12 @@
   color: var(--c-text-subtle);
 }
 
-.subscribe-btn {
-  background-color: var(--c-primary);
-  height: 100%;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  position: relative;
-  overflow: hidden;
-  transition: color var(--transition-medium);
-}
-
-.subscribe-btn span {
-  position: relative;
-  z-index: 1;
-}
-
-.subscribe-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background-color: var(--c-dark);
-  transition: left var(--transition-medium);
-  z-index: 0;
-}
-
-.subscribe-btn:hover {
-  color: var(--c-light);
-}
-
-.subscribe-btn:hover::before {
-  left: 0;
-}
-
-.mobile-subscribe-btn,
 .mobile-login-btn {
   flex: 1;
   padding: 12px;
   font-size: 16px;
   font-weight: 500;
   min-height: 50px;
-}
-
-.mobile-subscribe-btn {
-  background-color: var(--c-primary);
-}
-
-.mobile-login-btn {
   background-color: var(--c-light);
   border: 2px solid var(--c-dark);
 }

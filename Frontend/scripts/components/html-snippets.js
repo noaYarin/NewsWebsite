@@ -43,7 +43,6 @@ class HTMLSnippets {
       <div class="nav-right" ${isAuthPage ? 'style="display: none;"' : ""}>
         <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="search-icon" />
         ${this.generateNavRight(currentUser, isLoggedIn)}
-        <button class="subscribe-btn"><span>Subscribe</span></button>
       </div>
       ${this.generateSearchOverlay(logoHref, currentUser, isLoggedIn)}
     `;
@@ -124,7 +123,6 @@ class HTMLSnippets {
         </div>
         <div class="nav-right">
           ${this.generateNavRight(currentUser, isLoggedIn)}
-          <button class="subscribe-btn"><span>Subscribe</span></button>
         </div>
         <div class="mobile-search-header">
           <img src="../sources/icons/search-svgrepo-com.svg" alt="Search" class="mobile-search-icon" />
@@ -152,7 +150,6 @@ class HTMLSnippets {
       </ul>
       <div class="mobile-menu-footer" ${isAuthPage ? 'style="display: none;"' : ""}>
         ${isLoggedIn ? "" : '<button class="mobile-login-btn">LOG IN</button>'}
-        <button class="mobile-subscribe-btn">SUBSCRIBE</button>
       </div>
     `;
   }
