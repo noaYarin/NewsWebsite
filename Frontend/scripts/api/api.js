@@ -225,42 +225,28 @@ function getGeneralStatistics(successCallback, errorCallback) {
   ajaxCall("GET", `${statisticsEndpoint}/general`, null, successCallback, errorCallback);
 }
 
-function getDailyStatistics(startDate = null, endDate = null, successCallback, errorCallback) {
-  let url = `${statisticsEndpoint}/daily`;
+// Helper function for statistics calls with optional date parameters
+function getStatisticsData(endpoint, startDate = null, endDate = null, successCallback, errorCallback) {
   const params = [];
   if (startDate) params.push(`startDate=${startDate}`);
   if (endDate) params.push(`endDate=${endDate}`);
-  if (params.length > 0) url += `?${params.join("&")}`;
+  const queryString = params.length > 0 ? `?${params.join("&")}` : "";
 
-  ajaxCall("GET", url, null, successCallback, errorCallback);
+  ajaxCall("GET", `${statisticsEndpoint}${endpoint}${queryString}`, null, successCallback, errorCallback);
+}
+
+function getDailyStatistics(startDate = null, endDate = null, successCallback, errorCallback) {
+  getStatisticsData("/daily", startDate, endDate, successCallback, errorCallback);
 }
 
 function getDailyLogins(startDate = null, endDate = null, successCallback, errorCallback) {
-  let url = `${statisticsEndpoint}/daily/logins`;
-  const params = [];
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (params.length > 0) url += `?${params.join("&")}`;
-
-  ajaxCall("GET", url, null, successCallback, errorCallback);
+  getStatisticsData("/daily/logins", startDate, endDate, successCallback, errorCallback);
 }
 
 function getDailyArticlePulls(startDate = null, endDate = null, successCallback, errorCallback) {
-  let url = `${statisticsEndpoint}/daily/article-pulls`;
-  const params = [];
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (params.length > 0) url += `?${params.join("&")}`;
-
-  ajaxCall("GET", url, null, successCallback, errorCallback);
+  getStatisticsData("/daily/article-pulls", startDate, endDate, successCallback, errorCallback);
 }
 
 function getDailyArticleInserts(startDate = null, endDate = null, successCallback, errorCallback) {
-  let url = `${statisticsEndpoint}/daily/article-inserts`;
-  const params = [];
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (params.length > 0) url += `?${params.join("&")}`;
-
-  ajaxCall("GET", url, null, successCallback, errorCallback);
+  getStatisticsData("/daily/article-inserts", startDate, endDate, successCallback, errorCallback);
 }
