@@ -50,7 +50,6 @@ public class ArticleService : DBService
         finally { con?.Close(); }
     }
 
-
     public List<Article> GetArticlesByUrls(List<string> urls)
     {
         var articles = new List<Article>();

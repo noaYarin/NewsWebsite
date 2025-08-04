@@ -10,12 +10,7 @@ public class ArticleSummarization
         return await summarizerService.SummarizeAsync(text);
     }
 
-    public static async Task<string> SummarizeFromUrlAsync(string url)
-    {
-        var summarizerService = new SummarizerService();
-        return await summarizerService.SummarizeFromUrlAsync(url);
-    }
-
+    // Not used in the current context, but can be useful for future implementations
     public static async Task<string> SummarizeArticleAsync(int articleId)
     {
         var article = Article.GetById(articleId);
@@ -23,5 +18,11 @@ public class ArticleSummarization
             throw new ArgumentException("Article not found");
 
         return await SummarizeFromUrlAsync(article.Url);
+    }
+
+    public static async Task<string> SummarizeFromUrlAsync(string url)
+    {
+        var summarizerService = new SummarizerService();
+        return await summarizerService.SummarizeFromUrlAsync(url);
     }
 }

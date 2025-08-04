@@ -54,18 +54,6 @@ namespace Horizon.BL
             return reportService.GetAllReports();
         }
 
-        public bool UpdateStatus(ReportStatus newStatus, string adminNotes = "")
-        {
-            var reportService = new ReportService();
-            bool success = reportService.UpdateReportStatus(this.Id, newStatus, adminNotes);
-            if (success)
-            {
-                this.Status = newStatus;
-                this.AdminNotes = adminNotes;
-            }
-            return success;
-        }
-
         public static bool UpdateReportStatus(int reportId, ReportStatus newStatus, string adminNotes = "")
         {
             var reportService = new ReportService();

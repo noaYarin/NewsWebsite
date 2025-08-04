@@ -11,14 +11,21 @@ namespace Horizon.Controllers
         [HttpPost]
         public IActionResult AddTag([FromBody] AddTagRequestDto request)
         {
-            var tag = new Tag { Name = request.Name, ImageUrl = request.ImageUrl };
-            bool success = Tag.AddTag(tag);
-
-            if (!success)
+            try
             {
-                return Conflict("A tag with this name already exists.");
+                var tag = new Tag { Name = request.Name, ImageUrl = request.ImageUrl };
+                bool success = Tag.AddTag(tag);
+
+                if (!success)
+                {
+                    return Conflict("A tag with this name already exists.");
+                }
+                return Ok(tag);
             }
-            return Ok(tag);
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while adding the tag.");
+            }
         }
     }
 }
