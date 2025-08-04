@@ -118,29 +118,15 @@ public class CommentService : DBService
 
             SqlCommand cmd = CreateCommand("SP_ToggleCommentLike", con, parameters);
 
-            SqlParameter isNowLikedParam = new SqlParameter("@IsNowLiked", SqlDbType.Bit)
-            {
-                Direction = ParameterDirection.Output
-            };
-            cmd.Parameters.Add(isNowLikedParam);
-
-            SqlParameter commentAuthorIdParam = new SqlParameter("@CommentAuthorId", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            cmd.Parameters.Add(commentAuthorIdParam);
-
-            SqlParameter articleIdParam = new SqlParameter("@ArticleId", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            cmd.Parameters.Add(articleIdParam);
+            cmd.Parameters.Add("@IsNowLiked", SqlDbType.Bit).Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("@CommentAuthorId", SqlDbType.Int).Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("@ArticleId", SqlDbType.Int).Direction = ParameterDirection.Output;
 
             cmd.ExecuteNonQuery();
 
-            bool isLiked = Convert.ToBoolean(isNowLikedParam.Value);
-            authorId = Convert.ToInt32(commentAuthorIdParam.Value);
-            articleId = Convert.ToInt32(articleIdParam.Value);
+            bool isLiked = Convert.ToBoolean(cmd.Parameters["@IsNowLiked"].Value);
+            authorId = Convert.ToInt32(cmd.Parameters["@CommentAuthorId"].Value);
+            articleId = Convert.ToInt32(cmd.Parameters["@ArticleId"].Value);
 
             return isLiked;
         }
