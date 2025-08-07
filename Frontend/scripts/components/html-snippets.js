@@ -209,7 +209,8 @@ class HTMLSnippets {
       { href: Utils.getNavHref("notifications"), icon: "notifications-svgrepo-com.svg", text: "Notifications" },
       { href: "#", icon: "profile-plus-round-1324-svgrepo-com.svg", text: "Add Friend", class: "nav-profile-menu-add-friend" },
       { href: Utils.getNavHref("bookmarks"), icon: "bookmarks-svgrepo-com.svg", text: "Bookmarks" },
-      { href: Utils.getNavHref("profile"), icon: "user-svgrepo-com.svg", text: "Profile Settings" }
+      { href: Utils.getNavHref("profile"), icon: "user-svgrepo-com.svg", text: "Profile Settings" },
+      { href: Utils.getNavHref("extra"), icon: "star-alt-3-svgrepo-com.svg", text: "Extra Credit" }
     ];
 
     const menuItemsHTML = menuItems.map((item) => this.generateMenuItem(item)).join("");
