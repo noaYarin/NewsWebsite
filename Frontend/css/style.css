@@ -34,6 +34,7 @@
 @import url("./pages/category.css");
 @import url("./pages/bookmarks.css");
 @import url("./pages/notifications.css");
+@import url("./pages/extra.css");
 
 /* === RESPONSIVE STYLES === */
 @import url("./utils/responsive.css");

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HORIZON / Extra Credit Features</title>
+    <link rel="icon" type="image/x-icon" href="../sources/logo.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../scripts/core/script-loader.js"></script>
+    <script>
+      $(() => loadPageScripts());
+    </script>
+  </head>
+  <body>
+    <nav id="navbar"></nav>
+    <nav id="mobileMenu"></nav>
+    <div id="profileMenu" class="nav-profile-menu"></div>
+
+    <main>
+      <div class="container-fluid px-4">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-xl-8 d-flex flex-column justify-content-center align-items-center">
+            <div class="titles text-center mb-5">
+              <h1>EXTRA CREDIT FEATURES</h1>
+              <span class="highlight-container"> Advanced implementations beyond the basic project requirements </span>
+            </div>
+
+            <div class="extra-features-content">
+              <!-- Node.js API Server -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">Node.js API Server</h2>
+                  <span class="tech-badge">Node.js + Express.js</span>
+                </div>
+                <div class="feature-content">
+                  <p>Created a separate Node.js server running independently from the main .NET backend, providing a microservice architecture for news data management.</p>
+                  <div class="feature-highlights">
+                    <div class="highlight-item"><strong>Real-time News Integration:</strong> Connected to NewsAPI.org for live news feeds</div>
+                    <div class="highlight-item"><strong>API Rate Limiting:</strong> Intelligent handling of external API constraints</div>
+                    <div class="highlight-item"><strong>Scalable Architecture:</strong> Microservice design for better performance</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI-Powered Summarization -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">AI-Powered Article Summarization</h2>
+                  <span class="tech-badge">Hugging Face Transformers API</span>
+                </div>
+                <div class="feature-content">
+                  <p>Integrated advanced AI models to provide intelligent article summarization, helping users quickly understand content without reading full articles.</p>
+                  <div class="feature-highlights">
+                    <div class="highlight-item"><strong>Smart Text Processing:</strong> Automatic extraction and analysis of article content</div>
+                    <div class="highlight-item"><strong>AI-Generated Summaries:</strong> Machine learning models create concise, accurate summaries</div>
+                    <div class="highlight-item"><strong>Asynchronous Processing:</strong> Non-blocking operations for better user experience</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- NLP Categorization -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">Natural Language Processing</h2>
+                  <span class="tech-badge">Node-NLP Library</span>
+                </div>
+                <div class="feature-content">
+                  <p>
+                    Custom-trained NLP model that automatically categorizes articles based on content analysis, providing intelligent content organization across multiple
+                    categories.
+                  </p>
+                  <div class="category-grid">
+                    <div class="category-item">Business</div>
+                    <div class="category-item">Technology</div>
+                    <div class="category-item">Sports</div>
+                    <div class="category-item">Health</div>
+                    <div class="category-item">Science</div>
+                    <div class="category-item">Entertainment</div>
+                    <div class="category-item">Travel</div>
+                    <div class="category-item">Culture</div>
+                  </div>
+                  <div class="feature-highlights mt-3">
+                    <div class="highlight-item"><strong>Machine Learning Classification:</strong> Trained on diverse keyword sets for accuracy</div>
+                    <div class="highlight-item"><strong>Confidence Scoring:</strong> Quality assessment for categorization results</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Advanced Friendship System -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">Advanced Friendship System</h2>
+                  <span class="tech-badge">.NET Core + SQL Server</span>
+                </div>
+                <div class="feature-content">
+                  <p>Comprehensive social networking features with complete friendship management, privacy controls, and real-time status tracking.</p>
+                  <div class="friendship-features">
+                    <div class="friendship-feature">
+                      <h4>Friend Requests</h4>
+                      <p>Send, accept, decline, and cancel friend requests with proper state management</p>
+                    </div>
+                    <div class="friendship-feature">
+                      <h4>Privacy Controls</h4>
+                      <p>Block/unblock users with complete interaction prevention and content hiding</p>
+                    </div>
+                    <div class="friendship-feature">
+                      <h4>Status Tracking</h4>
+                      <p>Real-time friendship states: pending, accepted, blocked, and cancelled</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive Comment System -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">Interactive Comment Engagement</h2>
+                  <span class="tech-badge">.NET Core + Real-time Updates</span>
+                </div>
+                <div class="feature-content">
+                  <p>Advanced commenting system with social engagement features, including like/unlike functionality and real-time interaction tracking.</p>
+                  <div class="feature-highlights">
+                    <div class="highlight-item"><strong>Comment Likes:</strong> Toggle like/unlike with visual feedback and real-time updates</div>
+                    <div class="highlight-item"><strong>Engagement Tracking:</strong> Monitor user interactions and provide notifications</div>
+                    <div class="highlight-item"><strong>Permission System:</strong> Respect blocking relationships in all interactions</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Architecture Benefits -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">Architecture Benefits</h2>
+                  <span class="tech-badge">Microservice Design</span>
+                </div>
+                <div class="feature-content">
+                  <div class="architecture-grid">
+                    <div class="architecture-item">
+                      <h4>Separation of Concerns</h4>
+                      <p>Node.js handles external data, .NET manages business logic</p>
+                    </div>
+                    <div class="architecture-item">
+                      <h4>Scalability</h4>
+                      <p>Independent scaling of different service components</p>
+                    </div>
+                    <div class="architecture-item">
+                      <h4>Performance</h4>
+                      <p>Optimized database queries and caching strategies</p>
+                    </div>
+                    <div class="architecture-item">
+                      <h4>User Experience</h4>
+                      <p>Real-time updates and intelligent content curation</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Technology Stack -->
+              <div class="feature-section mb-5">
+                <div class="feature-header">
+                  <h2 class="highlight">Technology Stack</h2>
+                </div>
+                <div class="feature-content">
+                  <div class="tech-stack">
+                    <div class="tech-item"><strong>News API:</strong> Node.js + Express, NewsAPI.org, Axios</div>
+                    <div class="tech-item"><strong>AI Summarization:</strong> Hugging Face API, HTTP Client, Async/Await</div>
+                    <div class="tech-item"><strong>NLP Processing:</strong> Node-NLP, Natural Language Processing</div>
+                    <div class="tech-item"><strong>Social Features:</strong> .NET Core, SQL Server, Entity Framework, LINQ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer"></footer>
+  </body>
+</html>
