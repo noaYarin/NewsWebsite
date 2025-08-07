@@ -2,6 +2,10 @@
   color: var(--c-dark);
 }
 
+.highlight-container {
+  color: var(--c-dark);
+}
+
 .extra-features-content {
   margin-top: 2rem;
 }
