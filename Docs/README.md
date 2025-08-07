@@ -56,7 +56,57 @@ This document outlines the additional features implemented beyond the basic proj
 
 ---
 
-### 3. Natural Language Processing (NLP) for Article Categorization
+### 3. Real-time Notifications System
+
+**Technology**: .NET Core with SQL Server
+
+**Implementation**:
+
+- Comprehensive notification system with real-time delivery and categorization
+- Multiple notification types for different user interactions
+- Smart messaging system with default messages and custom content support
+- Unread count tracking with visual indicators
+
+**Features**:
+
+- **Friend Request Notifications**: Real-time alerts when users send or accept friend requests
+- **Article Sharing Notifications**: Instant notifications when friends share articles
+- **Comment Like Notifications**: Alerts when other users like your comments
+- **System Notifications**: Platform updates and important announcements
+- **Unread Count Tracking**: Visual badge indicators showing number of unread notifications
+- **Mark as Read Functionality**: Individual and bulk marking capabilities
+- **Pagination Support**: Efficient handling of large notification histories
+- **Smart Categorization**: Organized by type with contextual messaging
+
+**Database Design**:
+
+- Notifications table with flexible schema supporting multiple notification types
+- Support for both article-related and non-article notifications
+- Efficient indexing for fast retrieval and counting operations
+- Foreign key relationships ensuring data integrity
+
+**API Endpoints**:
+
+```
+POST /api/Notifications/share-article    - Create article sharing notification
+GET  /api/Notifications/{userId}         - Get paginated notifications
+GET  /api/Notifications/recent/{userId}  - Get recent notifications
+GET  /api/Notifications/unread-count/{userId} - Get unread count
+PUT  /api/Notifications/{id}/read/{userId}    - Mark notification as read
+PUT  /api/Notifications/read-all/{userId}     - Mark all as read
+```
+
+**User Experience**:
+
+- Real-time notification delivery without page refresh
+- Clean, organized notification interface with clear categorization
+- Visual indicators for unread notifications with badge counters
+- One-click actions for marking notifications as read
+- Efficient navigation to related content (articles, profiles, etc.)
+
+---
+
+### 4. Natural Language Processing (NLP) for Article Categorization
 
 **Technology**: Node-NLP Library
 
@@ -93,7 +143,7 @@ This document outlines the additional features implemented beyond the basic proj
 
 ---
 
-### 4. Advanced Friendship System
+### 5. Advanced Friendship System
 
 **Technology**: .NET Core with SQL Server
 
@@ -132,7 +182,7 @@ POST /api/Users/{userId}/toggle-block/{userToBlockId} - Block/unblock user
 
 ---
 
-### 5. Interactive Comment Engagement System
+### 6. Interactive Comment Engagement System
 
 **Technology**: .NET Core with SQL Server and real-time updates
 
@@ -192,13 +242,14 @@ POST /api/Users/{userId}/toggle-block/{userToBlockId} - Block/unblock user
 
 ## 🛠️ Technologies Used
 
-| Feature            | Primary Technology     | Supporting Tools              |
-| ------------------ | ---------------------- | ----------------------------- |
-| News API           | Node.js + Express      | NewsAPI.org, Axios            |
-| AI Summarization   | Hugging Face API       | HTTP Client, Async/Await      |
-| NLP Categorization | Node-NLP               | Natural Language Processing   |
-| Friendship System  | .NET Core + SQL Server | Entity Framework, LINQ        |
-| Comment Likes      | .NET Core + SQL Server | Stored Procedures, JavaScript |
+| Feature              | Primary Technology     | Supporting Tools              |
+| -------------------- | ---------------------- | ----------------------------- |
+| News API             | Node.js + Express      | NewsAPI.org, Axios            |
+| AI Summarization     | Hugging Face API       | HTTP Client, Async/Await      |
+| NLP Categorization   | Node-NLP               | Natural Language Processing   |
+| Friendship System    | .NET Core + SQL Server | Entity Framework, LINQ        |
+| Comment Likes        | .NET Core + SQL Server | Stored Procedures, JavaScript |
+| Notifications System | .NET Core + SQL Server | Real-time Updates, Badge UI   |
 
 ---
 
