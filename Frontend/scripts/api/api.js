@@ -1,5 +1,8 @@
-const dotnetBaseUrl = `https://localhost:${CONSTANTS.API.DOTNET_PORT}/api`;
-const nodeBaseUrl = `http://localhost:${CONSTANTS.API.NODE_PORT}/api`;
+//const dotnetBaseUrl = `https://localhost:${CONSTANTS.API.DOTNET_PORT}/api`;
+//const nodeBaseUrl = `http://localhost:${CONSTANTS.API.NODE_PORT}/api`;
+
+const dotnetBaseUrl = "https://proj.ruppin.ac.il/cgroup7/test2/tar1/api"; // .NET API
+const nodeBaseUrl = "https://horizon-news-henna.vercel.app/api"; // Node.js API
 
 const usersEndpoint = `${dotnetBaseUrl}/Users`;
 const newsEndpoint = `${nodeBaseUrl}/News`;
